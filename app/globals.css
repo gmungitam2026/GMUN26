@@ -149,6 +149,14 @@ body {
   opacity: 0;
 }
 
+.assembly-backdrop {
+  opacity: 0.8;
+}
+
+:root[data-theme="light"] .assembly-backdrop {
+  opacity: 0;
+}
+
 /* Faint editorial grain to keep large dark fields from looking flat / templated */
 .grain {
   position: relative;
