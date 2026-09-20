@@ -2,7 +2,7 @@ export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "CANCEL
 
 export type RegistrationStatus = "PENDING" | "PAID" | "CANCELLED";
 
-export type ParticipantType = "Delegate" | "Executive Board" | "Faculty Advisor" | "Observer" | "Press Corps";
+export type Gender = "Male" | "Female" | "Other" | "Prefer not to say";
 
 export interface RegistrationPackage {
   id: string;
@@ -33,24 +33,16 @@ export interface RegistrationRecord {
   id: string;
   registrationId: string;
   fullName: string;
+  age: number;
+  gender: Gender;
   email: string;
   phone: string;
-  college: string;
-  course: string;
-  year: string;
+  institution: string;
+  state: string;
   city: string;
-  participantType: ParticipantType;
   committeePreference: string;
-  countryPreference?: string;
-  munExperience: "First-time delegate" | "Experienced delegate";
-  munsAttended: number;
-  tshirtSize?: string | null;
-  accommodation?: boolean | null;
-  foodPreference?: string | null;
-  emergencyContactName?: string | null;
-  emergencyContactPhone?: string | null;
-  referralSource?: string | null;
-  specialRequirements?: string | null;
+  munExperience: "Yes" | "No";
+  munExperienceDetail?: string | null;
   packageId: string;
   status: RegistrationStatus;
   createdAt: string;

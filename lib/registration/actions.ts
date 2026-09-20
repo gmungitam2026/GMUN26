@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getActiveRegistrationPackage } from "@/config/pricing";
+import { getRegistrationPackageById } from "@/config/pricing";
 import { getPaymentProvider } from "@/lib/payments/service";
 import { simulateMockOutcome } from "@/lib/payments/mock";
 import { sendEmail } from "@/lib/email/service";
@@ -36,7 +36,10 @@ export async function createRegistration(
   }
   const data = parsed.data;
 
-  const pkg = getActiveRegistrationPackage();
+  const pkg = getRegistrationPackageById(data.packageId);
+  if (!pkg) {
+    return { ok: false, error: "Selected package is no longer available. Please choose another." };
+  }
 
   let supabase;
   try {
@@ -53,24 +56,16 @@ export async function createRegistration(
     .from("registrations")
     .insert({
       full_name: data.fullName,
+      age: data.age,
+      gender: data.gender,
       email: data.email.toLowerCase(),
       phone: data.phone,
-      college: data.college,
-      course: data.course,
-      year: data.year,
+      institution: data.institution,
+      state: data.state,
       city: data.city,
-      participant_type: data.participantType,
       committee_preference: data.committeePreference,
-      country_preference: data.countryPreference || null,
-      mun_experience: data.munExperience,
-      muns_attended: data.munsAttended,
-      tshirt_size: data.tshirtSize || null,
-      accommodation: data.accommodation ?? null,
-      food_preference: data.foodPreference || null,
-      emergency_contact_name: data.emergencyContactName || null,
-      emergency_contact_phone: data.emergencyContactPhone || null,
-      referral_source: data.referralSource || null,
-      special_requirements: data.specialRequirements || null,
+      mun_experience: data.hasMunExperience ? "Yes" : "No",
+      mun_experience_detail: data.hasMunExperience ? data.munExperienceDetail || null : null,
       package_id: pkg.id,
       status: "PENDING",
     })

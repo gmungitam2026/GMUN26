@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { committees } from "@/config/committees";
+import { registrationPackages } from "@/config/pricing";
 import { consentSummary } from "@/config/terms";
 import { CheckboxField } from "./fields";
 import type { DetailsInput, PreferencesInput } from "@/lib/validation/registration";
@@ -16,18 +17,17 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export function StepReview({
   data,
-  amount,
   termsAccepted,
   onTermsChange,
   termsError,
 }: {
   data: DetailsInput & PreferencesInput;
-  amount: number;
   termsAccepted: boolean;
   onTermsChange: (checked: boolean) => void;
   termsError?: string;
 }) {
   const committee = committees.find((c) => c.id === data.committeePreference);
+  const pkg = registrationPackages.find((p) => p.id === data.packageId);
 
   return (
     <div>
@@ -35,25 +35,32 @@ export function StepReview({
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Participant</p>
           <Row label="Name" value={data.fullName} />
+          <Row label="Age" value={String(data.age)} />
+          <Row label="Gender" value={data.gender} />
+          <Row label="Mobile" value={data.phone} />
           <Row label="Email" value={data.email} />
-          <Row label="Phone" value={data.phone} />
-          <Row label="College" value={data.college} />
-          <Row label="Course / Year" value={`${data.course} · ${data.year}`} />
+          <Row label="Institution" value={data.institution} />
+          <Row label="State" value={data.state} />
           <Row label="City" value={data.city} />
         </div>
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">MUN Preferences</p>
-          <Row label="Participant Type" value={data.participantType} />
+          <Row label="Prior MUN Experience" value={data.hasMunExperience ? "Yes" : "No"} />
+          {data.hasMunExperience && data.munExperienceDetail && (
+            <p className="border-b border-line py-3 text-sm leading-relaxed text-ivory-dim">
+              {data.munExperienceDetail}
+            </p>
+          )}
           <Row label="Committee" value={committee?.shortName ?? data.committeePreference} />
-          <Row label="Country Preference" value={data.countryPreference || "No preference"} />
-          <Row label="Experience" value={data.munExperience} />
-          <Row label="MUNs Attended" value={String(data.munsAttended)} />
         </div>
       </div>
 
       <div className="mt-10 flex items-baseline justify-between border-y border-line py-6">
-        <p className="font-display text-xl text-ivory">Registration Fee</p>
-        <p className="font-display text-3xl text-gold">₹{amount}</p>
+        <div>
+          <p className="font-display text-xl text-ivory">{pkg?.name}</p>
+          <p className="mt-1 text-xs text-ivory-faint">{pkg?.includes.join(" · ")}</p>
+        </div>
+        <p className="font-display text-3xl text-gold">₹{pkg?.price}</p>
       </div>
 
       <div className="mt-8 space-y-3 text-sm leading-relaxed text-ivory-dim">

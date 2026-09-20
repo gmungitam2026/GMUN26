@@ -8,7 +8,7 @@ export interface DashboardStats {
   failedPayments: number;
   revenue: number;
   committeeBreakdown: { committee: string; count: number }[];
-  participantTypeBreakdown: { type: string; count: number }[];
+  packageBreakdown: { packageId: string; count: number }[];
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -19,7 +19,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       supabase.from("registrations").select("id", { count: "exact", head: true }),
       supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "PAID"),
       supabase.from("payments").select("status, amount"),
-      supabase.from("registrations").select("committee_preference, participant_type"),
+      supabase.from("registrations").select("committee_preference, package_id"),
     ]);
 
   const pendingPayments = paymentRows?.filter((p) => p.status === "PENDING").length ?? 0;
@@ -27,10 +27,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const revenue = paymentRows?.filter((p) => p.status === "PAID").reduce((sum, p) => sum + (p.amount ?? 0), 0) ?? 0;
 
   const committeeCounts = new Map<string, number>();
-  const typeCounts = new Map<string, number>();
+  const packageCounts = new Map<string, number>();
   for (const row of registrationRows ?? []) {
     committeeCounts.set(row.committee_preference, (committeeCounts.get(row.committee_preference) ?? 0) + 1);
-    typeCounts.set(row.participant_type, (typeCounts.get(row.participant_type) ?? 0) + 1);
+    packageCounts.set(row.package_id, (packageCounts.get(row.package_id) ?? 0) + 1);
   }
 
   return {
@@ -42,8 +42,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     committeeBreakdown: [...committeeCounts.entries()]
       .map(([committee, count]) => ({ committee, count }))
       .sort((a, b) => b.count - a.count),
-    participantTypeBreakdown: [...typeCounts.entries()]
-      .map(([type, count]) => ({ type, count }))
+    packageBreakdown: [...packageCounts.entries()]
+      .map(([packageId, count]) => ({ packageId, count }))
       .sort((a, b) => b.count - a.count),
   };
 }

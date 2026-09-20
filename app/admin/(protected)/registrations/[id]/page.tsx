@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRegistrationDetail } from "@/lib/admin/queries";
 import { committees } from "@/config/committees";
+import { registrationPackages } from "@/config/pricing";
 
 function Field({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (
@@ -23,6 +24,7 @@ export default async function AdminRegistrationDetailPage({
 
   const { registration: r, payments } = detail;
   const committee = committees.find((c) => c.id === r.committee_preference);
+  const pkg = registrationPackages.find((p) => p.id === r.package_id);
 
   return (
     <div>
@@ -38,27 +40,22 @@ export default async function AdminRegistrationDetailPage({
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Participant</p>
-          <Field label="Full Name" value={r.full_name} />
+          <Field label="Name (as per Govt. ID)" value={r.full_name} />
+          <Field label="Age" value={r.age} />
+          <Field label="Gender" value={r.gender} />
           <Field label="Email" value={r.email} />
-          <Field label="Phone" value={r.phone} />
-          <Field label="College" value={r.college} />
-          <Field label="Course" value={r.course} />
-          <Field label="Year" value={r.year} />
+          <Field label="Mobile" value={r.phone} />
+          <Field label="Institution" value={r.institution} />
+          <Field label="State" value={r.state} />
           <Field label="City" value={r.city} />
         </div>
 
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">MUN</p>
-          <Field label="Participant Type" value={r.participant_type} />
           <Field label="Committee" value={committee?.shortName ?? r.committee_preference} />
-          <Field label="Country Preference" value={r.country_preference} />
-          <Field label="Experience" value={r.mun_experience} />
-          <Field label="MUNs Attended" value={r.muns_attended} />
-          <Field label="Accommodation" value={r.accommodation ? "Requested" : "Not requested"} />
-          <Field label="T-Shirt Size" value={r.tshirt_size} />
-          <Field label="Food Preference" value={r.food_preference} />
-          <Field label="Emergency Contact" value={r.emergency_contact_name && `${r.emergency_contact_name} · ${r.emergency_contact_phone ?? ""}`} />
-          <Field label="Special Requirements" value={r.special_requirements} />
+          <Field label="Package" value={pkg?.name ?? r.package_id} />
+          <Field label="Prior MUN Experience" value={r.mun_experience} />
+          <Field label="Experience Description" value={r.mun_experience_detail} />
         </div>
 
         <div>

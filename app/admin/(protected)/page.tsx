@@ -1,5 +1,6 @@
 import { getDashboardStats } from "@/lib/admin/queries";
 import { committees } from "@/config/committees";
+import { registrationPackages } from "@/config/pricing";
 import { AdminStatCard, AdminBreakdownList } from "@/components/admin/AdminStatCard";
 
 export default async function AdminOverviewPage() {
@@ -9,7 +10,10 @@ export default async function AdminOverviewPage() {
     label: committees.find((cm) => cm.id === c.committee)?.shortName ?? c.committee,
     count: c.count,
   }));
-  const typeItems = stats.participantTypeBreakdown.map((t) => ({ label: t.type, count: t.count }));
+  const packageItems = stats.packageBreakdown.map((p) => ({
+    label: registrationPackages.find((pkg) => pkg.id === p.packageId)?.name ?? p.packageId,
+    count: p.count,
+  }));
 
   return (
     <div>
@@ -25,7 +29,7 @@ export default async function AdminOverviewPage() {
 
       <div className="mt-6 grid gap-3 lg:grid-cols-2">
         <AdminBreakdownList title="Committee-wise Registrations" items={committeeItems} />
-        <AdminBreakdownList title="Participant Type Breakdown" items={typeItems} />
+        <AdminBreakdownList title="Package Breakdown" items={packageItems} />
       </div>
     </div>
   );

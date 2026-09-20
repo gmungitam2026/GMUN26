@@ -3,10 +3,10 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { site } from "@/config/site";
-import { getActiveRegistrationPackage } from "@/config/pricing";
+import { registrationPackages } from "@/config/pricing";
 import {
   detailsSchema,
-  preferencesSchema,
+  preferencesSchemaValidated,
   type DetailsInput,
   type PreferencesInput,
 } from "@/lib/validation/registration";
@@ -20,27 +20,20 @@ import { Button } from "@/components/ui/Button";
 
 const emptyDetails: DetailsInput = {
   fullName: "",
-  email: "",
+  age: NaN,
+  gender: "Prefer not to say",
   phone: "",
-  college: "",
-  course: "",
-  year: "",
+  email: "",
+  institution: "",
+  state: "" as DetailsInput["state"],
   city: "",
 };
 
 const emptyPreferences: PreferencesInput = {
-  participantType: "Delegate",
+  hasMunExperience: false,
+  munExperienceDetail: "",
   committeePreference: "",
-  countryPreference: "",
-  munExperience: "First-time delegate",
-  munsAttended: 0,
-  tshirtSize: "",
-  accommodation: false,
-  foodPreference: "",
-  emergencyContactName: "",
-  emergencyContactPhone: "",
-  referralSource: "",
-  specialRequirements: "",
+  packageId: registrationPackages[0].id,
 };
 
 type PaymentIntent = {
@@ -52,7 +45,7 @@ type PaymentIntent = {
 
 export function RegistrationWizard() {
   const router = useRouter();
-  const pkg = getActiveRegistrationPackage();
+  const minPrice = Math.min(...registrationPackages.map((p) => p.price));
 
   const [step, setStep] = useState(1);
   const [details, setDetails] = useState<DetailsInput>(emptyDetails);
@@ -90,7 +83,7 @@ export function RegistrationWizard() {
   }
 
   function goNextFromPreferences() {
-    const result = preferencesSchema.safeParse(preferences);
+    const result = preferencesSchemaValidated.safeParse(preferences);
     if (!result.success) {
       const errs: typeof preferencesErrors = {};
       for (const issue of result.error.issues) {
@@ -117,7 +110,6 @@ export function RegistrationWizard() {
         ...details,
         ...preferences,
         termsAccepted: true,
-        packageId: pkg.id,
       });
 
       if (!result.ok) {
@@ -135,12 +127,14 @@ export function RegistrationWizard() {
     });
   }
 
+  const selectedPackage = registrationPackages.find((p) => p.id === preferences.packageId) ?? registrationPackages[0];
+
   return (
     <div>
       <div className="border-b border-line pb-8">
         <p className="font-display text-2xl text-ivory">{site.name}</p>
         <p className="mt-1 text-sm text-ivory-dim">
-          {site.dates.display} · {site.venue.name}, {site.venue.line2} · Registration Fee ₹{pkg.price}
+          {site.dates.display} · {site.venue.name}, {site.venue.line2} · Registration from ₹{minPrice}
         </p>
       </div>
 
@@ -158,7 +152,6 @@ export function RegistrationWizard() {
         {step === 3 && (
           <StepReview
             data={{ ...details, ...preferences }}
-            amount={pkg.price}
             termsAccepted={termsAccepted}
             onTermsChange={(c) => {
               setTermsAccepted(c);
@@ -172,7 +165,7 @@ export function RegistrationWizard() {
             registrationDbId={intent.registrationDbId}
             orderId={intent.orderId}
             checkout={intent.checkout}
-            amount={pkg.price}
+            amount={selectedPackage.price}
             onPaid={() => router.push(`/confirmation/${intent.registrationId}`)}
           />
         )}
