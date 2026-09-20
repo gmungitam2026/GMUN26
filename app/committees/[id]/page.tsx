@@ -1,0 +1,78 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { committees } from "@/config/committees";
+import { Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/Button";
+
+export function generateStaticParams() {
+  return committees.map((c) => ({ id: c.id }));
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/committees/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const committee = committees.find((c) => c.id === id);
+  if (!committee) return {};
+  return {
+    title: committee.shortName,
+    description: committee.agenda,
+  };
+}
+
+export default async function CommitteeDetailPage({ params }: PageProps<"/committees/[id]">) {
+  const { id } = await params;
+  const committee = committees.find((c) => c.id === id);
+  if (!committee) notFound();
+
+  return (
+    <div className="pt-36 pb-24 md:pt-44 md:pb-32">
+      <Container>
+        <Link href="/committees" className="text-[11px] uppercase tracking-[0.14em] text-ivory-faint hover:text-gold">
+          ← All Committees
+        </Link>
+
+        <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+          <h1 className="font-display text-4xl text-ivory md:text-5xl">{committee.shortName}</h1>
+          <p className="text-lg text-ivory-dim">{committee.name}</p>
+        </div>
+        {committee.governingBody && (
+          <p className="mt-2 text-sm text-ivory-faint">{committee.governingBody}</p>
+        )}
+
+        <div className="mt-10 border-t border-line pt-8">
+          <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Agenda</p>
+          <p className="mt-3 max-w-2xl font-display text-xl leading-snug text-ivory">{committee.agenda}</p>
+        </div>
+
+        <div className="mt-10 grid gap-14 lg:grid-cols-[1fr_320px] lg:gap-20">
+          <div className="border-t border-line pt-8">
+            <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Overview</p>
+            <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ivory-dim">{committee.description}</p>
+          </div>
+
+          <div className="space-y-8 border-t border-line pt-8">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Committee Type</p>
+              <p className="mt-2 text-ivory">{committee.type}</p>
+            </div>
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Study Guide</p>
+              <p className="mt-2 text-sm text-ivory-faint">
+                {committee.studyGuideUrl ?? "To be released closer to the conference."}
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Executive Board</p>
+              <p className="mt-2 text-sm text-ivory-faint">To be announced.</p>
+            </div>
+            <Button href="/register" size="md" className="w-full">
+              Register for GMUN 5.0
+            </Button>
+          </div>
+        </div>
+      </Container>
+    </div>
+  );
+}
