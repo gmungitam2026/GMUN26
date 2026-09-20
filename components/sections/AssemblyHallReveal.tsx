@@ -4,6 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 const ROW_COUNT = 7;
 
+// Rounded to 2 decimals: Math.cos/Math.sin can differ in their last bit
+// between Node's and the browser's V8 build, which otherwise serializes
+// to a different string server vs client and trips a hydration mismatch.
+function round(n: number) {
+  return Math.round(n * 100) / 100;
+}
+
 function buildRowSeats(rowIndex: number) {
   const rx = 200 + rowIndex * 68;
   const ry = 100 + rowIndex * 44;
@@ -13,8 +20,8 @@ function buildRowSeats(rowIndex: number) {
     const t = i / (count - 1);
     const angle = Math.PI - t * Math.PI;
     seats.push({
-      x: 600 + rx * Math.cos(angle),
-      y: 486 - ry * Math.sin(angle) * 0.62,
+      x: round(600 + rx * Math.cos(angle)),
+      y: round(486 - ry * Math.sin(angle) * 0.62),
     });
   }
   return seats;

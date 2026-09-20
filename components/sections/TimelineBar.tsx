@@ -9,13 +9,35 @@ function getNextMilestone(now: Date) {
   return timelineMilestones.find((m) => m.date && new Date(m.date).getTime() > now.getTime());
 }
 
+// Snapshot is cached at module scope and only updated from the interval
+// tick, never computed fresh inside getSnapshot — useSyncExternalStore
+// calls getSnapshot multiple times per render to check for changes, and a
+// live Date.now() there differs on almost every call, which reads as a
+// constantly-changing store and causes a render loop ("Maximum update
+// depth exceeded").
+let cachedNowMs = Date.now();
+const clockListeners = new Set<() => void>();
+let clockIntervalId: ReturnType<typeof setInterval> | null = null;
+
 function subscribeToClock(callback: () => void) {
-  const id = setInterval(callback, 1000);
-  return () => clearInterval(id);
+  clockListeners.add(callback);
+  if (!clockIntervalId) {
+    clockIntervalId = setInterval(() => {
+      cachedNowMs = Date.now();
+      clockListeners.forEach((listener) => listener());
+    }, 1000);
+  }
+  return () => {
+    clockListeners.delete(callback);
+    if (clockListeners.size === 0 && clockIntervalId) {
+      clearInterval(clockIntervalId);
+      clockIntervalId = null;
+    }
+  };
 }
 
 function getClockSnapshot() {
-  return Date.now();
+  return cachedNowMs;
 }
 
 function getServerClockSnapshot() {
