@@ -1,94 +1,76 @@
-"use client";
-
-import { useSyncExternalStore } from "react";
-import { motion } from "framer-motion";
 import { site } from "@/config/site";
 import { Button } from "@/components/ui/Button";
-
-const easeOut = [0.16, 1, 0.3, 1] as const;
+import { cn } from "@/lib/utils/cn";
 
 /**
- * Neither a plain mount-triggered `animate` nor `whileInView` reliably
- * fired for this above-the-fold content on a hard load of this statically
- * prerendered page (confirmed live: elements stuck at their invisible
- * `initial` state until something like a window resize forced Framer
- * Motion's internal IntersectionObserver to re-evaluate — a timing race,
- * not a config error). Driving the transition off plain React state set
- * in an effect sidesteps Framer Motion's own mount/viewport heuristics
- * entirely, so there's no race left to hit.
+ * Pure CSS keyframe animation (see `--animate-reveal` in globals.css)
+ * instead of Framer Motion. This content is above the fold on a statically
+ * prerendered page, and every Framer Motion trigger tried here — plain
+ * mount-triggered `animate`, `whileInView`, and a React-state-driven
+ * `animate` via `useSyncExternalStore` — was confirmed live (via computed
+ * styles on the production deployment, not just a screenshot) to leave the
+ * content permanently stuck at its invisible initial state on a hard page
+ * load. A CSS animation runs the moment the browser paints the element,
+ * with no dependency on React hydration or any JS timing at all, so there
+ * is no race left to lose.
  */
-function subscribeNoop() {
-  return () => {};
-}
-function getRevealedClient() {
-  return true;
-}
-function getRevealedServer() {
-  return false;
-}
-
-/** True once this has rendered on the client — never on the server/first hydration pass. */
-function useRevealed() {
-  return useSyncExternalStore(subscribeNoop, getRevealedClient, getRevealedServer);
-}
-
-function fadeUp(revealed: boolean, delay: number) {
-  return {
-    initial: { opacity: 0, y: 22 },
-    animate: revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
-    transition: { duration: 0.9, delay, ease: easeOut },
-  };
+function revealStyle(delayMs: number) {
+  return { animationDelay: `${delayMs}ms` };
 }
 
 export function Hero() {
-  const revealed = useRevealed();
-
   return (
     <section className="grain relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-ink pt-20">
       <HeroMotif />
 
       <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 pb-20 md:px-10 lg:px-16 lg:pb-28">
-        <motion.p
-          {...fadeUp(revealed, 0.15)}
-          className="mb-6 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.32em] text-gold"
+        <p
+          style={revealStyle(100)}
+          className={cn(
+            "animate-reveal mb-6 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.32em] text-gold"
+          )}
         >
           <span className="h-px w-10 bg-gold" aria-hidden />
           {site.tagline}
-        </motion.p>
+        </p>
 
-        <motion.h1
-          {...fadeUp(revealed, 0.24)}
-          className="max-w-4xl font-display text-[13vw] leading-[0.98] font-medium text-ivory sm:text-6xl md:text-7xl lg:text-8xl"
+        <h1
+          style={revealStyle(180)}
+          className={cn(
+            "animate-reveal max-w-4xl font-display text-[13vw] leading-[0.98] font-medium text-ivory sm:text-6xl md:text-7xl lg:text-8xl"
+          )}
         >
           Welcome to <span className="italic text-gold">GMUN 5.0</span>
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          {...fadeUp(revealed, 0.33)}
-          className="mt-8 max-w-xl text-base leading-relaxed text-ivory-dim md:text-lg"
+        <p
+          style={revealStyle(260)}
+          className={cn("animate-reveal mt-8 max-w-xl text-base leading-relaxed text-ivory-dim md:text-lg")}
         >
           Andhra Pradesh&apos;s one of the largest Model United Nations conferences returns,
           a gathering of delegates for diplomacy, debate, leadership, and diverse
           perspectives on the issues shaping our world.
-        </motion.p>
+        </p>
 
-        <motion.div
-          {...fadeUp(revealed, 0.42)}
-          className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-3 border-t border-line pt-6 text-sm text-ivory-dim"
+        <div
+          style={revealStyle(340)}
+          className={cn(
+            "animate-reveal mt-10 flex flex-wrap items-center gap-x-10 gap-y-3 border-t border-line pt-6 text-sm text-ivory-dim"
+          )}
         >
           <span className="font-display text-lg text-ivory">{site.dates.display}</span>
           <span className="hidden h-4 w-px bg-line-strong sm:block" aria-hidden />
           <span>{site.venue.name}, {site.venue.line2}</span>
-        </motion.div>
+        </div>
 
-        <motion.div {...fadeUp(revealed, 0.51)} className="mt-10 flex flex-wrap items-center gap-4">
+        <div style={revealStyle(420)} className={cn("animate-reveal mt-10 flex flex-wrap items-center gap-4")}>
           <Button href="/register" variant="primary" size="lg">
             Register Now
           </Button>
           <Button href="/about" variant="secondary" size="lg">
             Explore GMUN
           </Button>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
