@@ -14,6 +14,9 @@ export default function Home() {
       <MissionVision />
       <Gallery />
       <Testimonials />
+      {/* Deliberately empty — lets the fully-lit assembly backdrop read
+          clearly once scroll progress reaches the end of the page. */}
+      <section aria-hidden className="min-h-screen border-t border-line" />
     </>
   );
 }

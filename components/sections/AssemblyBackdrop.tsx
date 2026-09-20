@@ -11,17 +11,26 @@ function round(n: number) {
   return Math.round(n * 100) / 100;
 }
 
-function buildRowSeats(rowIndex: number) {
+interface Seat {
+  x: number;
+  y: number;
+  /** Degrees to rotate the chair glyph so it faces the podium. */
+  rot: number;
+}
+
+function buildRowSeats(rowIndex: number): Seat[] {
   const rx = 170 + rowIndex * 62;
   const ry = 90 + rowIndex * 40;
   const count = 10 + rowIndex * 3;
-  const seats: { x: number; y: number }[] = [];
+  const seats: Seat[] = [];
   for (let i = 0; i < count; i++) {
     const t = i / (count - 1);
     const angle = Math.PI - t * Math.PI;
+    const angleDeg = (angle * 180) / Math.PI;
     seats.push({
       x: round(600 + rx * Math.cos(angle)),
       y: round(500 - ry * Math.sin(angle) * 0.6),
+      rot: round(90 - angleDeg),
     });
   }
   return seats;
@@ -87,13 +96,39 @@ function useScrollProgress() {
   return useSyncExternalStore(subscribeScrollProgress, getProgressSnapshot, getProgressServerSnapshot);
 }
 
+/** A small chair glyph — seat + backrest — facing +y by default. */
+function Chair({ seat, lit }: { seat: Seat; lit: boolean }) {
+  return (
+    <g transform={`translate(${seat.x} ${seat.y}) rotate(${seat.rot})`}>
+      <rect
+        x="-3.2"
+        y="-4.6"
+        width="6.4"
+        height="2.4"
+        rx="0.6"
+        className="transition-all duration-500 ease-out"
+        style={{ fill: lit ? "#d4af6a" : "#3a352a", opacity: lit ? 0.55 : 0.14 }}
+      />
+      <rect
+        x="-3.2"
+        y="-1.8"
+        width="6.4"
+        height="3.2"
+        rx="0.6"
+        className="transition-all duration-500 ease-out"
+        style={{ fill: lit ? "#d4af6a" : "#3a352a", opacity: lit ? 0.5 : 0.12 }}
+      />
+    </g>
+  );
+}
+
 /**
  * A fixed, full-page assembly hall behind all content. As the page scrolls
  * from the hero down through the rest of it, seats light up gold one at a
- * time, tied directly to scroll progress (not a one-time viewport
- * trigger). Screen-blended like the starfield so it reads over every
- * section's own background without needing those sections to go
- * transparent, and hidden in the light theme (see globals.css).
+ * time in sequence, tied directly to scroll progress rather than a
+ * one-time viewport trigger. Screen-blended like the starfield so it reads
+ * over every section's own background without those sections needing to
+ * go transparent, and hidden in the light theme (see globals.css).
  */
 export function AssemblyBackdrop() {
   const progress = useScrollProgress();
@@ -106,23 +141,17 @@ export function AssemblyBackdrop() {
       style={{ mixBlendMode: "screen" }}
     >
       <svg viewBox="0 0 1200 560" preserveAspectRatio="xMidYMax slice" className="h-full w-full">
-        {seatsInOrder.map((seat, i) => {
-          const lit = i < litCount;
-          return (
-            <circle
-              key={i}
-              cx={seat.x}
-              cy={seat.y}
-              r="4"
-              className="transition-all duration-500 ease-out"
-              style={{
-                fill: lit ? "#d4af6a" : "#3a352a",
-                opacity: lit ? 0.85 : 0.16,
-              }}
-            />
-          );
-        })}
-        <rect x="560" y="454" width="80" height="34" stroke="#b7924e" strokeWidth="0.9" fill="none" opacity="0.4" />
+        {seatsInOrder.map((seat, i) => (
+          <Chair key={i} seat={seat} lit={i < litCount} />
+        ))}
+
+        {/* Rear dais panel */}
+        <rect x="530" y="470" width="140" height="70" stroke="#b7924e" strokeWidth="0.8" fill="none" opacity="0.3" />
+        <line x1="565" y1="470" x2="565" y2="540" stroke="#b7924e" strokeWidth="0.4" opacity="0.2" />
+        <line x1="600" y1="470" x2="600" y2="540" stroke="#b7924e" strokeWidth="0.4" opacity="0.2" />
+        <line x1="635" y1="470" x2="635" y2="540" stroke="#b7924e" strokeWidth="0.4" opacity="0.2" />
+        {/* Lectern */}
+        <path d="M 585 540 L 615 540 L 622 558 L 578 558 Z" stroke="#b7924e" strokeWidth="0.9" fill="none" opacity="0.35" />
       </svg>
     </div>
   );
