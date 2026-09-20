@@ -70,6 +70,9 @@
   --radius-sm: 3px;
 
   --animate-reveal: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-twinkle: twinkle 6s ease-in-out infinite;
+  --animate-drift: drift 90s linear infinite;
 
   @keyframes reveal {
     from {
@@ -79,6 +82,33 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes twinkle {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes drift {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 400px 400px;
     }
   }
 }
@@ -105,6 +135,18 @@ body {
 :focus-visible {
   outline: 1px solid var(--color-gold);
   outline-offset: 3px;
+}
+
+/* Site-wide starfield atmosphere — additive (screen blend) so it reads on
+   both --color-ink and --color-surface sections without touching their
+   backgrounds. Dropped to near-invisible in the light theme rather than
+   removed, so there's no per-theme mount/unmount logic. */
+.starfield {
+  opacity: 0.55;
+}
+
+:root[data-theme="light"] .starfield {
+  opacity: 0;
 }
 
 /* Faint editorial grain to keep large dark fields from looking flat / templated */

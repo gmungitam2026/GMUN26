@@ -1,6 +1,8 @@
 import { site } from "@/config/site";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
+import { GlobeLoader } from "@/components/hero/GlobeLoader";
+import { OrbitingLabels } from "@/components/hero/OrbitingLabels";
 
 /**
  * Pure CSS keyframe animation (see `--animate-reveal` in globals.css)
@@ -22,6 +24,16 @@ export function Hero() {
   return (
     <section className="grain relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-ink pt-20">
       <HeroMotif />
+
+      <div
+        className="pointer-events-none absolute inset-y-0 right-[-6%] z-[5] hidden w-[58%] items-center justify-center lg:flex"
+        aria-hidden
+      >
+        <div className="pointer-events-auto relative h-[62vh] max-h-[620px] w-[62vh] max-w-[620px]">
+          <GlobeLoader />
+          <OrbitingLabels />
+        </div>
+      </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 pb-20 md:px-10 lg:px-16 lg:pb-28">
         <p

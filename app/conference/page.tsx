@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { ConferenceTimeline } from "@/components/sections/ConferenceTimeline";
+import { AssemblyHallMotif } from "@/components/sections/AssemblyHallMotif";
 
 export const metadata: Metadata = {
   title: "Conference",
@@ -13,8 +14,9 @@ export const metadata: Metadata = {
 
 export default function ConferencePage() {
   return (
-    <div className="pt-36 pb-24 md:pt-44 md:pb-32">
-      <Container>
+    <div className="relative overflow-hidden pt-36 pb-24 md:pt-44 md:pb-32">
+      <AssemblyHallMotif className="absolute inset-x-0 top-0 h-[560px] w-full opacity-[0.14]" />
+      <Container className="relative">
         <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-gold">Conference</p>
         <h1 className="mt-4 max-w-3xl font-display text-4xl text-ivory md:text-5xl">GMUN 5.0</h1>
         <p className="mt-4 font-display text-lg text-ivory-dim">
