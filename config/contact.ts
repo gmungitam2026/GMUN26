@@ -1,7 +1,7 @@
 export const contact = {
   email: "gmun@gitam.in",
   team: [
-    { name: "Saketh Jasthi", role: "President, GMUN", phone: "9110799363" },
+    { name: "Saketh Jasthi", role: "President, GMUN", phone: "8885649766" },
     { name: "Akshaya Tadi", role: "Vice President, GMUN", phone: "8885649766" },
   ],
   social: {
