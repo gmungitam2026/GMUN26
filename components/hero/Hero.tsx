@@ -7,18 +7,21 @@ import { Button } from "@/components/ui/Button";
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 /**
- * Each element animates independently on mount (initial→animate, staggered
- * via a per-element delay) rather than through a parent `variants` +
- * `staggerChildren` container. The variants/orchestration pattern was found
- * to silently never fire in production (elements stuck at their `initial`
- * — invisible — state, even though React hydration succeeded), while this
- * simpler self-contained pattern — the same one every other animated
- * section on the site already uses via the Reveal component — is reliable.
+ * Uses `whileInView` (IntersectionObserver-driven) rather than a plain
+ * mount-triggered `animate`. On a hard/fresh load of this statically
+ * prerendered page, a plain `initial`→`animate` transition was confirmed
+ * (via computed styles on the live deployment) to never fire — elements
+ * stayed stuck at their invisible `initial` state — even though it worked
+ * fine on a client-side navigation to the same page. `whileInView` is the
+ * exact mechanism every other animated section already uses reliably
+ * (via the Reveal component), so the hero now uses the same one instead
+ * of a separate, apparently-unreliable code path.
  */
 function fadeUp(delay: number) {
   return {
     initial: { opacity: 0, y: 22 },
-    animate: { opacity: 1, y: 0 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
     transition: { duration: 0.9, delay, ease: easeOut },
   };
 }
