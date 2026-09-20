@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { site } from "@/config/site";
 import { Button } from "@/components/ui/Button";
@@ -7,33 +8,48 @@ import { Button } from "@/components/ui/Button";
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 /**
- * Uses `whileInView` (IntersectionObserver-driven) rather than a plain
- * mount-triggered `animate`. On a hard/fresh load of this statically
- * prerendered page, a plain `initial`→`animate` transition was confirmed
- * (via computed styles on the live deployment) to never fire — elements
- * stayed stuck at their invisible `initial` state — even though it worked
- * fine on a client-side navigation to the same page. `whileInView` is the
- * exact mechanism every other animated section already uses reliably
- * (via the Reveal component), so the hero now uses the same one instead
- * of a separate, apparently-unreliable code path.
+ * Neither a plain mount-triggered `animate` nor `whileInView` reliably
+ * fired for this above-the-fold content on a hard load of this statically
+ * prerendered page (confirmed live: elements stuck at their invisible
+ * `initial` state until something like a window resize forced Framer
+ * Motion's internal IntersectionObserver to re-evaluate — a timing race,
+ * not a config error). Driving the transition off plain React state set
+ * in an effect sidesteps Framer Motion's own mount/viewport heuristics
+ * entirely, so there's no race left to hit.
  */
-function fadeUp(delay: number) {
+function subscribeNoop() {
+  return () => {};
+}
+function getRevealedClient() {
+  return true;
+}
+function getRevealedServer() {
+  return false;
+}
+
+/** True once this has rendered on the client — never on the server/first hydration pass. */
+function useRevealed() {
+  return useSyncExternalStore(subscribeNoop, getRevealedClient, getRevealedServer);
+}
+
+function fadeUp(revealed: boolean, delay: number) {
   return {
     initial: { opacity: 0, y: 22 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
+    animate: revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
     transition: { duration: 0.9, delay, ease: easeOut },
   };
 }
 
 export function Hero() {
+  const revealed = useRevealed();
+
   return (
     <section className="grain relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-ink pt-20">
       <HeroMotif />
 
       <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 pb-20 md:px-10 lg:px-16 lg:pb-28">
         <motion.p
-          {...fadeUp(0.15)}
+          {...fadeUp(revealed, 0.15)}
           className="mb-6 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.32em] text-gold"
         >
           <span className="h-px w-10 bg-gold" aria-hidden />
@@ -41,20 +57,23 @@ export function Hero() {
         </motion.p>
 
         <motion.h1
-          {...fadeUp(0.24)}
+          {...fadeUp(revealed, 0.24)}
           className="max-w-4xl font-display text-[13vw] leading-[0.98] font-medium text-ivory sm:text-6xl md:text-7xl lg:text-8xl"
         >
           Welcome to <span className="italic text-gold">GMUN 5.0</span>
         </motion.h1>
 
-        <motion.p {...fadeUp(0.33)} className="mt-8 max-w-xl text-base leading-relaxed text-ivory-dim md:text-lg">
+        <motion.p
+          {...fadeUp(revealed, 0.33)}
+          className="mt-8 max-w-xl text-base leading-relaxed text-ivory-dim md:text-lg"
+        >
           Andhra Pradesh&apos;s one of the largest Model United Nations conferences returns,
           a gathering of delegates for diplomacy, debate, leadership, and diverse
           perspectives on the issues shaping our world.
         </motion.p>
 
         <motion.div
-          {...fadeUp(0.42)}
+          {...fadeUp(revealed, 0.42)}
           className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-3 border-t border-line pt-6 text-sm text-ivory-dim"
         >
           <span className="font-display text-lg text-ivory">{site.dates.display}</span>
@@ -62,7 +81,7 @@ export function Hero() {
           <span>{site.venue.name}, {site.venue.line2}</span>
         </motion.div>
 
-        <motion.div {...fadeUp(0.51)} className="mt-10 flex flex-wrap items-center gap-4">
+        <motion.div {...fadeUp(revealed, 0.51)} className="mt-10 flex flex-wrap items-center gap-4">
           <Button href="/register" variant="primary" size="lg">
             Register Now
           </Button>
