@@ -1,3 +1,5 @@
+import { site } from "@/config/site";
+
 export interface ConferenceSession {
   title: string;
   description: string;
@@ -90,3 +92,19 @@ export const travel = {
     { label: "Parking", value: "Information regarding parking and vehicle access will be communicated to registered participants before the conference." },
   ],
 };
+
+export interface TimelineMilestone {
+  id: string;
+  label: string;
+  /** ISO date, or null where the client hasn't finalized a date yet (TBA). */
+  date: string | null;
+  /** True for a milestone considered "reached" the moment the site goes live, independent of a specific date (e.g. registrations opening). */
+  alwaysComplete?: boolean;
+}
+
+export const timelineMilestones: TimelineMilestone[] = [
+  { id: "reg-open", label: "Registrations Open", date: null, alwaysComplete: true },
+  { id: "reg-deadline", label: "Registration Deadline", date: null },
+  { id: "day1", label: "Day 1 — Opening Ceremony", date: site.dates.start },
+  { id: "day2", label: "Day 2 — Closing Ceremony", date: site.dates.end },
+];

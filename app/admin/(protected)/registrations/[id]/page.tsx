@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRegistrationDetail } from "@/lib/admin/queries";
-import { committees } from "@/config/committees";
-import { registrationPackages } from "@/config/pricing";
+import { RegistrationDetailView } from "@/components/admin/RegistrationDetailView";
 
 function Field({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (
@@ -23,8 +22,6 @@ export default async function AdminRegistrationDetailPage({
   if (!detail) notFound();
 
   const { registration: r, payments } = detail;
-  const committee = committees.find((c) => c.id === r.committee_preference);
-  const pkg = registrationPackages.find((p) => p.id === r.package_id);
 
   return (
     <div>
@@ -37,26 +34,8 @@ export default async function AdminRegistrationDetailPage({
         <span className="text-sm text-ivory-faint">{r.status}</span>
       </div>
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-3">
-        <div>
-          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Participant</p>
-          <Field label="Name (as per Govt. ID)" value={r.full_name} />
-          <Field label="Age" value={r.age} />
-          <Field label="Gender" value={r.gender} />
-          <Field label="Email" value={r.email} />
-          <Field label="Mobile" value={r.phone} />
-          <Field label="Institution" value={r.institution} />
-          <Field label="State" value={r.state} />
-          <Field label="City" value={r.city} />
-        </div>
-
-        <div>
-          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">MUN</p>
-          <Field label="Committee" value={committee?.shortName ?? r.committee_preference} />
-          <Field label="Package" value={pkg?.name ?? r.package_id} />
-          <Field label="Prior MUN Experience" value={r.mun_experience} />
-          <Field label="Experience Description" value={r.mun_experience_detail} />
-        </div>
+      <div className="mt-8 grid gap-10 lg:grid-cols-[2fr_1fr]">
+        <RegistrationDetailView registration={r} />
 
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Payments</p>

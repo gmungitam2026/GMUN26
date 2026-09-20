@@ -9,6 +9,7 @@ export interface DashboardStats {
   revenue: number;
   committeeBreakdown: { committee: string; count: number }[];
   packageBreakdown: { packageId: string; count: number }[];
+  genderBreakdown: { gender: string; count: number }[];
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -19,7 +20,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       supabase.from("registrations").select("id", { count: "exact", head: true }),
       supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "PAID"),
       supabase.from("payments").select("status, amount"),
-      supabase.from("registrations").select("committee_preference, package_id"),
+      supabase.from("registrations").select("committee_preference, package_id, gender"),
     ]);
 
   const pendingPayments = paymentRows?.filter((p) => p.status === "PENDING").length ?? 0;
@@ -28,9 +29,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
   const committeeCounts = new Map<string, number>();
   const packageCounts = new Map<string, number>();
+  const genderCounts = new Map<string, number>();
   for (const row of registrationRows ?? []) {
     committeeCounts.set(row.committee_preference, (committeeCounts.get(row.committee_preference) ?? 0) + 1);
     packageCounts.set(row.package_id, (packageCounts.get(row.package_id) ?? 0) + 1);
+    genderCounts.set(row.gender, (genderCounts.get(row.gender) ?? 0) + 1);
   }
 
   return {
@@ -45,6 +48,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     packageBreakdown: [...packageCounts.entries()]
       .map(([packageId, count]) => ({ packageId, count }))
       .sort((a, b) => b.count - a.count),
+    genderBreakdown: [...genderCounts.entries()]
+      .map(([gender, count]) => ({ gender, count }))
+      .sort((a, b) => b.count - a.count),
   };
 }
 
@@ -52,6 +58,7 @@ export interface RegistrationListFilters {
   query?: string;
   committee?: string;
   paymentStatus?: string;
+  packageId?: string;
   page?: number;
   pageSize?: number;
 }
@@ -65,29 +72,45 @@ export async function listRegistrations(filters: RegistrationListFilters) {
 
   let query = supabase
     .from("registrations")
-    .select("id, registration_id, full_name, email, phone, committee_preference, status, created_at", {
-      count: "exact",
-    })
+    .select(
+      "id, registration_id, full_name, email, phone, committee_preference, package_id, gender, status, created_at",
+      { count: "exact" }
+    )
     .order("created_at", { ascending: false })
     .range(from, to);
 
   if (filters.query) {
     const q = filters.query;
-    query = query.or(
-      `full_name.ilike.%${q}%,email.ilike.%${q}%,phone.ilike.%${q}%,registration_id.ilike.%${q}%`
-    );
+    query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,phone.ilike.%${q}%,registration_id.ilike.%${q}%`);
   }
-  if (filters.committee) {
-    query = query.eq("committee_preference", filters.committee);
-  }
-  if (filters.paymentStatus) {
-    query = query.eq("status", filters.paymentStatus);
-  }
+  if (filters.committee) query = query.eq("committee_preference", filters.committee);
+  if (filters.paymentStatus) query = query.eq("status", filters.paymentStatus);
+  if (filters.packageId) query = query.eq("package_id", filters.packageId);
 
   const { data, count, error } = await query;
   if (error) throw error;
 
   return { registrations: data ?? [], total: count ?? 0, page, pageSize };
+}
+
+/** Same filters as listRegistrations, but every matching row (no pagination) — used for CSV export. */
+export async function listRegistrationsForExport(filters: Omit<RegistrationListFilters, "page" | "pageSize">) {
+  const supabase = createAdminClient();
+
+  let query = supabase.from("registrations").select("*").order("created_at", { ascending: false });
+
+  if (filters.query) {
+    const q = filters.query;
+    query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,phone.ilike.%${q}%,registration_id.ilike.%${q}%`);
+  }
+  if (filters.committee) query = query.eq("committee_preference", filters.committee);
+  if (filters.paymentStatus) query = query.eq("status", filters.paymentStatus);
+  if (filters.packageId) query = query.eq("package_id", filters.packageId);
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  return data ?? [];
 }
 
 export async function getRegistrationDetail(id: string) {

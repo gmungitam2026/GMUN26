@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { committees } from "@/config/committees";
+import { registrationPackages } from "@/config/pricing";
 import { cn } from "@/lib/utils/cn";
 
 interface RegistrationRow {
@@ -9,6 +10,8 @@ interface RegistrationRow {
   email: string;
   phone: string;
   committee_preference: string;
+  package_id: string;
+  gender: string;
   status: string;
   created_at: string;
 }
@@ -20,12 +23,14 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+      <table className="w-full min-w-[860px] border-collapse text-left text-sm">
         <thead>
           <tr className="border-b border-line text-[11px] uppercase tracking-[0.08em] text-ivory-faint">
             <th className="py-3 pr-4 font-normal">Registration ID</th>
             <th className="py-3 pr-4 font-normal">Name</th>
+            <th className="py-3 pr-4 font-normal">Gender</th>
             <th className="py-3 pr-4 font-normal">Committee</th>
+            <th className="py-3 pr-4 font-normal">Package</th>
             <th className="py-3 pr-4 font-normal">Contact</th>
             <th className="py-3 pr-4 font-normal">Status</th>
             <th className="py-3 pr-4 font-normal">Registered</th>
@@ -40,8 +45,12 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
                 </Link>
               </td>
               <td className="py-3 pr-4 text-ivory">{r.full_name}</td>
+              <td className="py-3 pr-4 text-ivory-dim">{r.gender}</td>
               <td className="py-3 pr-4 text-ivory-dim">
                 {committees.find((c) => c.id === r.committee_preference)?.shortName ?? r.committee_preference}
+              </td>
+              <td className="py-3 pr-4 text-ivory-dim">
+                {registrationPackages.find((p) => p.id === r.package_id)?.name ?? r.package_id}
               </td>
               <td className="py-3 pr-4 text-ivory-dim">
                 <div>{r.email}</div>

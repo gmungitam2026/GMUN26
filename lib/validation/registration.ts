@@ -59,6 +59,10 @@ export const registrationSchema = withMunExperienceRules(
   detailsSchema.extend(preferencesSchema.shape).extend(consentSchema.shape)
 );
 
+/** Same participant/MUN fields as registration, without the consent checkbox — used by the admin edit form. */
+export const adminEditSchema = withMunExperienceRules(detailsSchema.extend(preferencesSchema.shape));
+
 export type RegistrationInput = z.infer<typeof registrationSchema>;
 export type DetailsInput = z.infer<typeof detailsSchema>;
 export type PreferencesInput = z.infer<typeof preferencesSchema>;
+export type AdminEditInput = z.infer<typeof adminEditSchema>;

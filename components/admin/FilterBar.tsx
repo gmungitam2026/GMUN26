@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
 import { committees } from "@/config/committees";
+import { registrationPackages } from "@/config/pricing";
 
 const paymentStatuses = ["PENDING", "PAID", "CANCELLED"];
 
@@ -75,6 +76,25 @@ export function FilterBar() {
           {paymentStatuses.map((s) => (
             <option key={s} value={s}>
               {s}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="package-filter" className="mb-1.5 block text-[11px] uppercase tracking-[0.08em] text-ivory-faint">
+          Package
+        </label>
+        <select
+          id="package-filter"
+          defaultValue={searchParams.get("package") ?? ""}
+          onChange={(e) => updateParam("package", e.target.value)}
+          className="h-10 border border-line bg-ink px-3 text-sm text-ivory"
+        >
+          <option value="">All</option>
+          {registrationPackages.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
             </option>
           ))}
         </select>

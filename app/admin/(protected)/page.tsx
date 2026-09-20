@@ -14,6 +14,7 @@ export default async function AdminOverviewPage() {
     label: registrationPackages.find((pkg) => pkg.id === p.packageId)?.name ?? p.packageId,
     count: p.count,
   }));
+  const genderItems = stats.genderBreakdown.map((g) => ({ label: g.gender, count: g.count }));
 
   return (
     <div>
@@ -27,9 +28,10 @@ export default async function AdminOverviewPage() {
         <AdminStatCard label="Revenue Collected" value={`₹${stats.revenue.toLocaleString("en-IN")}`} />
       </div>
 
-      <div className="mt-6 grid gap-3 lg:grid-cols-2">
+      <div className="mt-6 grid gap-3 lg:grid-cols-3">
         <AdminBreakdownList title="Committee-wise Registrations" items={committeeItems} />
-        <AdminBreakdownList title="Package Breakdown" items={packageItems} />
+        <AdminBreakdownList title="Package-wise Registrations" items={packageItems} />
+        <AdminBreakdownList title="Gender-wise Registrations" items={genderItems} />
       </div>
     </div>
   );
