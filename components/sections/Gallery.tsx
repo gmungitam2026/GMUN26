@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { galleryCategories } from "@/config/gallery";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import { GalleryCarousel } from "@/components/sections/GalleryCarousel";
 
 export function Gallery() {
   const hasImages = galleryCategories.some((c) => c.images.length > 0);
@@ -15,23 +15,7 @@ export function Gallery() {
         </Reveal>
 
         {hasImages ? (
-          <div className="mt-16 grid grid-cols-2 gap-3 md:grid-cols-4">
-            {galleryCategories
-              .flatMap((c) => c.images)
-              .map((img, i) => (
-                <Reveal key={img.src} delay={(i % 4) * 0.05}>
-                  <div className="relative aspect-[4/5] w-full overflow-hidden border border-line">
-                    <Image
-                      src={img.src}
-                      alt={img.alt}
-                      fill
-                      sizes="(min-width: 768px) 25vw, 50vw"
-                      className="object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                  </div>
-                </Reveal>
-              ))}
-          </div>
+          <GalleryCarousel images={galleryCategories.flatMap((c) => c.images)} />
         ) : (
           <div className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {galleryCategories.map((c, i) => (

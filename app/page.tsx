@@ -1,6 +1,7 @@
 import { Hero } from "@/components/hero/Hero";
 import { TimelineBar } from "@/components/sections/TimelineBar";
 import { MissionVision } from "@/components/sections/MissionVision";
+import { AssemblyChamber } from "@/components/sections/AssemblyChamber";
 import { Gallery } from "@/components/sections/Gallery";
 import { Testimonials } from "@/components/sections/Testimonials";
 
@@ -10,6 +11,7 @@ export default function Home() {
       <Hero />
       <TimelineBar />
       <MissionVision />
+      <AssemblyChamber />
       <Gallery />
       <Testimonials />
     </>
