@@ -26,7 +26,7 @@ export function StepDetails({
           id="age"
           type="number"
           min={12}
-          max={22}
+          max={23}
           value={Number.isNaN(data.age) ? "" : data.age}
           onChange={(e) => onChange("age", Number(e.target.value))}
         />

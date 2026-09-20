@@ -32,7 +32,7 @@ export const termsSections: TermsSection[] = [
     number: "2",
     title: "Eligibility",
     paragraphs: [
-      "2.1. The Conference is open to students in the age category 12 to 22. Specific eligibility criteria for individual committees (including the press-house UNGA committee and the DISEC arms trade committee) will be published on the committee pages.",
+      "2.1. The Conference is open to students in the age category 12 to 23. Specific eligibility criteria for individual committees (including the press-house UNGA committee and the DISEC arms trade committee) will be published on the committee pages.",
       "2.2. GMUN reserves the right to verify the eligibility of any applicant and to deny or revoke registration where eligibility criteria are not met.",
     ],
   },

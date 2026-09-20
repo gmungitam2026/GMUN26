@@ -12,7 +12,7 @@ function wordCount(value: string) {
 
 export const detailsSchema = z.object({
   fullName: z.string().trim().min(2, "Enter your name as per your government ID.").max(120),
-  age: z.coerce.number().int().min(12, "Minimum age for GMUN 5.0 is 12.").max(22, "Maximum age for GMUN 5.0 is 22."),
+  age: z.coerce.number().int().min(12, "Minimum age for GMUN 5.0 is 12.").max(23, "Maximum age for GMUN 5.0 is 23."),
   gender: z.enum(genderOptions),
   phone: z
     .string()
