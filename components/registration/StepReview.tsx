@@ -80,7 +80,7 @@ export function StepReview({
           </Link>{" "}
           of GMUN 5.0.
         </CheckboxField>
-        {termsError && <p className="mt-2 text-xs text-red-400">{termsError}</p>}
+        {termsError && <p className="mt-2 text-xs text-danger">{termsError}</p>}
       </div>
     </div>
   );

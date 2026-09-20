@@ -4,6 +4,7 @@ import { site } from "@/config/site";
 import { NavBar } from "@/components/navigation/NavBar";
 import { Footer } from "@/components/sections/Footer";
 import { MotionProvider } from "@/components/providers/MotionProvider";
+import { themeInitScript } from "@/components/navigation/ThemeToggle";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -30,11 +31,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="flex min-h-screen flex-col bg-ink text-ivory antialiased">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-gold focus:px-4 focus:py-2 focus:text-ink"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-gold-fill focus:px-4 focus:py-2 focus:text-ink"
         >
           Skip to content
         </a>

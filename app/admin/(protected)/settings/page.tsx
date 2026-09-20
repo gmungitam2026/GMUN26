@@ -1,9 +1,12 @@
 import { registrationPackages } from "@/config/pricing";
 import { verifyAdminSession } from "@/lib/supabase/dal";
+import { getRegistrationOpen } from "@/lib/admin/queries";
+import { RegistrationToggle } from "@/components/admin/RegistrationToggle";
 
 export default async function AdminSettingsPage() {
   const session = await verifyAdminSession();
   const activeProvider = process.env.PAYMENT_PROVIDER || "mock";
+  const registrationOpen = await getRegistrationOpen();
 
   return (
     <div>
@@ -14,6 +17,11 @@ export default async function AdminSettingsPage() {
           <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Signed in as</p>
           <p className="text-ivory">{session.name}</p>
           <p className="text-sm text-ivory-faint">{session.email} · {session.role}</p>
+        </div>
+
+        <div>
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Registration Status</p>
+          <RegistrationToggle initialOpen={registrationOpen} />
         </div>
 
         <div>

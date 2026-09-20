@@ -67,8 +67,8 @@ export default async function CommitteeDetailPage({ params }: PageProps<"/commit
               <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Executive Board</p>
               <p className="mt-2 text-sm text-ivory-faint">To be announced.</p>
             </div>
-            <Button href="/register" size="md" className="w-full">
-              Register for GMUN 5.0
+            <Button href={`/register?committee=${committee.id}`} size="md" className="w-full">
+              Register for this Committee
             </Button>
           </div>
         </div>

@@ -36,8 +36,8 @@ export default async function AdminPaymentsPage() {
                       "px-2 py-0.5 text-[11px] uppercase tracking-[0.06em]",
                       p.status === "PAID" && "bg-gold/15 text-gold",
                       p.status === "PENDING" && "bg-ivory-faint/15 text-ivory-dim",
-                      (p.status === "FAILED" || p.status === "CANCELLED") && "bg-red-400/10 text-red-300",
-                      p.status === "REFUNDED" && "bg-blue-400/10 text-blue-300"
+                      (p.status === "FAILED" || p.status === "CANCELLED") && "bg-danger/10 text-danger",
+                      p.status === "REFUNDED" && "bg-info/10 text-info"
                     )}
                   >
                     {p.status}

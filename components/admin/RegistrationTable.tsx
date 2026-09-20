@@ -62,7 +62,7 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
                     "px-2 py-0.5 text-[11px] uppercase tracking-[0.06em]",
                     r.status === "PAID" && "bg-gold/15 text-gold",
                     r.status === "PENDING" && "bg-ivory-faint/15 text-ivory-dim",
-                    r.status === "CANCELLED" && "bg-red-400/10 text-red-300"
+                    r.status === "CANCELLED" && "bg-danger/10 text-danger"
                   )}
                 >
                   {r.status}

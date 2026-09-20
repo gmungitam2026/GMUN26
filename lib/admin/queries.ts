@@ -144,3 +144,19 @@ export async function listPayments(page = 1, pageSize = 20) {
   if (error) throw error;
   return { payments: data ?? [], total: count ?? 0, page, pageSize };
 }
+
+/**
+ * Not user-specific and not sensitive, so this reads via the admin client
+ * for simplicity rather than threading a cookie-bound anon client through
+ * every public page that needs to know whether registration is open.
+ */
+export async function getRegistrationOpen(): Promise<boolean> {
+  try {
+    const supabase = createAdminClient();
+    const { data } = await supabase.from("platform_settings").select("registration_open").eq("id", true).maybeSingle();
+    return data?.registration_open ?? true;
+  } catch {
+    // No Supabase configured (e.g. local dev without credentials) — default open.
+    return true;
+  }
+}

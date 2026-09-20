@@ -67,3 +67,22 @@ export async function updateRegistration(
   revalidatePath("/admin/registrations");
   return { ok: true };
 }
+
+export async function setRegistrationOpen(open: boolean): Promise<UpdateRegistrationResult> {
+  await verifyAdminSession();
+
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("platform_settings")
+    .update({ registration_open: open })
+    .eq("id", true);
+
+  if (error) {
+    return { ok: false, error: "Could not update registration status. Please try again." };
+  }
+
+  revalidatePath("/register");
+  revalidatePath("/admin/settings");
+  revalidatePath("/");
+  return { ok: true };
+}

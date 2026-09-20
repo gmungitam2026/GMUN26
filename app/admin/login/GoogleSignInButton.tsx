@@ -62,7 +62,7 @@ export function GoogleSignInButton({ redirectError }: { redirectError?: string }
         {pending ? "Redirecting…" : "Continue with Google"}
       </button>
       {(error || redirectError) && (
-        <p role="alert" className="mt-4 border border-red-400/40 bg-red-400/5 p-3 text-sm text-red-300">
+        <p role="alert" className="mt-4 border border-danger/40 bg-danger/5 p-3 text-sm text-danger">
           {error ?? redirectError}
         </p>
       )}

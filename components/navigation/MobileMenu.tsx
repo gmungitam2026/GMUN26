@@ -64,7 +64,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
             <div className="flex flex-col gap-6">
               <Link
                 href={registerNav.href}
-                className="flex h-14 items-center justify-center bg-gold text-[13px] font-medium uppercase tracking-[0.14em] text-ink"
+                className="flex h-14 items-center justify-center bg-gold-fill text-[13px] font-medium uppercase tracking-[0.14em] text-ink"
               >
                 {registerNav.label} Now
               </Link>

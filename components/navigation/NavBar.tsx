@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { primaryNav, registerNav } from "@/config/navigation";
 import { cn } from "@/lib/utils/cn";
 import { MobileMenu } from "./MobileMenu";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function NavBar() {
   const [scrolled, setScrolled] = useState(false);
@@ -50,9 +51,11 @@ export function NavBar() {
         </nav>
 
         <div className="flex items-center gap-4">
+          <ThemeToggle />
+
           <Link
             href={registerNav.href}
-            className="hidden h-10 items-center justify-center border border-gold px-5 text-[13px] font-medium uppercase tracking-[0.12em] text-gold transition-colors hover:bg-gold hover:text-ink md:inline-flex"
+            className="hidden h-10 items-center justify-center border border-gold px-5 text-[13px] font-medium uppercase tracking-[0.12em] text-gold transition-colors hover:bg-gold-fill hover:text-ink md:inline-flex"
           >
             {registerNav.label}
           </Link>

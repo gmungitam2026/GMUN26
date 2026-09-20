@@ -8,6 +8,7 @@ export const primaryNav: NavItem[] = [
   { label: "About", href: "/about" },
   { label: "Conference", href: "/conference" },
   { label: "Committees", href: "/committees" },
+  { label: "Forms", href: "/forms" },
   { label: "FAQs", href: "/faq" },
   { label: "Contact Us", href: "/contact" },
 ];

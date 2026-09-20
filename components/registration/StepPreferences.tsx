@@ -39,7 +39,7 @@ export function StepPreferences({
               className={cn(
                 "h-11 flex-1 border text-sm uppercase tracking-[0.08em] transition-colors sm:flex-none sm:px-10",
                 data.hasMunExperience === opt.value
-                  ? "border-gold bg-gold text-ink"
+                  ? "border-gold bg-gold-fill text-ink"
                   : "border-line text-ivory-dim hover:border-line-strong"
               )}
             >
@@ -62,7 +62,7 @@ export function StepPreferences({
             onChange={(e) => onChange("munExperienceDetail", e.target.value)}
             placeholder="Conferences attended, committees, awards, roles — max 200 words."
           />
-          <p className={cn("mt-2 text-xs", words > 200 ? "text-red-400" : "text-ivory-faint")}>
+          <p className={cn("mt-2 text-xs", words > 200 ? "text-danger" : "text-ivory-faint")}>
             {words} / 200 words
           </p>
         </Field>
@@ -115,7 +115,7 @@ export function StepPreferences({
             </label>
           ))}
         </div>
-        {errors.packageId && <p className="mt-2 text-xs text-red-400">{errors.packageId}</p>}
+        {errors.packageId && <p className="mt-2 text-xs text-danger">{errors.packageId}</p>}
       </div>
     </div>
   );

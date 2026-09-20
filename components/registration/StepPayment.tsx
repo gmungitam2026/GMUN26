@@ -74,7 +74,7 @@ export function StepPayment({
       )}
 
       {error && (
-        <p role="alert" className="mt-6 border border-red-400/40 bg-red-400/5 p-4 text-sm text-red-300">
+        <p role="alert" className="mt-6 border border-danger/40 bg-danger/5 p-4 text-sm text-danger">
           {error}
         </p>
       )}

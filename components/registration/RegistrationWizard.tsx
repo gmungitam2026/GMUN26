@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { site } from "@/config/site";
 import { registrationPackages } from "@/config/pricing";
+import { committees } from "@/config/committees";
 import {
   detailsSchema,
   preferencesSchemaValidated,
@@ -29,12 +30,15 @@ const emptyDetails: DetailsInput = {
   city: "",
 };
 
-const emptyPreferences: PreferencesInput = {
-  hasMunExperience: false,
-  munExperienceDetail: "",
-  committeePreference: "",
-  packageId: registrationPackages[0].id,
-};
+function buildEmptyPreferences(initialCommittee?: string): PreferencesInput {
+  const committeePreference = committees.some((c) => c.id === initialCommittee) ? initialCommittee! : "";
+  return {
+    hasMunExperience: false,
+    munExperienceDetail: "",
+    committeePreference,
+    packageId: registrationPackages[0].id,
+  };
+}
 
 type PaymentIntent = {
   registrationDbId: string;
@@ -43,13 +47,13 @@ type PaymentIntent = {
   checkout: Record<string, string>;
 };
 
-export function RegistrationWizard() {
+export function RegistrationWizard({ initialCommittee }: { initialCommittee?: string }) {
   const router = useRouter();
   const minPrice = Math.min(...registrationPackages.map((p) => p.price));
 
   const [step, setStep] = useState(1);
   const [details, setDetails] = useState<DetailsInput>(emptyDetails);
-  const [preferences, setPreferences] = useState<PreferencesInput>(emptyPreferences);
+  const [preferences, setPreferences] = useState<PreferencesInput>(() => buildEmptyPreferences(initialCommittee));
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   const [detailsErrors, setDetailsErrors] = useState<Partial<Record<keyof DetailsInput, string>>>({});
@@ -172,7 +176,7 @@ export function RegistrationWizard() {
       </div>
 
       {submitError && (
-        <p role="alert" className="mt-6 border border-red-400/40 bg-red-400/5 p-4 text-sm text-red-300">
+        <p role="alert" className="mt-6 border border-danger/40 bg-danger/5 p-4 text-sm text-danger">
           {submitError}
         </p>
       )}

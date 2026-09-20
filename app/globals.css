@@ -9,11 +9,43 @@
   --color-ivory-faint: #928c7d;
   --color-gold: #b7924e;
   --color-gold-bright: #d4af6a;
+  /* Used for solid fills that carry dark text/icons on top (buttons, the
+     settings toggle). Same value as --color-gold in dark mode, but in
+     light mode --color-gold darkens to stay legible as text on a light
+     page, so fills need their own brighter token to keep dark-text-on-gold
+     contrast intact. */
+  --color-gold-fill: #b7924e;
   --color-line: rgba(239, 233, 220, 0.12);
   --color-line-strong: rgba(239, 233, 220, 0.22);
 
+  /* Status colors — themed per mode so error/info text keeps WCAG AA
+     contrast on both a near-black and a light-ivory background. */
+  --color-danger: #f87171;
+  --color-info: #93c5fd;
+
   --font-display: "Fraunces", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Light theme — opted into via data-theme="light" on <html>, toggled by
+   ThemeToggle and persisted to localStorage. Every color below was picked
+   to keep WCAG AA contrast (>=4.5:1 for text) against the light background,
+   not just inverted from the dark palette. */
+:root[data-theme="light"] {
+  --color-ink: #f3efe4;
+  --color-surface: #ece5d3;
+  --color-surface-raised: #e2dac3;
+  --color-ivory: #1c1a15;
+  --color-ivory-dim: #4d4638;
+  --color-ivory-faint: #6b6354;
+  --color-gold: #7d5f28;
+  --color-gold-bright: #96702f;
+  --color-gold-fill: #c9a45c;
+  --color-line: rgba(28, 26, 21, 0.12);
+  --color-line-strong: rgba(28, 26, 21, 0.22);
+
+  --color-danger: #b91c1c;
+  --color-info: #1d4ed8;
 }
 
 @theme inline {
@@ -25,8 +57,11 @@
   --color-ivory-faint: var(--color-ivory-faint);
   --color-gold: var(--color-gold);
   --color-gold-bright: var(--color-gold-bright);
+  --color-gold-fill: var(--color-gold-fill);
   --color-line: var(--color-line);
   --color-line-strong: var(--color-line-strong);
+  --color-danger: var(--color-danger);
+  --color-info: var(--color-info);
 
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);

@@ -27,7 +27,7 @@ export function Field({
         {optional && <span className="text-[11px] normal-case text-ivory-faint">Optional</span>}
       </label>
       {children}
-      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
+      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
     </div>
   );
 }
