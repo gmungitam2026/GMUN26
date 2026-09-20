@@ -1,28 +1,30 @@
-"use client";
-
-import { motion } from "framer-motion";
-
+/**
+ * Pure CSS keyframe animation (see `--animate-reveal` in globals.css)
+ * rather than Framer Motion's `whileInView`. `whileInView` was confirmed
+ * live to never fire — content stuck permanently at its invisible initial
+ * state — for anything already inside the viewport on a hard page load
+ * (the same failure mode found and fixed on the hero). Since Reveal wraps
+ * content on nearly every page, some of it inevitably above the fold, a
+ * plain CSS animation removes that whole class of bug: it runs the moment
+ * the browser paints the element, with no JS/IntersectionObserver timing
+ * involved. The one behavior change is that elements below the fold now
+ * animate in on page load rather than on scroll-into-view — a reasonable
+ * trade for content that reliably renders.
+ */
 export function Reveal({
   children,
   delay = 0,
   className,
-  as = "div",
+  as: Tag = "div",
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
   as?: "div" | "li";
 }) {
-  const MotionTag = as === "li" ? motion.li : motion.div;
   return (
-    <MotionTag
-      initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={className}
-    >
+    <Tag className={className ? `animate-reveal ${className}` : "animate-reveal"} style={{ animationDelay: `${delay * 1000}ms` }}>
       {children}
-    </MotionTag>
+    </Tag>
   );
 }
