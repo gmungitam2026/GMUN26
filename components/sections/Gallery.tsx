@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { galleryCategories } from "@/config/gallery";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -15,10 +16,21 @@ export function Gallery() {
 
         {hasImages ? (
           <div className="mt-16 grid grid-cols-2 gap-3 md:grid-cols-4">
-            {galleryCategories.flatMap((c) => c.images).map((img, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={i} src={img.src} alt={img.alt} className="aspect-[4/5] w-full object-cover" />
-            ))}
+            {galleryCategories
+              .flatMap((c) => c.images)
+              .map((img, i) => (
+                <Reveal key={img.src} delay={(i % 4) * 0.05}>
+                  <div className="relative aspect-[4/5] w-full overflow-hidden border border-line">
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      sizes="(min-width: 768px) 25vw, 50vw"
+                      className="object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                  </div>
+                </Reveal>
+              ))}
           </div>
         ) : (
           <div className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">

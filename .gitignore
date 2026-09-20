@@ -37,6 +37,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+# large raw photography (RAW files can't render on the web; JPEGs here are
+# unoptimized camera originals) — keep locally, only commit web-sized
+# exports under public/gallery/
+_sources/gallery-originals/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
