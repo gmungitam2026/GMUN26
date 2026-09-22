@@ -3,7 +3,6 @@
 import { useSyncExternalStore } from "react";
 import { timelineMilestones } from "@/config/conference";
 import { Container } from "@/components/ui/Container";
-import { cn } from "@/lib/utils/cn";
 
 function getNextMilestone(now: Date) {
   return timelineMilestones.find((m) => m.date && new Date(m.date).getTime() > now.getTime());
@@ -83,7 +82,7 @@ export function TimelineBar() {
                 { label: "Sec", value: seconds },
               ].map((unit) => (
                 <div key={unit.label} className="flex items-baseline gap-1.5">
-                  <span className="font-display text-3xl text-ivory tabular-nums sm:text-4xl">
+                  <span className="font-display text-4xl text-ivory tabular-nums sm:text-5xl lg:text-6xl">
                     {now ? pad(unit.value) : "--"}
                   </span>
                   <span className="text-[11px] uppercase tracking-[0.08em] text-ivory-faint">{unit.label}</span>
@@ -92,33 +91,6 @@ export function TimelineBar() {
             </div>
           </div>
 
-          <ol className="flex flex-1 flex-wrap items-start gap-x-6 gap-y-6 border-t border-line pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
-            {timelineMilestones.map((m) => {
-              const isComplete = m.alwaysComplete || (m.date && now && new Date(m.date).getTime() <= now.getTime());
-              const isCurrent = next?.id === m.id;
-              return (
-                <li key={m.id} className="flex min-w-[130px] flex-1 items-start gap-3 sm:flex-none">
-                  <span
-                    className={cn(
-                      "mt-1 h-[7px] w-[7px] shrink-0 rotate-45 border",
-                      isComplete ? "border-gold bg-gold" : isCurrent ? "border-gold" : "border-line-strong"
-                    )}
-                    aria-hidden
-                  />
-                  <div>
-                    <p className={cn("text-sm", isComplete || isCurrent ? "text-ivory" : "text-ivory-faint")}>
-                      {m.label}
-                    </p>
-                    <p className="mt-0.5 text-xs text-ivory-faint">
-                      {m.date
-                        ? new Date(m.date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
-                        : "To be announced"}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
         </div>
       </Container>
     </section>

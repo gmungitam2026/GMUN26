@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { site } from "@/config/site";
 import { registrationPackages } from "@/config/pricing";
@@ -11,7 +11,6 @@ import {
   type DetailsInput,
   type PreferencesInput,
 } from "@/lib/validation/registration";
-import { createRegistration } from "@/lib/registration/actions";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { StepDetails } from "./StepDetails";
 import { StepPreferences } from "./StepPreferences";
@@ -40,13 +39,6 @@ function buildEmptyPreferences(initialCommittee?: string): PreferencesInput {
   };
 }
 
-type PaymentIntent = {
-  registrationDbId: string;
-  registrationId: string;
-  orderId: string;
-  checkout: Record<string, string>;
-};
-
 export function RegistrationWizard({ initialCommittee }: { initialCommittee?: string }) {
   const router = useRouter();
   const minPrice = Math.min(...registrationPackages.map((p) => p.price));
@@ -60,9 +52,6 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
   const [preferencesErrors, setPreferencesErrors] = useState<Partial<Record<keyof PreferencesInput, string>>>({});
   const [termsError, setTermsError] = useState<string | undefined>();
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const [intent, setIntent] = useState<PaymentIntent | null>(null);
-  const [pending, startTransition] = useTransition();
 
   function updateDetails<K extends keyof DetailsInput>(key: K, value: DetailsInput[K]) {
     setDetails((d) => ({ ...d, [key]: value }));
@@ -108,27 +97,7 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
     }
     setTermsError(undefined);
     setSubmitError(null);
-
-    startTransition(async () => {
-      const result = await createRegistration({
-        ...details,
-        ...preferences,
-        termsAccepted: true,
-      });
-
-      if (!result.ok) {
-        setSubmitError(result.error);
-        return;
-      }
-
-      setIntent({
-        registrationDbId: result.registrationDbId,
-        registrationId: result.registrationId,
-        orderId: result.orderId,
-        checkout: result.checkout,
-      });
-      setStep(4);
-    });
+    setStep(4);
   }
 
   const selectedPackage = registrationPackages.find((p) => p.id === preferences.packageId) ?? registrationPackages[0];
@@ -164,13 +133,12 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
             termsError={termsError}
           />
         )}
-        {step === 4 && intent && (
+        {step === 4 && (
           <StepPayment
-            registrationDbId={intent.registrationDbId}
-            orderId={intent.orderId}
-            checkout={intent.checkout}
             amount={selectedPackage.price}
-            onPaid={() => router.push(`/confirmation/${intent.registrationId}`)}
+            registrationData={{ ...details, ...preferences, termsAccepted: true }}
+            onSubmitted={(registrationId) => router.push(`/confirmation/${registrationId}`)}
+            onError={setSubmitError}
           />
         )}
       </div>
@@ -202,8 +170,8 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
             </Button>
           )}
           {step === 3 && (
-            <Button type="button" disabled={pending} onClick={submitRegistration}>
-              {pending ? "Submitting…" : "Continue to Payment"}
+            <Button type="button" onClick={submitRegistration}>
+              Continue to Payment
             </Button>
           )}
         </div>

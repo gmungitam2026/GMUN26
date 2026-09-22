@@ -1,6 +1,11 @@
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "CANCELLED";
 
-export type RegistrationStatus = "PENDING" | "PAID" | "CANCELLED";
+export type RegistrationStatus =
+  | "PENDING_VERIFICATION"
+  | "UNDER_VERIFICATION"
+  | "PAYMENT_CONFIRMED"
+  | "REJECTED"
+  | "CANCELLED";
 
 export type Gender = "Male" | "Female" | "Other" | "Prefer not to say";
 

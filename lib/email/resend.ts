@@ -21,6 +21,11 @@ export const resendProvider: EmailProvider = {
       body: JSON.stringify({ from, to: message.to, subject: message.subject, html: message.html }),
     });
 
-    return { sent: res.ok };
+    if (!res.ok) {
+      const details = await res.text();
+      throw new Error(`Resend rejected the email (${res.status}): ${details}`);
+    }
+
+    return { sent: true };
   },
 };

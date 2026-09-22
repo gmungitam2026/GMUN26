@@ -15,7 +15,7 @@ alter table registrations
   add column mun_experience_detail text;
 
 alter table registrations
-  add constraint registrations_age_check check (age >= 12 and age <= 22),
+  add constraint registrations_age_check check (age >= 12 and age <= 23),
   add constraint registrations_gender_check check (gender in ('Male', 'Female', 'Other', 'Prefer not to say')),
   add constraint registrations_mun_experience_check check (mun_experience in ('Yes', 'No')),
   add constraint registrations_mun_experience_detail_length check (char_length(mun_experience_detail) <= 2000);

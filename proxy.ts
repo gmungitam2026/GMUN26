@@ -11,6 +11,13 @@ import { createServerClient } from "@supabase/ssr";
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
+  if (request.nextUrl.pathname === "/" && request.nextUrl.searchParams.has("code")) {
+    const callbackUrl = request.nextUrl.clone();
+    callbackUrl.pathname = "/auth/callback";
+    callbackUrl.searchParams.set("next", "/admin");
+    return NextResponse.redirect(callbackUrl);
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -46,5 +53,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/", "/admin/:path*"],
 };

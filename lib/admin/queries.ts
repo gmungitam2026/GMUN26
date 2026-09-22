@@ -3,9 +3,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export interface DashboardStats {
   totalRegistrations: number;
-  paidRegistrations: number;
-  pendingPayments: number;
-  failedPayments: number;
+  pendingVerification: number;
+  underVerification: number;
+  confirmedRegistrations: number;
+  rejectedRegistrations: number;
+  cancelledRegistrations: number;
   revenue: number;
   committeeBreakdown: { committee: string; count: number }[];
   packageBreakdown: { packageId: string; count: number }[];
@@ -15,17 +17,17 @@ export interface DashboardStats {
 export async function getDashboardStats(): Promise<DashboardStats> {
   const supabase = createAdminClient();
 
-  const [{ count: total }, { count: paid }, { data: paymentRows }, { data: registrationRows }] =
+  const [{ data: registrations }, { data: registrationRows }] =
     await Promise.all([
-      supabase.from("registrations").select("id", { count: "exact", head: true }),
-      supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "PAID"),
-      supabase.from("payments").select("status, amount"),
+      supabase.from("registrations").select("status, payment_amount"),
       supabase.from("registrations").select("committee_preference, package_id, gender"),
     ]);
 
-  const pendingPayments = paymentRows?.filter((p) => p.status === "PENDING").length ?? 0;
-  const failedPayments = paymentRows?.filter((p) => p.status === "FAILED").length ?? 0;
-  const revenue = paymentRows?.filter((p) => p.status === "PAID").reduce((sum, p) => sum + (p.amount ?? 0), 0) ?? 0;
+  const rows = registrations ?? [];
+  const countStatus = (status: string) => rows.filter((row) => row.status === status).length;
+  const revenue = rows
+    .filter((row) => row.status === "PAYMENT_CONFIRMED")
+    .reduce((sum, row) => sum + (row.payment_amount ?? 0), 0);
 
   const committeeCounts = new Map<string, number>();
   const packageCounts = new Map<string, number>();
@@ -37,10 +39,12 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   }
 
   return {
-    totalRegistrations: total ?? 0,
-    paidRegistrations: paid ?? 0,
-    pendingPayments,
-    failedPayments,
+    totalRegistrations: rows.length,
+    pendingVerification: countStatus("PENDING_VERIFICATION"),
+    underVerification: countStatus("UNDER_VERIFICATION"),
+    confirmedRegistrations: countStatus("PAYMENT_CONFIRMED"),
+    rejectedRegistrations: countStatus("REJECTED"),
+    cancelledRegistrations: countStatus("CANCELLED"),
     revenue,
     committeeBreakdown: [...committeeCounts.entries()]
       .map(([committee, count]) => ({ committee, count }))
@@ -119,13 +123,12 @@ export async function getRegistrationDetail(id: string) {
   const { data: registration } = await supabase.from("registrations").select("*").eq("id", id).maybeSingle();
   if (!registration) return null;
 
-  const { data: payments } = await supabase
-    .from("payments")
-    .select("*")
-    .eq("registration_id", id)
-    .order("created_at", { ascending: false });
+  const [{ data: history }, { data: notes }] = await Promise.all([
+    supabase.from("registration_status_history").select("*, admin_profiles(name)").eq("registration_id", id).order("created_at", { ascending: false }),
+    supabase.from("registration_notes").select("*, admin_profiles(name)").eq("registration_id", id).order("created_at", { ascending: false }),
+  ]);
 
-  return { registration, payments: payments ?? [] };
+  return { registration, history: history ?? [], notes: notes ?? [] };
 }
 
 export async function listPayments(page = 1, pageSize = 20) {

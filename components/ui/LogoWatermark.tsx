@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useScrollProgress } from "@/lib/hooks/useScrollProgress";
 
 /**
- * The club logo as a large, faded, full-page background — fixed and
+ * The GMUN logo as a large, faded, full-page background — fixed and
  * centered behind all content. It starts almost invisible and fills in
  * color from the bottom up as the page scrolls, reaching a soft (still
  * faded, never opaque) full color by the bottom of the page.
@@ -22,14 +22,14 @@ export function LogoWatermark() {
       className="logo-watermark pointer-events-none fixed inset-0 z-30 flex items-center justify-center"
       style={{ mixBlendMode: "screen" }}
     >
-      <div className="relative h-[85vmin] w-[85vmin] max-h-[900px] max-w-[900px]">
+      <div className="relative h-[85vmin] w-[85vmin] max-h-[900px] max-w-[900px] overflow-hidden">
         <Image
           src="/logos/gmun-club-logo.jpg"
           alt=""
           fill
           sizes="900px"
           className="object-contain grayscale"
-          style={{ opacity: 0.06 }}
+          style={{ opacity: 0.06, clipPath: "inset(0 0 20% 0)" }}
         />
         <Image
           src="/logos/gmun-club-logo.jpg"
@@ -37,7 +37,7 @@ export function LogoWatermark() {
           fill
           sizes="900px"
           className="object-contain transition-[clip-path] duration-300 ease-out"
-          style={{ opacity: 0.18, clipPath: `inset(${revealFromTop}% 0 0 0)` }}
+          style={{ opacity: 0.18, clipPath: `inset(${revealFromTop}% 0 20% 0)` }}
         />
       </div>
     </div>

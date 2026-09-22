@@ -21,7 +21,7 @@ export default async function AdminRegistrationDetailPage({
   const detail = await getRegistrationDetail(id);
   if (!detail) notFound();
 
-  const { registration: r, payments } = detail;
+  const { registration: r, history, notes } = detail;
 
   return (
     <div>
@@ -35,22 +35,13 @@ export default async function AdminRegistrationDetailPage({
       </div>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[2fr_1fr]">
-        <RegistrationDetailView registration={r} />
+        <RegistrationDetailView registration={r} history={history} notes={notes} />
 
         <div>
-          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Payments</p>
-          {payments.length === 0 && <p className="py-3 text-sm text-ivory-faint">No payment records yet.</p>}
-          {payments.map((p) => (
-            <div key={p.id} className="mb-4 border border-line p-4">
-              <Field label="Provider" value={p.provider} />
-              <Field label="Order ID" value={p.order_id} />
-              <Field label="Payment ID" value={p.payment_id} />
-              <Field label="Amount" value={`₹${p.amount}`} />
-              <Field label="Status" value={p.status} />
-              <Field label="Method" value={p.method} />
-              <Field label="Payment Date" value={p.updated_at ? new Date(p.updated_at).toLocaleString("en-IN") : null} />
-            </div>
-          ))}
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Payment</p>
+          <Field label="Amount" value={r.payment_amount ? `₹${r.payment_amount}` : null} />
+          <Field label="UTR / Reference" value={r.payment_reference} />
+          <Field label="Proof Submitted" value={r.payment_submitted_at ? new Date(r.payment_submitted_at).toLocaleString("en-IN") : null} />
 
           <p className="mt-6 mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Audit</p>
           <Field label="Created At" value={new Date(r.created_at).toLocaleString("en-IN")} />

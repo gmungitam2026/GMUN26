@@ -36,55 +36,29 @@ export default async function ConfirmationPage({
 
   if (!registration) notFound();
 
-  const { data: payment } = await supabase
-    .from("payments")
-    .select("status, amount")
-    .eq("registration_id", registration.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
   const committee = committees.find((c) => c.id === registration.committee_preference);
-  const paid = registration.status === "PAID" && payment?.status === "PAID";
-
-  if (!paid) {
-    return (
-      <StatusShell
-        heading={
-          payment?.status === "PENDING"
-            ? "Your payment is being verified"
-            : "We couldn't confirm your payment"
-        }
-        body={
-          payment?.status === "PENDING"
-            ? "Your payment was received and is being verified. Please check back shortly, or contact the Organising team with your registration ID."
-            : "No successful payment has been recorded for this registration yet. If you believe this is an error, contact the GMUN Organising team with your registration ID."
-        }
-        registrationId={registration.registration_id}
-      />
-    );
-  }
 
   return (
     <div className="pt-36 pb-24 md:pt-44 md:pb-32">
       <Container className="max-w-2xl">
         <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-gold">Success</p>
-        <h1 className="mt-4 font-display text-4xl text-ivory md:text-5xl">Registration confirmed.</h1>
+        <h1 className="mt-4 font-display text-4xl text-ivory md:text-5xl">
+          {registration.status === "PAYMENT_CONFIRMED" ? "Payment confirmed." : "Registration submitted."}
+        </h1>
         <p className="mt-4 text-lg text-ivory-dim">{registration.full_name}</p>
 
         <div className="mt-10 divide-y divide-line border-y border-line">
           <Row label="Registration ID" value={registration.registration_id} />
           <Row label="Committee" value={committee?.shortName ?? registration.committee_preference} />
-          <Row label="Amount" value={`₹${payment?.amount ?? ""}`} />
-          <Row label="Payment Status" value="PAID" />
+          <Row label="Payment Status" value={formatStatus(registration.status)} />
         </div>
 
         <div className="mt-10 space-y-4 text-sm leading-relaxed text-ivory-dim">
           <p>
-            A confirmation has been recorded against registration ID{" "}
+            Your submission has been recorded against registration ID{" "}
             <span className="text-ivory">{registration.registration_id}</span>. Committee allocation,
-            portfolio, study guides, and further conference instructions will be shared through
-            GMUN&apos;s official communication channels.
+            portfolio, study guides, and further conference instructions will be shared after the
+            organising team verifies your payment.
           </p>
           <p>
             For any questions, contact the Organising team at{" "}
@@ -103,6 +77,10 @@ export default async function ConfirmationPage({
       </Container>
     </div>
   );
+}
+
+function formatStatus(status: string) {
+  return status.replaceAll("_", " ").toLowerCase().replace(/^\w/, (character) => character.toUpperCase());
 }
 
 function Row({ label, value }: { label: string; value: string }) {

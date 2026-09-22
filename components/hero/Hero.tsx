@@ -52,7 +52,7 @@ export function Hero() {
             "animate-reveal max-w-4xl font-display text-[13vw] leading-[0.98] font-medium text-ivory sm:text-6xl md:text-7xl lg:text-8xl"
           )}
         >
-          Welcome to <span className="italic text-gold">GMUN 5.0</span>
+          Welcome to <span className="italic text-gold">GMUN</span>
         </h1>
 
         <p

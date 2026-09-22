@@ -20,11 +20,12 @@ export default async function AdminOverviewPage() {
     <div>
       <h1 className="font-display text-2xl text-ivory">Overview</h1>
 
-      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-6">
         <AdminStatCard label="Total Registrations" value={stats.totalRegistrations} />
-        <AdminStatCard label="Paid Registrations" value={stats.paidRegistrations} />
-        <AdminStatCard label="Pending Payments" value={stats.pendingPayments} />
-        <AdminStatCard label="Failed Payments" value={stats.failedPayments} />
+        <AdminStatCard label="Pending Verification" value={stats.pendingVerification} />
+        <AdminStatCard label="Under Verification" value={stats.underVerification} />
+        <AdminStatCard label="Payment Confirmed" value={stats.confirmedRegistrations} />
+        <AdminStatCard label="Rejected" value={stats.rejectedRegistrations} />
         <AdminStatCard label="Revenue Collected" value={`₹${stats.revenue.toLocaleString("en-IN")}`} />
       </div>
 

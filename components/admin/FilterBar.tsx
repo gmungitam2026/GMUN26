@@ -5,7 +5,13 @@ import { useState, useTransition } from "react";
 import { committees } from "@/config/committees";
 import { registrationPackages } from "@/config/pricing";
 
-const paymentStatuses = ["PENDING", "PAID", "CANCELLED"];
+const registrationStatuses = [
+  "PENDING_VERIFICATION",
+  "UNDER_VERIFICATION",
+  "PAYMENT_CONFIRMED",
+  "REJECTED",
+  "CANCELLED",
+];
 
 export function FilterBar() {
   const router = useRouter();
@@ -73,7 +79,7 @@ export function FilterBar() {
           className="h-10 border border-line bg-ink px-3 text-sm text-ivory"
         >
           <option value="">All</option>
-          {paymentStatuses.map((s) => (
+          {registrationStatuses.map((s) => (
             <option key={s} value={s}>
               {s}
             </option>

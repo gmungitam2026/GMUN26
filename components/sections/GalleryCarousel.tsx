@@ -44,7 +44,7 @@ export function GalleryCarousel({ images }: { images: { src: string; alt: string
   }
 
   return (
-    <div className="mt-16">
+    <div className="relative z-40 mt-16">
       <div
         ref={trackRef}
         className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -52,7 +52,7 @@ export function GalleryCarousel({ images }: { images: { src: string; alt: string
         {images.map((img) => (
           <div
             key={img.src}
-            className="relative aspect-[4/5] w-[78%] flex-none snap-center overflow-hidden border border-line sm:w-[46%] lg:w-[30%]"
+            className="relative z-40 aspect-[4/5] w-[78%] flex-none snap-center overflow-hidden border border-line sm:w-[46%] lg:w-[30%]"
           >
             <Image
               src={img.src}
@@ -65,7 +65,7 @@ export function GalleryCarousel({ images }: { images: { src: string; alt: string
         ))}
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-5">
+      <div className="relative z-50 mt-6 flex items-center justify-center gap-5">
         <button
           type="button"
           onClick={() => scrollToIndex(Math.max(0, active - 1))}

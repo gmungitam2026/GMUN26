@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdminSession } from "@/lib/supabase/dal";
 import { adminEditSchema, type AdminEditInput } from "@/lib/validation/registration";
+import { sendEmail } from "@/lib/email/service";
 
 export async function signOutAdmin() {
   const supabase = await createClient();
@@ -85,4 +86,135 @@ export async function setRegistrationOpen(open: boolean): Promise<UpdateRegistra
   revalidatePath("/admin/settings");
   revalidatePath("/");
   return { ok: true };
+}
+
+const allowedTransitions: Record<string, string[]> = {
+  PENDING_VERIFICATION: ["PAYMENT_CONFIRMED", "UNDER_VERIFICATION", "REJECTED", "CANCELLED"],
+  UNDER_VERIFICATION: ["PAYMENT_CONFIRMED", "REJECTED", "CANCELLED"],
+  PAYMENT_CONFIRMED: ["CANCELLED"],
+  REJECTED: ["CANCELLED"],
+  CANCELLED: [],
+};
+
+export async function updateRegistrationStatus(
+  registrationDbId: string,
+  nextStatus: string,
+  note: string
+): Promise<UpdateRegistrationResult> {
+  const session = await verifyAdminSession();
+  if (!allowedTransitions[nextStatus] && !Object.keys(allowedTransitions).includes(nextStatus)) {
+    return { ok: false, error: "Invalid registration status." };
+  }
+
+  const supabase = createAdminClient();
+  const { data: current, error: readError } = await supabase
+    .from("registrations")
+    .select("status, registration_id, full_name, email")
+    .eq("id", registrationDbId)
+    .maybeSingle();
+  if (readError || !current) return { ok: false, error: "Registration was not found." };
+  if (!allowedTransitions[current.status]?.includes(nextStatus)) {
+    return { ok: false, error: `Cannot change ${current.status} to ${nextStatus}.` };
+  }
+
+  const now = new Date().toISOString();
+  const update = {
+    status: nextStatus,
+    updated_at: now,
+    verified_at: nextStatus === "PAYMENT_CONFIRMED" ? now : null,
+    verified_by: nextStatus === "PAYMENT_CONFIRMED" ? session.userId : null,
+  };
+  const { error: updateError } = await supabase.from("registrations").update(update).eq("id", registrationDbId);
+  if (updateError) return { ok: false, error: "Could not update registration status." };
+
+  const { error: historyError } = await supabase.from("registration_status_history").insert({
+    registration_id: registrationDbId,
+    old_status: current.status,
+    new_status: nextStatus,
+    changed_by: session.userId,
+    note: note.trim() || null,
+  });
+  if (historyError) return { ok: false, error: "Status changed, but history could not be recorded." };
+
+  const email = getStatusEmail(current, nextStatus);
+  try {
+    await sendEmail(email);
+  } catch (error) {
+    console.error("Registration status email failed:", error);
+  }
+
+  revalidatePath(`/admin/registrations/${registrationDbId}`);
+  revalidatePath("/admin/registrations");
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+function getStatusEmail(
+  registration: { registration_id: string; full_name: string; email: string },
+  status: string
+) {
+  const messages: Record<string, { subject: string; body: string }> = {
+    PAYMENT_CONFIRMED: {
+      subject: `GMUN 5.0 · Payment confirmed (${registration.registration_id})`,
+      body: "Your payment has been verified by the organising team. Your GMUN registration is now confirmed.",
+    },
+    UNDER_VERIFICATION: {
+      subject: `GMUN 5.0 · Payment under verification (${registration.registration_id})`,
+      body: "Your payment proof is currently under verification. The organising team may contact you if more information is needed.",
+    },
+    REJECTED: {
+      subject: `GMUN 5.0 · Registration update (${registration.registration_id})`,
+      body: "We could not verify the payment proof for your registration. Please contact the organising team if you believe this needs review.",
+    },
+    CANCELLED: {
+      subject: `GMUN 5.0 · Registration cancelled (${registration.registration_id})`,
+      body: "Your GMUN registration has been cancelled. Please contact the organising team if you need more information.",
+    },
+  };
+  const message = messages[status] ?? {
+    subject: `GMUN 5.0 · Registration update (${registration.registration_id})`,
+    body: `Your registration status is now ${status.replaceAll("_", " ").toLowerCase()}.`,
+  };
+
+  return {
+    to: registration.email,
+    subject: message.subject,
+    html: `<p>Hi ${registration.full_name},</p><p>${message.body}</p><p>Registration ID: <strong>${registration.registration_id}</strong></p><p>GMUN Organising Team</p>`,
+  };
+}
+
+export async function addRegistrationNote(
+  registrationDbId: string,
+  note: string
+): Promise<UpdateRegistrationResult> {
+  const session = await verifyAdminSession();
+  const trimmed = note.trim();
+  if (!trimmed || trimmed.length > 2000) return { ok: false, error: "Enter a note of 1 to 2,000 characters." };
+
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("registration_notes").insert({
+    registration_id: registrationDbId,
+    author_id: session.userId,
+    note: trimmed,
+  });
+  if (error) return { ok: false, error: "Could not save the internal note." };
+  revalidatePath(`/admin/registrations/${registrationDbId}`);
+  return { ok: true };
+}
+
+export async function getPaymentProofUrl(registrationDbId: string): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  await verifyAdminSession();
+  const supabase = createAdminClient();
+  const { data: registration } = await supabase
+    .from("registrations")
+    .select("payment_screenshot_path")
+    .eq("id", registrationDbId)
+    .maybeSingle();
+  if (!registration?.payment_screenshot_path) return { ok: false, error: "No payment proof is attached." };
+
+  const { data, error } = await supabase.storage
+    .from("payment-proofs")
+    .createSignedUrl(registration.payment_screenshot_path, 300);
+  if (error || !data?.signedUrl) return { ok: false, error: "Could not open the payment proof." };
+  return { ok: true, url: data.signedUrl };
 }

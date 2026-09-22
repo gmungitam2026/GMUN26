@@ -41,6 +41,11 @@ export const conferenceDays: ConferenceDay[] = [
         time: "Timing to be announced",
       },
       {
+        title: "Snacks Break",
+        description: "A short refreshment break for delegates, organisers, and guests.",
+        time: "Timing to be announced",
+      },
+      {
         title: "Socials Night",
         description: "An informal evening for delegates to interact, network, and engage in cultural and social activities.",
         time: "Timing to be announced",
@@ -54,6 +59,11 @@ export const conferenceDays: ConferenceDay[] = [
       {
         title: "Session 3",
         description: "Committees resume proceedings with further debate, negotiations, and development of solutions to the issues under discussion.",
+        time: "Timing to be announced",
+      },
+      {
+        title: "Lunch Break",
+        description: "Lunch break for delegates, organisers, and guests.",
         time: "Timing to be announced",
       },
       {
