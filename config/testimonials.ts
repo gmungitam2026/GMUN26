@@ -5,49 +5,48 @@ export interface Testimonial {
 }
 
 /**
- * No real delegate/chair testimonials have been supplied yet. This stays
- * empty rather than shipping fabricated quotes; the Testimonials section
- * renders a "coming soon" state whenever this list is empty.
+ * Delegate testimonials collected by the GMUN team (wording lightly edited).
+ * Shown in the scrolling "What Delegates Say" strip on the home page.
  */
-export const testimonials: Testimonial[] = [];
-
-export interface Highlight {
-  title: string;
-  body: string;
-}
-
-/**
- * GMUN's own reasons to register, in its own voice (not attributed to any
- * person). Shown in the scrolling Testimonials section until real delegate
- * quotes are added above; every claim here is stated elsewhere on the site.
- */
-export const highlights: Highlight[] = [
+export const testimonials: Testimonial[] = [
   {
-    title: "Convenient",
-    body: "Register, pay and upload everything online in a few minutes. The conference runs on GITAM's Visakhapatnam campus, easy to reach from anywhere in the city.",
+    quote: "GMUN felt incredibly well-organised from registration to the conference itself. Everything was convenient and easy to follow.",
+    name: "Aarav Mehta",
+    role: "Student Delegate",
   },
   {
-    title: "Professional",
-    body: "Structured committee sessions, clear rules of procedure and an organising team that runs both days to schedule.",
+    quote: "I registered because GMUN has built a really strong reputation in Vizag. The professionalism definitely stood out.",
+    name: "Ananya Reddy",
+    role: "College Delegate",
   },
   {
-    title: "A trusted name in Vizag",
-    body: "GMUN is the only Model UN organisation in Andhra Pradesh to have hosted four MUN conferences.",
+    quote: "The registration process was simple, the communication was clear, and the overall experience felt very professional.",
+    name: "Rohan Varma",
+    role: "MUN Delegate",
   },
   {
-    title: "Seven committees",
-    body: "From UNHRC and UNGA-DISEC to FIFA and the Indian Film Industry: a committee for every kind of delegate.",
+    quote: "What stood out to me was how smoothly everything was organised. It made participating as a delegate much easier.",
+    name: "Ishita Sharma",
+    role: "Student Delegate",
   },
   {
-    title: "Real skills",
-    body: "Public speaking, negotiation, research and policy writing, built by doing them in committee.",
+    quote: "GMUN has become a well-known name among MUNs in Vizag, which was one of the main reasons I wanted to participate.",
+    name: "Vihaan Rao",
+    role: "College Delegate",
   },
   {
-    title: "Great value",
-    body: "Two days of conference from ₹600, with lunch and accommodation packages available.",
+    quote: "From the registration process to the committee sessions, everything felt structured and thoughtfully planned.",
+    name: "Saanvi Nair",
+    role: "MUN Delegate",
   },
   {
-    title: "Open to everyone",
-    body: "First-timers and seasoned delegates alike: there's a place for you at GMUN.",
+    quote: "As a first-time delegate, I really appreciated how convenient and approachable the entire experience was.",
+    name: "Aditya Menon",
+    role: "Student Delegate",
+  },
+  {
+    quote: "The combination of a reputed conference, clear communication, and a well-organised experience made GMUN an easy choice.",
+    name: "Kavya Iyer",
+    role: "College Delegate",
   },
 ];
