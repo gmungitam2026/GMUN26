@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { sessionOnly } from "@/lib/supabase/session-cookies";
 
 /**
  * Refreshes the Supabase auth session cookie on every request and performs
@@ -33,14 +34,27 @@ export async function proxy(request: NextRequest) {
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, sessionOnly(options)));
       },
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const {
+      data: { user: currentUser },
+    } = await supabase.auth.getUser();
+    user = currentUser;
+  } catch (error) {
+    // A rotated or revoked refresh token must not block a fresh OAuth login.
+    if (error instanceof Error && error.message.includes("Refresh Token")) {
+      request.cookies.getAll().forEach(({ name }) => {
+        if (name.startsWith("sb-") && name.includes("auth-token")) {
+          response.cookies.set(name, "", { maxAge: 0, path: "/" });
+        }
+      });
+    }
+  }
 
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
   const isLoginRoute = request.nextUrl.pathname === "/admin/login";

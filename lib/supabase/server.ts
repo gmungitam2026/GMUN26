@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { sessionOnly } from "@/lib/supabase/session-cookies";
 
 /**
  * Server Component / Server Action / Route Handler client — reads and writes
@@ -28,7 +29,7 @@ export async function createClient() {
       setAll(cookiesToSet) {
         try {
           cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
+            cookieStore.set(name, value, sessionOnly(options));
           });
         } catch {
           // Called from a Server Component without a mutable response —

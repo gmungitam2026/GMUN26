@@ -37,7 +37,12 @@ export function GoogleSignInButton({ redirectError }: { redirectError?: string }
       const supabase = createClient();
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: `${window.location.origin}/auth/callback?next=%2Fadmin` },
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=%2Fadmin`,
+          // Always show Google's account picker instead of silently reusing
+          // whichever Google account is already signed in in this browser.
+          queryParams: { prompt: "select_account" },
+        },
       });
       if (oauthError) {
         setError(oauthError.message);

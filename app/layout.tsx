@@ -30,11 +30,21 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * A page refresh always starts from the top. Browsers normally restore the
+ * previous scroll position on reload (which also restores scroll-driven state
+ * like the home page's logo fill); this turns that off for reloads only, so
+ * back/forward navigation still returns you to where you were. Runs inline in
+ * <head>, before the browser gets a chance to restore.
+ */
+const scrollResetOnReloadScript = `(function(){try{var n=performance.getEntriesByType("navigation")[0];if(n&&n.type==="reload"){history.scrollRestoration="manual";if(location.hash){history.replaceState(null,"",location.pathname+location.search)}window.scrollTo(0,0);addEventListener("load",function(){window.scrollTo(0,0);history.scrollRestoration="auto"})}}catch(e){}})();`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: scrollResetOnReloadScript }} />
       </head>
       <body className="flex min-h-screen flex-col bg-ink text-ivory antialiased">
         <a
