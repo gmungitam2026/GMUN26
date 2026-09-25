@@ -3,6 +3,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getRegistrationPackageById } from "@/config/pricing";
 import { sendEmail } from "@/lib/email/service";
+import { registrationReceivedEmail } from "@/lib/email/templates";
 import { registrationSchema, type RegistrationInput } from "@/lib/validation/registration";
 
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
@@ -237,11 +238,19 @@ async function saveRegistration(
   });
 
   try {
-    await sendEmail({
-      to: normalizedEmail,
-      subject: `GMUN 5.0 · Registration submitted (${registration.registration_id})`,
-      html: `<p>Hi ${data.fullName},</p><p>Your registration <strong>${registration.registration_id}</strong> has been submitted and is awaiting manual payment verification.</p>`,
-    });
+    await sendEmail(
+      registrationReceivedEmail({
+        registration_id: registration.registration_id,
+        full_name: data.fullName,
+        email: normalizedEmail,
+        committee_preference: data.committeePreference,
+        committee_preference_2: data.committeePreference2,
+        country_preference: data.countryPreference,
+        package_id: pkg.id,
+        payment_amount: pkg.price,
+        payment_reference: normalizedUtr,
+      })
+    );
   } catch (error) {
     console.error("Registration email failed:", error);
   }

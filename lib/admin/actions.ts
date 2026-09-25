@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdminSession } from "@/lib/supabase/dal";
 import { adminEditSchema, type AdminEditInput } from "@/lib/validation/registration";
 import { sendEmail } from "@/lib/email/service";
+import { statusChangeEmail } from "@/lib/email/templates";
 
 export async function signOutAdmin() {
   const supabase = await createClient();
@@ -117,7 +118,7 @@ export async function updateRegistrationStatus(
   const supabase = createAdminClient();
   const { data: current, error: readError } = await supabase
     .from("registrations")
-    .select("status, registration_id, full_name, email")
+    .select("status, registration_id, full_name, email, committee_preference, committee_preference_2, country_preference, package_id, payment_amount, payment_reference")
     .eq("id", registrationDbId)
     .maybeSingle();
   if (readError || !current) return { ok: false, error: "Registration was not found." };
@@ -144,51 +145,19 @@ export async function updateRegistrationStatus(
   });
   if (historyError) return { ok: false, error: "Status changed, but history could not be recorded." };
 
-  const email = getStatusEmail(current, nextStatus);
-  try {
-    await sendEmail(email);
-  } catch (error) {
-    console.error("Registration status email failed:", error);
+  const email = statusChangeEmail(current, nextStatus, note);
+  if (email) {
+    try {
+      await sendEmail(email);
+    } catch (error) {
+      console.error("Registration status email failed:", error);
+    }
   }
 
   revalidatePath(`/admin/registrations/${registrationDbId}`);
   revalidatePath("/admin/registrations");
   revalidatePath("/admin");
   return { ok: true };
-}
-
-function getStatusEmail(
-  registration: { registration_id: string; full_name: string; email: string },
-  status: string
-) {
-  const messages: Record<string, { subject: string; body: string }> = {
-    PAYMENT_CONFIRMED: {
-      subject: `GMUN 5.0 · Payment confirmed (${registration.registration_id})`,
-      body: "Your payment has been verified by the organising team. Your GMUN registration is now confirmed.",
-    },
-    UNDER_VERIFICATION: {
-      subject: `GMUN 5.0 · Payment under verification (${registration.registration_id})`,
-      body: "Your payment proof is currently under verification. The organising team may contact you if more information is needed.",
-    },
-    REJECTED: {
-      subject: `GMUN 5.0 · Registration update (${registration.registration_id})`,
-      body: "We could not verify the payment proof for your registration. Please contact the organising team if you believe this needs review.",
-    },
-    CANCELLED: {
-      subject: `GMUN 5.0 · Registration cancelled (${registration.registration_id})`,
-      body: "Your GMUN registration has been cancelled. Please contact the organising team if you need more information.",
-    },
-  };
-  const message = messages[status] ?? {
-    subject: `GMUN 5.0 · Registration update (${registration.registration_id})`,
-    body: `Your registration status is now ${status.replaceAll("_", " ").toLowerCase()}.`,
-  };
-
-  return {
-    to: registration.email,
-    subject: message.subject,
-    html: `<p>Hi ${registration.full_name},</p><p>${message.body}</p><p>Registration ID: <strong>${registration.registration_id}</strong></p><p>GMUN Organising Team</p>`,
-  };
 }
 
 export async function addRegistrationNote(

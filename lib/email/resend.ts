@@ -1,5 +1,6 @@
 import "server-only";
 import type { EmailMessage, EmailProvider } from "./types";
+import { contact } from "@/config/contact";
 
 /**
  * Resend adapter — only reachable if EMAIL_PROVIDER=resend and RESEND_API_KEY
@@ -18,7 +19,15 @@ export const resendProvider: EmailProvider = {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from, to: message.to, subject: message.subject, html: message.html }),
+      body: JSON.stringify({
+        from,
+        to: message.to,
+        subject: message.subject,
+        html: message.html,
+        text: message.text,
+        // Replies go to the team inbox rather than the no-reply sending address.
+        reply_to: process.env.EMAIL_REPLY_TO || contact.email,
+      }),
     });
 
     if (!res.ok) {

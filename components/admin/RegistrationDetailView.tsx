@@ -101,7 +101,7 @@ export function RegistrationDetailView({ registration, history, notes }: { regis
             <Button type="button" variant="secondary" disabled={pending} onClick={() => changeStatus("REJECTED")}>Reject</Button>
           </>}
         </div>
-        <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Internal note or reason" rows={3} className="mt-4 w-full resize-none border border-line bg-transparent p-3 text-sm text-ivory placeholder:text-ivory-faint" />
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Reason (sent to the delegate when you reject or cancel) or an internal note" rows={3} className="mt-4 w-full resize-none border border-line bg-transparent p-3 text-sm text-ivory placeholder:text-ivory-faint" />
         <div className="mt-3 flex justify-end"><Button type="button" variant="ghost" disabled={pending || !note.trim()} onClick={saveNote}>Add Internal Note</Button></div>
         {error && <p className="mt-3 text-sm text-danger">{error}</p>}
       </div>
