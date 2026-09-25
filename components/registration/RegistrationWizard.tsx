@@ -19,6 +19,18 @@ import { StepPayment } from "./StepPayment";
 import { Button } from "@/components/ui/Button";
 import { PoweredByMDC } from "@/components/ui/PoweredByMDC";
 import { shrinkProfilePhoto, validateImageFile } from "@/lib/registration/photo";
+import { firstError, focusField } from "@/lib/registration/focusField";
+
+// On-screen order of each step's fields, so the first visible error wins.
+const DETAILS_ORDER = ["fullName", "gitamStudent", "age", "gender", "phone", "email", "institution", "state", "city"] as const;
+const PREFERENCES_ORDER = [
+  "committeePreference",
+  "committeePreference2",
+  "countryPreference",
+  "hasMunExperience",
+  "munExperienceDetail",
+  "packageId",
+] as const;
 
 const emptyDetails: DetailsInput = {
   fullName: "",
@@ -102,10 +114,14 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
         if (!errs[key]) errs[key] = issue.message;
       }
       setDetailsErrors(errs);
+      focusField(firstError(DETAILS_ORDER, errs) ?? "profilePhoto-field");
       return;
     }
     setDetailsErrors({});
-    if (missingPhoto) return;
+    if (missingPhoto) {
+      focusField("profilePhoto-field");
+      return;
+    }
     setStep(2);
   }
 
@@ -118,6 +134,8 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
         if (!errs[key]) errs[key] = issue.message;
       }
       setPreferencesErrors(errs);
+      const first = firstError(PREFERENCES_ORDER, errs);
+      if (first) focusField(first === "hasMunExperience" ? "hasMunExperience" : first);
       return;
     }
     setPreferencesErrors({});
@@ -127,6 +145,7 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
   function submitRegistration() {
     if (!termsAccepted) {
       setTermsError("Please accept the Terms and Conditions to continue.");
+      focusField("termsAccepted");
       return;
     }
     setTermsError(undefined);
@@ -183,6 +202,11 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
             profilePhoto={profilePhoto!}
             onSubmitted={(registrationId) => router.push(`/confirmation/${registrationId}`)}
             onError={setSubmitError}
+            onDetailsFieldError={(field, message) => {
+              setDetailsErrors({ [field]: message });
+              setStep(1);
+              focusField(field, { afterStepChange: true });
+            }}
           />
         )}
       </div>

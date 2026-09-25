@@ -522,6 +522,22 @@ option {
   }
 }
 
+/* Registration: the field a failed submit jumps to (lib/registration/focusField.ts). */
+.field-flash {
+  animation: field-flash 1.5s ease-out;
+}
+@keyframes field-flash {
+  0%,
+  40% {
+    box-shadow: 0 0 0 2px var(--color-danger), 0 0 24px -4px var(--color-danger);
+    background-color: color-mix(in srgb, var(--color-danger) 8%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 2px transparent;
+    background-color: transparent;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

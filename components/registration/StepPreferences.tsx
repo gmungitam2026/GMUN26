@@ -108,7 +108,7 @@ export function StepPreferences({
         </Field>
       )}
 
-      <div>
+      <div id="packageId" data-field>
         <p className="mb-3 text-[13px] uppercase tracking-[0.08em] text-ivory-dim">Package</p>
         <div className="space-y-3">
           {registrationPackages.map((pkg) => (

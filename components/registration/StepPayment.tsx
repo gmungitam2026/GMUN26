@@ -6,6 +6,7 @@ import { createRegistration, requestRegistrationUploads } from "@/lib/registrati
 import { createClient } from "@/lib/supabase/client";
 import { ACCEPTED_IMAGE_TYPES, validateImageFile } from "@/lib/registration/photo";
 import { PaymentAmountNotice } from "./PaymentAmountNotice";
+import { focusField } from "@/lib/registration/focusField";
 import { Button } from "@/components/ui/Button";
 import { eventSettings } from "@/config/event";
 import type { RegistrationInput } from "@/lib/validation/registration";
@@ -16,12 +17,15 @@ export function StepPayment({
   profilePhoto,
   onSubmitted,
   onError,
+  onDetailsFieldError,
 }: {
   amount: number;
   registrationData: RegistrationInput;
   profilePhoto: File;
   onSubmitted: (registrationId: string) => void;
   onError: (message: string | null) => void;
+  /** A server-side problem with a step-1 field (e.g. email already registered): go back and focus it. */
+  onDetailsFieldError: (field: "email" | "phone", message: string) => void;
 }) {
   const [pending, startTransition] = useTransition();
   const [proof, setProof] = useState<File | null>(null);
@@ -42,8 +46,19 @@ export function StepPayment({
   }
 
   // Shown in this step's own error box only (the wizard's box would duplicate it).
-  function fail(message: string) {
+  // Shows the error and takes the delegate to the field it concerns.
+  function fail(message: string, field?: string) {
     setError(message);
+    focusField(field ?? "payment-error");
+  }
+
+  /** Server messages that point at a specific field. */
+  function failFromServer(message: string) {
+    if (/email address already exists/i.test(message)) return onDetailsFieldError("email", message);
+    if (/mobile number already exists/i.test(message)) return onDetailsFieldError("phone", message);
+    if (/UTR/i.test(message)) return fail(message, "utr");
+    if (/payment screenshot/i.test(message)) return fail(message, "paymentProof");
+    fail(message);
   }
 
   function selectProof(file: File | null) {
@@ -52,7 +67,7 @@ export function StepPayment({
     const problem = validateImageFile(file, "payment screenshot");
     if (problem) {
       setProof(null);
-      return setError(problem);
+      return fail(problem, "paymentProof");
     }
     setProof(file);
   }
@@ -60,15 +75,15 @@ export function StepPayment({
   function submit() {
     setError(null);
     onError(null);
-    if (!utr.trim()) return setError("Enter the UTR / payment reference from your payment receipt.");
-    if (!proof) return setError("Upload your payment screenshot before submitting.");
-    if (!confirmed) return setError("Confirm that you completed the payment to continue.");
+    if (!utr.trim()) return fail("Enter the UTR / payment reference from your payment receipt.", "utr");
+    if (!proof) return fail("Upload your payment screenshot before submitting.", "paymentProof");
+    if (!confirmed) return fail("Confirm that you completed the payment to continue.", "paymentConfirmed");
     startTransition(async () => {
       try {
         // 1. Upload both images straight to storage via one-time signed URLs.
         setStage("uploading");
         const targets = await requestRegistrationUploads(profilePhoto.type, proof.type);
-        if (!targets.ok) return fail(targets.error);
+        if (!targets.ok) return failFromServer(targets.error);
         const storage = createClient().storage;
         const [photoUpload, proofUpload] = await Promise.all([
           storage.from("profile-photos").uploadToSignedUrl(targets.photo.path, targets.photo.token, profilePhoto, { contentType: profilePhoto.type }),
@@ -80,7 +95,7 @@ export function StepPayment({
         setStage("saving");
         const result = await createRegistration(registrationData, { photoPath: targets.photo.path, proofPath: targets.proof.path }, utr);
         if (result.ok) onSubmitted(result.registrationId);
-        else fail(result.error);
+        else failFromServer(result.error);
       } catch (submissionError) {
         console.error("Registration submission failed:", submissionError);
         fail("We could not submit your registration. Please try again.");
@@ -131,17 +146,17 @@ export function StepPayment({
               {upiCopied ? "Copied" : "Copy"}
             </button>
           </p>
-          <label className="block text-xs uppercase tracking-[0.08em] text-ivory-dim">
+          <label className="block text-xs uppercase tracking-[0.08em] text-ivory-dim" data-field>
             UTR / payment reference
-            <input value={utr} onChange={(e) => setUtr(e.target.value)} className="mt-2 h-12 w-full border border-line bg-transparent px-4 text-sm text-ivory" placeholder="Enter the UTR from your payment receipt" />
+            <input id="utr" value={utr} onChange={(e) => setUtr(e.target.value)} className="mt-2 h-12 w-full border border-line bg-transparent px-4 text-sm text-ivory" placeholder="Enter the UTR from your payment receipt" />
           </label>
-          <label className="block text-xs uppercase tracking-[0.08em] text-ivory-dim">
+          <label className="block text-xs uppercase tracking-[0.08em] text-ivory-dim" data-field>
             Payment screenshot
-            <input type="file" accept={ACCEPTED_IMAGE_TYPES.join(",")} onChange={(e) => selectProof(e.target.files?.[0] ?? null)} className="mt-2 block w-full text-sm text-ivory-dim file:mr-4 file:border-0 file:bg-gold-fill file:px-4 file:py-2 file:text-ink" />
+            <input id="paymentProof" type="file" accept={ACCEPTED_IMAGE_TYPES.join(",")} onChange={(e) => selectProof(e.target.files?.[0] ?? null)} className="mt-2 block w-full text-sm text-ivory-dim file:mr-4 file:border-0 file:bg-gold-fill file:px-4 file:py-2 file:text-ink" />
           </label>
           <p className="text-xs text-ivory-faint">{proof ? `Selected: ${proof.name}` : "JPG, PNG or WebP · under 5 MB"}</p>
-          <label className="flex items-start gap-3 text-sm text-ivory-dim">
-            <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="mt-1 accent-[#b7924e]" />
+          <label className="flex items-start gap-3 text-sm text-ivory-dim" data-field>
+            <input id="paymentConfirmed" type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="mt-1 accent-[#b7924e]" />
             I confirm that I have completed the payment.
           </label>
           <Button type="button" disabled={pending} onClick={submit}>
@@ -151,7 +166,7 @@ export function StepPayment({
       </div>
 
       {error && (
-        <p role="alert" className="mt-6 border border-danger/40 bg-danger/5 p-4 text-sm text-danger">
+        <p id="payment-error" role="alert" className="mt-6 border border-danger/40 bg-danger/5 p-4 text-sm text-danger">
           {error}
         </p>
       )}

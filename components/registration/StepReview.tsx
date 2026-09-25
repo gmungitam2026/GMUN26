@@ -83,7 +83,7 @@ export function StepReview({
         </ul>
       </div>
 
-      <div className="mt-6 border border-line p-5">
+      <div className="mt-6 border border-line p-5" data-field>
         <CheckboxField id="termsAccepted" checked={termsAccepted} onChange={onTermsChange}>
           I have read, understood, and agree to the{" "}
           <Link href="/terms" target="_blank" className="text-gold underline underline-offset-2">

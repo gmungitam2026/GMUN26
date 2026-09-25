@@ -27,7 +27,7 @@ export function ProfilePhotoField({
   const preview = useFilePreview(file);
 
   return (
-    <div>
+    <div id="profilePhoto-field" data-field>
       <p className="mb-2 text-[13px] uppercase tracking-[0.08em] text-ivory-dim">Profile Photo</p>
       <div className="flex items-center gap-5">
         <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border border-line-strong bg-surface-raised">
