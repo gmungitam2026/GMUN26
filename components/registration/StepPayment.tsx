@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Image from "next/image";
 import { createRegistration, requestRegistrationUploads } from "@/lib/registration/actions";
 import { createClient } from "@/lib/supabase/client";
 import { ACCEPTED_IMAGE_TYPES, validateImageFile } from "@/lib/registration/photo";
+import { PaymentAmountNotice } from "./PaymentAmountNotice";
 import { Button } from "@/components/ui/Button";
 import { eventSettings } from "@/config/event";
 import type { RegistrationInput } from "@/lib/validation/registration";
@@ -27,6 +29,17 @@ export function StepPayment({
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stage, setStage] = useState<"uploading" | "saving" | null>(null);
+  const [upiCopied, setUpiCopied] = useState(false);
+
+  async function copyUpiId() {
+    try {
+      await navigator.clipboard.writeText(eventSettings.upiId);
+      setUpiCopied(true);
+      setTimeout(() => setUpiCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable (e.g. insecure context); the ID is visible to copy by hand.
+    }
+  }
 
   // Shown in this step's own error box only (the wizard's box would duplicate it).
   function fail(message: string) {
@@ -79,20 +92,45 @@ export function StepPayment({
 
   return (
     <div>
+      <PaymentAmountNotice amount={amount} />
+
       <div className="flex items-baseline justify-between border-b border-line pb-6">
         <p className="font-display text-xl text-ivory">Amount Payable</p>
         <p className="font-display text-3xl text-gold">₹{amount}</p>
       </div>
 
-      <div className="mt-8 grid gap-8 border border-line p-6 md:grid-cols-[220px_1fr]">
-        <div className="flex aspect-square items-center justify-center border border-line bg-white p-4 text-center text-xs text-black">
-          QR PLACEHOLDER
-          <br />
-          {eventSettings.upiId}
+      <div className="mt-8 grid gap-8 border border-line p-6 md:grid-cols-[240px_1fr]">
+        <div className="mx-auto w-full max-w-[260px]">
+          <Image
+            src={eventSettings.paymentQrPath}
+            alt={`GMUN UPI QR code. Pay ₹${amount} to UPI ID ${eventSettings.upiId}`}
+            width={839}
+            height={1009}
+            className="w-full border border-line"
+            priority
+          />
+          {/* On a phone you can't scan your own screen: save the image and use "scan from gallery" in any UPI app. */}
+          <a
+            href={eventSettings.paymentQrPath}
+            download="GMUN-UPI-QR.jpg"
+            className="mt-3 block text-center text-[11px] uppercase tracking-[0.12em] text-gold hover:underline"
+          >
+            Save QR image
+          </a>
         </div>
         <div className="space-y-5 text-sm leading-relaxed text-ivory-dim">
-          <p>Scan the official MUN QR code and pay exactly ₹{amount}. The payment will be manually verified by the organising team.</p>
-          <p>UPI ID: <span className="text-ivory">{eventSettings.upiId}</span></p>
+          <p>
+            Scan the official GMUN QR code with any UPI app (PhonePe, Google Pay, Paytm…) and pay{" "}
+            <strong className="text-ivory">exactly ₹{amount}</strong>. The payment will be manually verified by the organising team.
+          </p>
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span>
+              UPI ID: <span className="text-ivory">{eventSettings.upiId}</span>
+            </span>
+            <button type="button" onClick={copyUpiId} className="text-[11px] uppercase tracking-[0.12em] text-gold hover:underline">
+              {upiCopied ? "Copied" : "Copy"}
+            </button>
+          </p>
           <label className="block text-xs uppercase tracking-[0.08em] text-ivory-dim">
             UTR / payment reference
             <input value={utr} onChange={(e) => setUtr(e.target.value)} className="mt-2 h-12 w-full border border-line bg-transparent px-4 text-sm text-ivory" placeholder="Enter the UTR from your payment receipt" />
