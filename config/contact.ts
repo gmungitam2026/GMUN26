@@ -14,6 +14,10 @@ export const contact = {
   },
   partner: {
     heading: "Partner With Us",
+    /** The MUN's Gmail inbox; the Partner With Us button opens a Gmail draft to it. */
+    email: "gmungitam2026@gmail.com",
+    subject: "Partnering with GMUN 5.0",
+    message: "Hello GMUN team,\n\nWe would like to explore partnering with GMUN 5.0.\n\nOrganisation:\nContact person:\nPhone:\n\n",
     body: "We invite brands, organisations, institutions, and individuals to partner with GMUN 5.0 as sponsors and collaborators. Join us in creating a platform that brings together young minds through diplomacy, leadership, dialogue, and meaningful engagement. Partner with us to connect, collaborate, and make an impact.",
   },
 } as const;

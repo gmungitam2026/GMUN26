@@ -24,6 +24,13 @@ function LinkedInIcon() {
   );
 }
 
+// Opens a pre-filled Gmail draft (web, or the Gmail app on phones) to the MUN inbox.
+const partnerGmailUrl =
+  "https://mail.google.com/mail/?view=cm&fs=1" +
+  `&to=${encodeURIComponent(contact.partner.email)}` +
+  `&su=${encodeURIComponent(contact.partner.subject)}` +
+  `&body=${encodeURIComponent(contact.partner.message)}`;
+
 export function Footer() {
   return (
     <footer className="border-t border-line bg-surface">
@@ -53,7 +60,9 @@ export function Footer() {
             </h3>
             <p className="text-sm leading-relaxed text-ivory-dim">{contact.partner.body}</p>
             <a
-              href={`mailto:${contact.email}?subject=Partnering with GMUN 5.0`}
+              href={partnerGmailUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-5 inline-block border-b border-gold pb-0.5 text-[13px] font-medium uppercase tracking-[0.1em] text-gold"
             >
               Partner With Us
