@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils/cn";
 import { aboutVizag } from "@/config/about";
-import { PhotoCredit } from "@/components/ui/PhotoCredit";
 
 const ADVANCE_MS = 6000;
 
@@ -39,7 +38,6 @@ export function VizagExplorer() {
           <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold-bright">{aboutVizag.eyebrow}</p>
           <h2 className="mt-3 max-w-lg font-display text-3xl text-white md:text-5xl">{aboutVizag.heading}</h2>
         </div>
-        <PhotoCredit credit={heroImage.credit} className="top-0 right-0" />
       </div>
 
       <div className="mt-10 max-w-2xl space-y-4 text-[15px] leading-relaxed text-ivory-dim">
@@ -81,7 +79,6 @@ export function VizagExplorer() {
                   i === active ? "scale-100 duration-[6500ms]" : "scale-110 duration-700"
                 )}
               />
-              <PhotoCredit credit={l.image.credit} className="right-0 bottom-0" />
             </div>
           ))}
           <div className="pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-black/60 to-transparent p-5" aria-hidden>

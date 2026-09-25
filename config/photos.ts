@@ -1,7 +1,7 @@
 /**
  * Every photo used outside the home gallery, in one place. GMUN's own
  * photos need no credit; photos from Wikimedia Commons carry the author and
- * licence their terms require, rendered by <PhotoCredit>.
+ * licence their terms require, listed on the /credits page.
  */
 
 export type PhotoCreditInfo = { author: string; license: string; url: string };

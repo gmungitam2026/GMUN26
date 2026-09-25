@@ -117,6 +117,9 @@ export function Footer() {
             <Link href="/privacy" className="hover:text-gold">
               Privacy Policy
             </Link>
+            <Link href="/credits" className="hover:text-gold">
+              Photo Credits
+            </Link>
           </div>
         </div>
       </Container>

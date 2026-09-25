@@ -1,12 +1,11 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils/cn";
 import type { Photo as PhotoData } from "@/config/photos";
-import { PhotoCredit } from "@/components/ui/PhotoCredit";
 
 /**
  * A framed photo that fills its box (give it an aspect ratio or height via
- * className). Slowly zooms on hover, drifts with scroll where supported, and
- * shows the licence credit when the photo has one.
+ * className). Slowly zooms on hover and drifts with scroll where supported.
+ * Photo credits are listed on the /credits page, not on the photo.
  */
 export function Photo({
   photo,
@@ -33,7 +32,6 @@ export function Photo({
           className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
         />
       </div>
-      {photo.credit && <PhotoCredit credit={photo.credit} className="right-0 bottom-0" />}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import type { Photo } from "@/config/photos";
 import { Container } from "@/components/ui/Container";
-import { PhotoCredit } from "@/components/ui/PhotoCredit";
 
 /**
  * Full-bleed photo header for inner pages. The photo drifts with scroll
@@ -49,7 +48,6 @@ export function PageHeader({
         )}
       </Container>
 
-      {photo.credit && <PhotoCredit credit={photo.credit} className="top-24 right-0" />}
     </header>
   );
 }
