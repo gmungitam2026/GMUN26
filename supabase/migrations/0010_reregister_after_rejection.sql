@@ -6,7 +6,6 @@
 -- matching (lib/registration/actions.ts). Registrations never move from
 -- REJECTED / CANCELLED back to an active status, so an old row can't collide
 -- with a newer one later.
-
 drop index if exists registrations_email_key;
 drop index if exists registrations_phone_key;
 drop index if exists registrations_payment_reference_key;
