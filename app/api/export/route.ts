@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { verifyAdminSession } from "@/lib/supabase/dal";
 import { buildRegistrationsWorkbook } from "@/lib/excel/export";
 
-export async function GET() {
+export async function GET(request: Request) {
   await verifyAdminSession(); // redirects to /admin/login if not an authorized admin
 
-  const buffer = await buildRegistrationsWorkbook();
+  const buffer = await buildRegistrationsWorkbook(new URL(request.url).origin);
 
   return new NextResponse(new Uint8Array(buffer), {
     headers: {

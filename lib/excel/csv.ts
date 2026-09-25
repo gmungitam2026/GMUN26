@@ -4,13 +4,15 @@ import { committees } from "@/config/committees";
 import { registrationPackages } from "@/config/pricing";
 import { listRegistrationsForExport, type RegistrationListFilters } from "@/lib/admin/queries";
 
-export async function buildRegistrationsCsv(filters: Omit<RegistrationListFilters, "page" | "pageSize">) {
+/** @param origin Site origin for the admin-only photo links (/admin/photos/<id>). */
+export async function buildRegistrationsCsv(filters: Omit<RegistrationListFilters, "page" | "pageSize">, origin: string) {
   const registrations = await listRegistrationsForExport(filters);
 
   const rows = registrations.map((r) => ({
     "Registration ID": r.registration_id,
     "Registration Date": new Date(r.created_at).toISOString(),
     "Full Name": r.full_name,
+    "Profile Photo": r.profile_photo_path ? `${origin}/admin/photos/${r.id}` : "",
     "GITAM Student": r.is_gitam_student == null ? "" : r.is_gitam_student ? "Yes" : "No",
     Age: r.age,
     Gender: r.gender,

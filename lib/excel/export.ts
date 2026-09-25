@@ -17,17 +17,44 @@ const packageName = (id: string) => registrationPackages.find((p) => p.id === id
 const formatDate = (iso: string | null) =>
   iso ? new Date(iso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) : "";
 
-/** A sheet whose columns are sized to their content, so it's readable without resizing. */
+const PHOTO_COLUMN = "Profile Photo";
+
+/**
+ * A sheet whose columns are sized to their content, so it's readable without
+ * resizing. URLs in the Profile Photo column become clickable "View photo"
+ * links.
+ */
 function sheet(rows: Record<string, unknown>[], emptyMessage: string) {
   if (rows.length === 0) return XLSX.utils.json_to_sheet([{ Note: emptyMessage }]);
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws["!cols"] = Object.keys(rows[0]).map((key) => ({
-    wch: Math.min(60, Math.max(key.length, ...rows.map((r) => String(r[key] ?? "").length)) + 2),
+  const keys = Object.keys(rows[0]);
+  ws["!cols"] = keys.map((key) => ({
+    wch:
+      key === PHOTO_COLUMN
+        ? 14
+        : Math.min(60, Math.max(key.length, ...rows.map((r) => String(r[key] ?? "").length)) + 2),
   }));
+
+  const photoCol = keys.indexOf(PHOTO_COLUMN);
+  if (photoCol !== -1) {
+    rows.forEach((row, i) => {
+      const url = row[PHOTO_COLUMN];
+      if (typeof url !== "string" || !url) return;
+      const ref = XLSX.utils.encode_cell({ r: i + 1, c: photoCol });
+      ws[ref] = { t: "s", v: "View photo", l: { Target: url, Tooltip: "Opens the photo (admin sign-in required)" } };
+    });
+  }
   return ws;
 }
 
-export async function buildRegistrationsWorkbook(): Promise<Buffer> {
+/**
+ * @param origin Site origin for the admin-only photo links (/admin/photos/<id>),
+ *   taken from the export request so links point at the deployment in use.
+ */
+export async function buildRegistrationsWorkbook(origin: string): Promise<Buffer> {
+  const photoLink = (r: { id: string; profile_photo_path: string | null }) =>
+    r.profile_photo_path ? `${origin}/admin/photos/${r.id}` : "";
+
   const supabase = createAdminClient();
 
   const [{ data: registrations }, { data: history }] = await Promise.all([
@@ -50,6 +77,7 @@ export async function buildRegistrationsWorkbook(): Promise<Buffer> {
     Status: STATUS_LABELS[r.status] ?? r.status,
     "Registered On": formatDate(r.created_at),
     "Full Name": r.full_name,
+    [PHOTO_COLUMN]: photoLink(r),
     "GITAM Student": r.is_gitam_student == null ? "" : r.is_gitam_student ? "Yes" : "No",
     Age: r.age,
     Gender: r.gender,
@@ -80,6 +108,7 @@ export async function buildRegistrationsWorkbook(): Promise<Buffer> {
     return {
       "Registration ID": r.registration_id,
       "Full Name": r.full_name,
+      [PHOTO_COLUMN]: photoLink(r),
       Phone: r.phone,
       Email: r.email,
       Institution: r.institution,

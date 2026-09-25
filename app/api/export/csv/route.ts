@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     committee: params.get("committee") ?? undefined,
     paymentStatus: params.get("status") ?? undefined,
     packageId: params.get("package") ?? undefined,
-  });
+  }, request.nextUrl.origin);
 
   return new NextResponse(csv, {
     headers: {
