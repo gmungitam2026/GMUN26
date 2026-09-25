@@ -2,6 +2,8 @@ import { missionVision } from "@/config/about";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import { Photo } from "@/components/ui/Photo";
+import { gmunPhotos } from "@/config/photos";
 
 export function MissionVision() {
   return (
@@ -22,6 +24,7 @@ export function MissionVision() {
 
           <Reveal delay={0.15}>
             <div className="lg:sticky lg:top-32">
+              <Photo photo={gmunPhotos.p5} className="mb-10 aspect-[4/3]" sizes="(min-width: 1024px) 480px, 100vw" />
               <p className="mb-6 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">
                 What we value
               </p>

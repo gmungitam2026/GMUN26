@@ -91,16 +91,49 @@ export const venueAndAccommodation = {
   },
 };
 
+export interface TravelOption {
+  label: string;
+  /** The specific place or service, shown as the card's title. */
+  name: string;
+  /** Approximate distance / travel time from the GITAM campus. */
+  distance?: string;
+  body: string;
+}
+
 export const travel = {
   heading: "Travel & Transportation",
   intro:
-    "GITAM's Visakhapatnam campus is located in Gandhi Nagar, Rushikonda, Visakhapatnam, Andhra Pradesh.",
+    "GITAM's Visakhapatnam campus is in Gandhi Nagar, Rushikonda, on the city's northern coast along Beach Road. Visakhapatnam is well connected by air, rail and road, and getting to campus from any arrival point is straightforward.",
   items: [
-    { label: "Nearest Airport", value: "To be announced" },
-    { label: "Nearest Railway Station", value: "To be announced" },
-    { label: "City Transport", value: "To be announced" },
-    { label: "Parking", value: "Information regarding parking and vehicle access will be communicated to registered participants before the conference." },
-  ],
+    {
+      label: "Nearest Airport",
+      name: "Alluri Sitarama Raju International Airport",
+      distance: "Approx. 40 km · 1 hr by road",
+      body: "Visakhapatnam's international airport at Bhogapuram, north of the city. Prepaid taxis and app-based cabs are available at the terminal for the drive down to Rushikonda.",
+    },
+    {
+      label: "Nearest Railway Station",
+      name: "Visakhapatnam Railway Station (VSKP)",
+      distance: "Approx. 15 km · 30–40 min by road",
+      body: "The city's main station, on the East Coast Railway with direct trains from most major Indian cities. Autos and cabs are available outside the station. Some trains stop only at Duvvada (DVD), south-west of the city, so check your ticket.",
+    },
+    {
+      label: "Intercity Buses",
+      name: "Dwaraka Bus Station (RTC Complex)",
+      distance: "Approx. 14 km · 30 min by road",
+      body: "APSRTC and private operators run regular services to Visakhapatnam from across Andhra Pradesh, Telangana and Odisha, arriving at the Dwaraka bus station in the city centre.",
+    },
+    {
+      label: "Getting Around",
+      name: "Cabs, autos & city buses",
+      body: "App-based cabs and bike taxis (Uber, Ola, Rapido) and auto-rickshaws are the easiest way to reach campus. APSRTC city buses also run along Beach Road towards Rushikonda.",
+    },
+    {
+      label: "Parking",
+      name: "On-campus vehicle access",
+      body: "Information regarding parking and vehicle access will be communicated to registered participants before the conference.",
+    },
+  ] satisfies TravelOption[],
 };
 
 export interface TimelineMilestone {

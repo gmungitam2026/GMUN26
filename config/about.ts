@@ -47,13 +47,34 @@ export const aboutVizag = {
 As one of Andhra Pradesh's major cities and an important port and industrial centre, Visakhapatnam combines a growing modern identity with a rich historical and cultural heritage. The city is also home to the Eastern Naval Command of the Indian Navy.
 
 For GMUN delegates, Visakhapatnam offers more than just a conference destination. Its coastline, heritage, food, and surrounding landscapes provide plenty to explore beyond committee rooms.`,
+  heroImage: {
+    src: "/vizag/coast-aerial.jpg",
+    width: 1920,
+    height: 1439,
+    alt: "Aerial view of waves meeting the rocky, green coastline near Yarada, Visakhapatnam",
+    credit: {
+      author: "Lokesh Manikanta",
+      license: "CC BY-SA 4.0",
+      url: "https://commons.wikimedia.org/wiki/File:Aerial_photograph_of_Yarada_beach,_Visakhapatnam.jpg",
+    },
+  },
   landmarksHeading: "A city worth exploring",
   landmarks: [
-    { name: "Ramakrishna Beach", body: "One of the city's best-known coastal landmarks is located along the scenic Beach Road." },
-    { name: "Kailasagiri", body: "A hilltop destination overlooking the sea, known for its panoramic views and landscaped surroundings." },
-    { name: "Yarada Beach", body: "A picturesque beach surrounded by hills, offering one of the more scenic coastal landscapes around Visakhapatnam." },
-    { name: "Submarine Museum", body: "The decommissioned submarine museum on RK Beach is one of Visakhapatnam's distinctive attractions and reflects the city's strong maritime identity." },
-    { name: "Simhachalam", body: "An important historic and religious site located in the hills around Visakhapatnam, known for its architecture and cultural significance." },
+    { name: "Ramakrishna Beach", body: "One of the city's best-known coastal landmarks is located along the scenic Beach Road.",
+      image: { src: "/vizag/rk-beach.jpg", width: 1920, height: 1280, alt: "The lights of Visakhapatnam port seen from RK Beach at night", credit: { author: "iMahesh", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Visakhapatnam_port_from_RK_beach_at_night.jpg" } },
+    },
+    { name: "Kailasagiri", body: "A hilltop destination overlooking the sea, known for its panoramic views and landscaped surroundings.",
+      image: { src: "/vizag/kailasagiri.jpg", width: 1920, height: 1440, alt: "The sculpted entrance arch of Kailasagiri hilltop park", credit: { author: "Pinakpani", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Kailasagiri,_the_hilltop_park_in_Visakhapatnam_03.jpg" } },
+    },
+    { name: "Yarada Beach", body: "A picturesque beach surrounded by hills, offering one of the more scenic coastal landscapes around Visakhapatnam.",
+      image: { src: "/vizag/yarada-beach.jpg", width: 1920, height: 1280, alt: "Waves breaking below the green headland at Yarada Beach", credit: { author: "Krishna Potluri", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Yarada_Beach.jpg" } },
+    },
+    { name: "Submarine Museum", body: "The decommissioned submarine museum on RK Beach is one of Visakhapatnam's distinctive attractions and reflects the city's strong maritime identity.",
+      image: { src: "/vizag/submarine-museum.jpg", width: 1920, height: 1440, alt: "INS Kursura, the submarine museum, on Beach Road under a stormy sky", credit: { author: "Raja Ramakrishna Chinna Swamy Naidu", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:INS_Kursura_Submarine_Museum.jpg" } },
+    },
+    { name: "Simhachalam", body: "An important historic and religious site located in the hills around Visakhapatnam, known for its architecture and cultural significance.",
+      image: { src: "/vizag/simhachalam.jpg", width: 1920, height: 1440, alt: "The gopuram of the Varaha Lakshmi Narasimha temple at Simhachalam", credit: { author: "eclicks_by_bunny", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Varaha_Lakshmi_Narasimha_temple_in_Simhachalam.jpg" } },
+    },
   ],
 };
 

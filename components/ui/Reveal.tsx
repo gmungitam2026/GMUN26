@@ -7,9 +7,12 @@
  * content on nearly every page, some of it inevitably above the fold, a
  * plain CSS animation removes that whole class of bug: it runs the moment
  * the browser paints the element, with no JS/IntersectionObserver timing
- * involved. The one behavior change is that elements below the fold now
- * animate in on page load rather than on scroll-into-view — a reasonable
- * trade for content that reliably renders.
+ * involved.
+ *
+ * Where the browser supports scroll-driven animations, `reveal-scroll`
+ * (globals.css) swaps the on-load animation for one tied to the element's
+ * own scroll position, so content eases in as it enters the viewport — still
+ * with no JS, and anything already on screen is already fully shown.
  */
 export function Reveal({
   children,
@@ -23,7 +26,7 @@ export function Reveal({
   as?: "div" | "li";
 }) {
   return (
-    <Tag className={className ? `animate-reveal ${className}` : "animate-reveal"} style={{ animationDelay: `${delay * 1000}ms` }}>
+    <Tag className={className ? `animate-reveal reveal-scroll ${className}` : "animate-reveal reveal-scroll"} style={{ animationDelay: `${delay * 1000}ms` }}>
       {children}
     </Tag>
   );

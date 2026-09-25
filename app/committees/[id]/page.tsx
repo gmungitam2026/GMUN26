@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { committees } from "@/config/committees";
 import { Container } from "@/components/ui/Container";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { committeePhotos, gmunPhotos } from "@/config/photos";
 import { Button } from "@/components/ui/Button";
 
 export function generateStaticParams() {
@@ -27,19 +29,16 @@ export default async function CommitteeDetailPage({ params }: PageProps<"/commit
   if (!committee) notFound();
 
   return (
-    <div className="pt-36 pb-24 md:pt-44 md:pb-32">
+    <div className="pb-24 md:pb-32">
+      <PageHeader photo={committeePhotos[committee.id] ?? gmunPhotos.p7} eyebrow={committee.type + " Committee"} title={committee.shortName}>
+        <p className="text-lg text-ivory">{committee.name}</p>
+        {committee.governingBody && <p className="mt-1 text-sm text-ivory-faint">{committee.governingBody}</p>}
+      </PageHeader>
+
       <Container>
         <Link href="/committees" className="text-[11px] uppercase tracking-[0.14em] text-ivory-faint hover:text-gold">
           ← All Committees
         </Link>
-
-        <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2">
-          <h1 className="font-display text-4xl text-ivory md:text-5xl">{committee.shortName}</h1>
-          <p className="text-lg text-ivory-dim">{committee.name}</p>
-        </div>
-        {committee.governingBody && (
-          <p className="mt-2 text-sm text-ivory-faint">{committee.governingBody}</p>
-        )}
 
         <div className="mt-10 border-t border-line pt-8">
           <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Agenda</p>

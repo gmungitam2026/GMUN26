@@ -13,7 +13,7 @@ import * as THREE from "three";
  * pointer. Loaded client-only via Chamber3DLoader.
  */
 
-const SPEAK_SECONDS = 3.2;
+const SPEAK_SECONDS = 2.2;
 
 // ---------------------------------------------------------------------------
 // Reduced motion

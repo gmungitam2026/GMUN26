@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { delegateForms } from "@/config/forms";
 import { Container } from "@/components/ui/Container";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { gmunPhotos } from "@/config/photos";
 import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
@@ -11,18 +13,12 @@ export const metadata: Metadata = {
 
 export default function FormsPage() {
   return (
-    <div className="pt-36 pb-24 md:pt-44 md:pb-32">
-      <Container>
-        <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-gold">Forms &amp; Documents</p>
-        <h1 className="mt-4 max-w-2xl font-display text-4xl text-ivory md:text-5xl">
-          Read before you register.
-        </h1>
-        <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-ivory-dim">
-          Every delegate is expected to read and agree to the following. You confirm your
-          agreement to both during registration — this page just makes them easy to read, print,
-          or save on their own.
-        </p>
-      </Container>
+    <div className="pb-24 md:pb-32">
+      <PageHeader photo={gmunPhotos.p3} eyebrow="Forms & Documents" title="Read before you register.">
+        Every delegate is expected to read and agree to the following. You confirm your
+        agreement to both during registration — this page just makes them easy to read, print,
+        or save on their own.
+      </PageHeader>
 
       <Container className="mt-16 md:mt-20">
         <div className="grid gap-3 sm:grid-cols-2">

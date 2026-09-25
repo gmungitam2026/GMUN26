@@ -1,8 +1,12 @@
 export const contact = {
   email: "gmun@gitam.in",
+  /**
+   * `photo` is a path under /public (e.g. "/team/saketh-jasthi.jpg"), ideally
+   * a portrait at least 800×1000. Leave it null to show the placeholder.
+   */
   team: [
-    { name: "Saketh Jasthi", role: "President, GMUN", phone: "8885649766" },
-    { name: "Akshaya Tadi", role: "Vice President, GMUN", phone: "8885649766" },
+    { name: "Saketh Jasthi", role: "President, GMUN", phone: "8885649766", photo: null as string | null },
+    { name: "Akshaya Tadi", role: "Vice President, GMUN", phone: "8885649766", photo: null as string | null },
   ],
   social: {
     instagram: null as string | null,

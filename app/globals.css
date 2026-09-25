@@ -154,6 +154,60 @@ body {
 }
 
 
+/* Dropdowns — every <select> on the site (registration form, admin filters).
+   The open list is gold with dark text. Browsers that support customizable
+   selects (Chromium 135+) get a fully styled picker; elsewhere the option
+   colours below still apply wherever the platform lets options be coloured. */
+select {
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b7924e' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+}
+option {
+  background-color: var(--color-gold-fill);
+  color: #0a0906;
+}
+
+@supports (appearance: base-select) {
+  select,
+  ::picker(select) {
+    appearance: base-select;
+  }
+  select {
+    display: flex;
+    align-items: center;
+  }
+  /* The gold chevron above replaces the built-in icon. */
+  select::picker-icon {
+    display: none;
+  }
+  ::picker(select) {
+    margin-top: 4px;
+    max-height: 320px;
+    padding: 4px 0;
+    border: 1px solid var(--color-gold-bright);
+    background: var(--color-gold-fill);
+    color: #0a0906;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+  option {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  option:hover,
+  option:focus-visible {
+    background-color: var(--color-gold-bright);
+    outline: none;
+  }
+  option:checked {
+    font-weight: 600;
+  }
+  option::checkmark {
+    color: #0a0906;
+  }
+}
+
 /* Faint editorial grain to keep large dark fields from looking flat / templated */
 .grain {
   position: relative;
@@ -296,6 +350,45 @@ body {
   }
 }
 
+/* About → Visakhapatnam (components/sections/VizagExplorer.tsx) */
+.vizag-progress {
+  width: 0;
+  animation-name: vizag-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes vizag-progress {
+  to {
+    width: 100%;
+  }
+}
+
+/* Scroll-linked motion. Only where the browser supports scroll-driven
+   animations; elsewhere everything simply renders in place (Reveal falls
+   back to its on-load animation). Because progress is a pure function of
+   scroll position, content already on screen is already fully revealed —
+   there is no observer or JS timing that could leave it stuck invisible. */
+@supports (animation-timeline: view()) {
+  .photo-parallax {
+    animation: photo-parallax linear both;
+    animation-timeline: view();
+  }
+  @keyframes photo-parallax {
+    from {
+      transform: scale(1.18) translateY(-7%);
+    }
+    to {
+      transform: scale(1.18) translateY(7%);
+    }
+  }
+
+  .animate-reveal.reveal-scroll {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 140px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -318,5 +411,13 @@ body {
   }
   .gallery-marquee [aria-hidden] {
     display: none;
+  }
+
+  .vizag-progress {
+    animation: none !important;
+  }
+  .photo-parallax,
+  .animate-reveal.reveal-scroll {
+    animation: none !important;
   }
 }
