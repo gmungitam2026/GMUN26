@@ -22,6 +22,8 @@ const UNIQUE_INDEX_ERRORS: Record<string, string> = {
   registrations_phone_key: "A registration with this mobile number already exists.",
 };
 const DUPLICATE_UTR_ERROR = UNIQUE_INDEX_ERRORS.registrations_payment_reference_key;
+/** Registrations in these statuses don't block a new one with the same email / phone / UTR (migration 0010). */
+const INACTIVE_STATUSES = "(REJECTED,CANCELLED)";
 
 /** UTRs are compared without spaces and case-insensitively. */
 function normalizeUtr(utr: string) {
@@ -174,12 +176,14 @@ async function saveRegistration(
   if ((count ?? 0) >= MAX_REGISTRATIONS) return { ok: false, error: "Registrations are full for this event." };
 
   const normalizedEmail = data.email.toLowerCase();
-  // Email and phone are unique across all registrations, whatever their
-  // status. (Fetches up to two rows: email and phone may match different ones.)
+  // Email and phone are unique among active registrations; someone whose
+  // earlier registration was rejected or cancelled can register again.
+  // (Fetches up to two rows: email and phone may match different ones.)
   const { data: duplicates } = await supabase
     .from("registrations")
     .select("email, phone")
     .or(`email.eq.${normalizedEmail},phone.eq.${data.phone}`)
+    .not("status", "in", INACTIVE_STATUSES)
     .limit(2);
   if (duplicates?.some((d) => d.email === normalizedEmail)) return { ok: false, error: UNIQUE_INDEX_ERRORS.registrations_email_key };
   if (duplicates?.length) return { ok: false, error: UNIQUE_INDEX_ERRORS.registrations_phone_key };
@@ -190,6 +194,7 @@ async function saveRegistration(
     .from("registrations")
     .select("id")
     .ilike("payment_reference", normalizedUtr)
+    .not("status", "in", INACTIVE_STATUSES)
     .limit(1)
     .maybeSingle();
   if (utrInUse) return { ok: false, error: DUPLICATE_UTR_ERROR };

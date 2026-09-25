@@ -28,9 +28,9 @@ export function StepPayment({
   const [error, setError] = useState<string | null>(null);
   const [stage, setStage] = useState<"uploading" | "saving" | null>(null);
 
+  // Shown in this step's own error box only (the wizard's box would duplicate it).
   function fail(message: string) {
     setError(message);
-    onError(message);
   }
 
   function selectProof(file: File | null) {
