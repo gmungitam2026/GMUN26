@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/Button";
 
 const emptyDetails: DetailsInput = {
   fullName: "",
+  gitamStudent: "" as DetailsInput["gitamStudent"],
   age: NaN,
   gender: "Prefer not to say",
   phone: "",
@@ -30,11 +31,14 @@ const emptyDetails: DetailsInput = {
 };
 
 function buildEmptyPreferences(initialCommittee?: string): PreferencesInput {
+  // /register?committee=<id> (from a committee page) pre-selects the 1st preference.
   const committeePreference = committees.some((c) => c.id === initialCommittee) ? initialCommittee! : "";
   return {
+    committeePreference,
+    committeePreference2: "",
+    countryPreference: "",
     hasMunExperience: false,
     munExperienceDetail: "",
-    committeePreference,
     packageId: registrationPackages[0].id,
   };
 }

@@ -20,7 +20,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const [{ data: registrations }, { data: registrationRows }] =
     await Promise.all([
       supabase.from("registrations").select("status, payment_amount"),
-      supabase.from("registrations").select("committee_preference, package_id, gender"),
+      // Totals and breakdowns count confirmed payments only; every other
+      // status is reported in its own count.
+      supabase.from("registrations").select("committee_preference, package_id, gender").eq("status", "PAYMENT_CONFIRMED"),
     ]);
 
   const rows = registrations ?? [];
@@ -39,7 +41,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   }
 
   return {
-    totalRegistrations: rows.length,
+    totalRegistrations: countStatus("PAYMENT_CONFIRMED"),
     pendingVerification: countStatus("PENDING_VERIFICATION"),
     underVerification: countStatus("UNDER_VERIFICATION"),
     confirmedRegistrations: countStatus("PAYMENT_CONFIRMED"),

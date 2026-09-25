@@ -9,6 +9,18 @@ const MAX_PROOF_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PROOF_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const REGISTRATION_CLOSE = "2026-10-23T23:59:59+05:30";
 const MAX_REGISTRATIONS = 500;
+/** Unique indexes from supabase/migrations/0006 and 0008, mapped to a message for the delegate. */
+const UNIQUE_INDEX_ERRORS: Record<string, string> = {
+  registrations_payment_reference_key: "This UTR / payment reference has already been used for another registration.",
+  registrations_email_key: "A registration with this email address already exists.",
+  registrations_phone_key: "A registration with this mobile number already exists.",
+};
+const DUPLICATE_UTR_ERROR = UNIQUE_INDEX_ERRORS.registrations_payment_reference_key;
+
+/** UTRs are compared without spaces and case-insensitively. */
+function normalizeUtr(utr: string) {
+  return utr.replace(/\s+/g, "").toUpperCase();
+}
 
 export interface CreateRegistrationResult {
   ok: true;
@@ -36,7 +48,10 @@ export async function createRegistration(
   if (!paymentProof || !ALLOWED_PROOF_TYPES.has(paymentProof.type) || paymentProof.size > MAX_PROOF_BYTES) {
     return { ok: false, error: "Upload a JPG, PNG, or WebP payment screenshot under 5 MB." };
   }
-  if (!/^\S{6,80}$/.test(utr.trim())) return { ok: false, error: "Enter a valid UTR or payment reference number." };
+  const normalizedUtr = normalizeUtr(utr);
+  if (!/^[A-Z0-9/-]{6,80}$/.test(normalizedUtr)) {
+    return { ok: false, error: "Enter a valid UTR or payment reference number (letters and digits only)." };
+  }
 
   let supabase;
   try {
@@ -45,17 +60,33 @@ export async function createRegistration(
     return { ok: false, error: "Registration storage is not configured yet." };
   }
 
-  const { count } = await supabase.from("registrations").select("id", { count: "exact", head: true });
+  // Rejected registrations don't hold a seat.
+  const { count } = await supabase
+    .from("registrations")
+    .select("id", { count: "exact", head: true })
+    .neq("status", "REJECTED");
   if ((count ?? 0) >= MAX_REGISTRATIONS) return { ok: false, error: "Registrations are full for this event." };
 
   const normalizedEmail = data.email.toLowerCase();
-  const { data: duplicate } = await supabase
+  // Email and phone are unique across all registrations, whatever their
+  // status. (Fetches up to two rows: email and phone may match different ones.)
+  const { data: duplicates } = await supabase
+    .from("registrations")
+    .select("email, phone")
+    .or(`email.eq.${normalizedEmail},phone.eq.${data.phone}`)
+    .limit(2);
+  if (duplicates?.some((d) => d.email === normalizedEmail)) return { ok: false, error: UNIQUE_INDEX_ERRORS.registrations_email_key };
+  if (duplicates?.length) return { ok: false, error: UNIQUE_INDEX_ERRORS.registrations_phone_key };
+
+  // Checked here for a friendly message before uploading; the unique index
+  // still enforces it if two submissions race.
+  const { data: utrInUse } = await supabase
     .from("registrations")
     .select("id")
-    .or(`email.eq.${normalizedEmail},phone.eq.${data.phone}`)
-    .neq("status", "CANCELLED")
+    .ilike("payment_reference", normalizedUtr)
+    .limit(1)
     .maybeSingle();
-  if (duplicate) return { ok: false, error: "A registration with this email or phone number already exists." };
+  if (utrInUse) return { ok: false, error: DUPLICATE_UTR_ERROR };
 
   const extension = paymentProof.type === "image/png" ? "png" : paymentProof.type === "image/webp" ? "webp" : "jpg";
   const proofPath = `2026/${crypto.randomUUID()}/payment-proof.${extension}`;
@@ -69,6 +100,7 @@ export async function createRegistration(
     .from("registrations")
     .insert({
       full_name: data.fullName,
+      is_gitam_student: data.gitamStudent === "Yes",
       age: data.age,
       gender: data.gender,
       email: normalizedEmail,
@@ -77,12 +109,14 @@ export async function createRegistration(
       state: data.state,
       city: data.city,
       committee_preference: data.committeePreference,
+      committee_preference_2: data.committeePreference2,
+      country_preference: data.countryPreference,
       mun_experience: data.hasMunExperience ? "Yes" : "No",
       mun_experience_detail: data.hasMunExperience ? data.munExperienceDetail || null : null,
       package_id: pkg.id,
       payment_amount: pkg.price,
       payment_screenshot_path: proofPath,
-      payment_reference: utr.trim(),
+      payment_reference: normalizedUtr,
       payment_submitted_at: new Date().toISOString(),
       status: "PENDING_VERIFICATION",
     })
@@ -91,7 +125,11 @@ export async function createRegistration(
 
   if (insertError || !registration) {
     await supabase.storage.from("payment-proofs").remove([proofPath]);
-    return { ok: false, error: insertError?.code === "23505" ? "A registration with this email or phone number already exists." : "Could not create your registration. Please try again." };
+    if (insertError?.code === "23505") {
+      const index = Object.keys(UNIQUE_INDEX_ERRORS).find((name) => insertError.message.includes(name));
+      return { ok: false, error: index ? UNIQUE_INDEX_ERRORS[index] : "A registration with these details already exists." };
+    }
+    return { ok: false, error: "Could not create your registration. Please try again." };
   }
 
   await supabase.from("registration_status_history").insert({

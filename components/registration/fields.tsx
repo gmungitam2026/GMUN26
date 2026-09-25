@@ -44,8 +44,45 @@ export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       {...props}
-      className={cn(inputClasses, "appearance-none bg-[url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%23b7924e%27 fill=%27none%27/%3E%3C/svg%3E')] bg-[right_1rem_center] bg-no-repeat pr-10", props.className)}
+      className={cn(inputClasses, "appearance-none", props.className)}
     />
+  );
+}
+
+/**
+ * A row of mutually exclusive buttons (e.g. Yes / No). The group carries the
+ * question as its accessible name; each button is named by its own label.
+ */
+export function ChoiceButtons<T extends string | boolean>({
+  idPrefix,
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  idPrefix: string;
+  label: string;
+  options: { label: string; value: T }[];
+  value: T | "" | null | undefined;
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div role="group" id={idPrefix} aria-label={label} className="flex gap-3">
+      {options.map((opt) => (
+        <button
+          key={opt.label}
+          type="button"
+          onClick={() => onChange(opt.value)}
+          aria-pressed={value === opt.value}
+          className={cn(
+            "h-11 flex-1 border text-sm uppercase tracking-[0.08em] transition-colors sm:flex-none sm:px-10",
+            value === opt.value ? "border-gold bg-gold-fill text-ink" : "border-line text-ivory-dim hover:border-line-strong"
+          )}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
   );
 }
 

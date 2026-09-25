@@ -3,6 +3,7 @@ import { indianStates } from "@/config/states";
 import { registrationPackages } from "@/config/pricing";
 
 export const genderOptions = ["Male", "Female", "Other", "Prefer not to say"] as const;
+export const gitamStudentOptions = ["Yes", "No"] as const;
 
 const packageIds = registrationPackages.map((p) => p.id) as [string, ...string[]];
 
@@ -12,7 +13,8 @@ function wordCount(value: string) {
 
 export const detailsSchema = z.object({
   fullName: z.string().trim().min(2, "Enter your name as per your government ID.").max(120),
-  age: z.coerce.number().int().min(12, "Minimum age for GMUN 5.0 is 12.").max(23, "Maximum age for GMUN 5.0 is 23."),
+  gitamStudent: z.enum(gitamStudentOptions, { error: "Tell us whether you're a GITAM student." }),
+  age: z.coerce.number({ error: "Enter your age." }).int().min(12, "Minimum age for GMUN 5.0 is 12.").max(23, "Maximum age for GMUN 5.0 is 23."),
   gender: z.enum(genderOptions),
   phone: z
     .string()
@@ -25,9 +27,11 @@ export const detailsSchema = z.object({
 });
 
 export const preferencesSchema = z.object({
+  committeePreference: z.string().min(1, "Select your first committee preference."),
+  committeePreference2: z.string().min(1, "Select your second committee preference."),
+  countryPreference: z.string().trim().min(2, "Enter your country preference.").max(120),
   hasMunExperience: z.boolean(),
   munExperienceDetail: z.string().trim().max(1600).optional().or(z.literal("")),
-  committeePreference: z.string().min(1, "Select a committee preference."),
   packageId: z.enum(packageIds, { error: "Select a registration package." }),
 });
 
@@ -53,14 +57,27 @@ function withMunExperienceRules<T extends z.ZodType<{ hasMunExperience: boolean;
   });
 }
 
-export const preferencesSchemaValidated = withMunExperienceRules(preferencesSchema);
+/** First and second committee preferences must be different committees. */
+function withCommitteeRules<T extends z.ZodType<{ committeePreference: string; committeePreference2: string }>>(schema: T) {
+  return schema.superRefine((data, ctx) => {
+    if (data.committeePreference && data.committeePreference === data.committeePreference2) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Choose a different committee from your first preference.",
+        path: ["committeePreference2"],
+      });
+    }
+  });
+}
 
-export const registrationSchema = withMunExperienceRules(
-  detailsSchema.extend(preferencesSchema.shape).extend(consentSchema.shape)
+export const preferencesSchemaValidated = withCommitteeRules(withMunExperienceRules(preferencesSchema));
+
+export const registrationSchema = withCommitteeRules(
+  withMunExperienceRules(detailsSchema.extend(preferencesSchema.shape).extend(consentSchema.shape))
 );
 
 /** Same participant/MUN fields as registration, without the consent checkbox — used by the admin edit form. */
-export const adminEditSchema = withMunExperienceRules(detailsSchema.extend(preferencesSchema.shape));
+export const adminEditSchema = withCommitteeRules(withMunExperienceRules(detailsSchema.extend(preferencesSchema.shape)));
 
 export type RegistrationInput = z.infer<typeof registrationSchema>;
 export type DetailsInput = z.infer<typeof detailsSchema>;

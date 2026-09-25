@@ -1,8 +1,9 @@
-export function AdminStatCard({ label, value }: { label: string; value: string | number }) {
+export function AdminStatCard({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
     <div className="border border-line p-6">
       <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-ivory-faint">{label}</p>
       <p className="mt-3 font-display text-3xl text-ivory">{value}</p>
+      {hint && <p className="mt-1 text-[11px] text-ivory-faint">{hint}</p>}
     </div>
   );
 }

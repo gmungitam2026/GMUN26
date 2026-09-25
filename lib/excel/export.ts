@@ -4,96 +4,120 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { committees } from "@/config/committees";
 import { registrationPackages } from "@/config/pricing";
 
-interface ExportRow {
-  "Registration ID": string;
-  "Registration Date": string;
-  "Full Name": string;
-  Age: number | string;
-  Gender: string;
-  Email: string;
-  Phone: string;
-  Institution: string;
-  State: string;
-  City: string;
-  Committee: string;
-  Package: string;
-  "MUN Experience": string;
-  "MUN Experience Detail": string;
-  Amount: number | string;
-  "Payment Status": string;
-  "Payment Provider": string;
-  "Order ID": string;
-  "Payment ID": string;
-  "Payment Date": string;
+const STATUS_LABELS: Record<string, string> = {
+  PENDING_VERIFICATION: "Pending verification",
+  UNDER_VERIFICATION: "Under verification",
+  PAYMENT_CONFIRMED: "Payment confirmed",
+  REJECTED: "Payment rejected",
+  CANCELLED: "Cancelled",
+};
+
+const committeeName = (id: string | null) => (id ? committees.find((c) => c.id === id)?.shortName ?? id : "");
+const packageName = (id: string) => registrationPackages.find((p) => p.id === id)?.name ?? id;
+const formatDate = (iso: string | null) =>
+  iso ? new Date(iso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) : "";
+
+/** A sheet whose columns are sized to their content, so it's readable without resizing. */
+function sheet(rows: Record<string, unknown>[], emptyMessage: string) {
+  if (rows.length === 0) return XLSX.utils.json_to_sheet([{ Note: emptyMessage }]);
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws["!cols"] = Object.keys(rows[0]).map((key) => ({
+    wch: Math.min(60, Math.max(key.length, ...rows.map((r) => String(r[key] ?? "").length)) + 2),
+  }));
+  return ws;
 }
 
 export async function buildRegistrationsWorkbook(): Promise<Buffer> {
   const supabase = createAdminClient();
 
-  const { data: registrations } = await supabase
-    .from("registrations")
-    .select("*")
-    .order("created_at", { ascending: true });
+  const [{ data: registrations }, { data: history }] = await Promise.all([
+    supabase.from("registrations").select("*").order("created_at", { ascending: true }),
+    supabase
+      .from("registration_status_history")
+      .select("registration_id, new_status, note, created_at")
+      .eq("new_status", "REJECTED")
+      .order("created_at", { ascending: false }),
+  ]);
 
-  const { data: payments } = await supabase.from("payments").select("*");
+  const all = registrations ?? [];
 
-  const paymentByRegistration = new Map((payments ?? []).map((p) => [p.registration_id, p]));
+  // Most recent rejection entry per registration (history is newest-first).
+  const rejection = new Map<string, { note: string | null; created_at: string }>();
+  for (const h of history ?? []) if (!rejection.has(h.registration_id)) rejection.set(h.registration_id, h);
 
-  const rows: ExportRow[] = (registrations ?? []).map((r) => {
-    const payment = paymentByRegistration.get(r.id);
-    const committee = committees.find((c) => c.id === r.committee_preference);
-    const pkg = registrationPackages.find((p) => p.id === r.package_id);
+  const fullRow = (r: (typeof all)[number]) => ({
+    "Registration ID": r.registration_id,
+    Status: STATUS_LABELS[r.status] ?? r.status,
+    "Registered On": formatDate(r.created_at),
+    "Full Name": r.full_name,
+    "GITAM Student": r.is_gitam_student == null ? "" : r.is_gitam_student ? "Yes" : "No",
+    Age: r.age,
+    Gender: r.gender,
+    Email: r.email,
+    Phone: r.phone,
+    Institution: r.institution,
+    State: r.state,
+    City: r.city,
+    "1st Committee": committeeName(r.committee_preference),
+    "2nd Committee": committeeName(r.committee_preference_2),
+    "Country Preference": r.country_preference ?? "",
+    Package: packageName(r.package_id),
+    "Amount (₹)": r.payment_amount ?? "",
+    "UTR / Reference": r.payment_reference ?? "",
+    "Payment Submitted": formatDate(r.payment_submitted_at),
+    "Verified On": formatDate(r.verified_at),
+    "MUN Experience": r.mun_experience,
+    "MUN Experience Detail": r.mun_experience_detail ?? "",
+  });
+
+  const confirmed = all.filter((r) => r.status === "PAYMENT_CONFIRMED");
+  const awaiting = all.filter((r) => r.status === "PENDING_VERIFICATION" || r.status === "UNDER_VERIFICATION");
+  const failed = all.filter((r) => r.status === "REJECTED");
+
+  // Contact-first layout so the team can work down the list and follow up.
+  const failedRows = failed.map((r) => {
+    const rej = rejection.get(r.id);
     return {
       "Registration ID": r.registration_id,
-      "Registration Date": new Date(r.created_at).toISOString(),
       "Full Name": r.full_name,
-      Age: r.age,
-      Gender: r.gender,
-      Email: r.email,
       Phone: r.phone,
+      Email: r.email,
       Institution: r.institution,
-      State: r.state,
       City: r.city,
-      Committee: committee?.shortName ?? r.committee_preference,
-      Package: pkg?.name ?? r.package_id,
-      "MUN Experience": r.mun_experience,
-      "MUN Experience Detail": r.mun_experience_detail ?? "",
-      Amount: payment?.amount ?? "",
-      "Payment Status": payment?.status ?? r.status,
-      "Payment Provider": payment?.provider ?? "",
-      "Order ID": payment?.order_id ?? "",
-      "Payment ID": payment?.payment_id ?? "",
-      "Payment Date": payment?.updated_at ? new Date(payment.updated_at).toISOString() : "",
+      State: r.state,
+      "GITAM Student": r.is_gitam_student == null ? "" : r.is_gitam_student ? "Yes" : "No",
+      "1st Committee": committeeName(r.committee_preference),
+      Package: packageName(r.package_id),
+      "Amount (₹)": r.payment_amount ?? "",
+      "UTR / Reference": r.payment_reference ?? "",
+      "Payment Submitted": formatDate(r.payment_submitted_at),
+      "Rejected On": formatDate(rej?.created_at ?? null),
+      "Rejection Reason": rej?.note ?? "",
     };
   });
 
-  const paid = rows.filter((r) => r["Payment Status"] === "PAID");
-  const pending = rows.filter((r) => r["Payment Status"] === "PENDING");
-
+  // Summary figures count confirmed payments only.
   const committeeSummary = committees.map((c) => ({
     Committee: c.shortName,
-    Registrations: rows.filter((r) => r.Committee === c.shortName).length,
+    "Confirmed (1st preference)": confirmed.filter((r) => r.committee_preference === c.id).length,
   }));
-
-  const packageSummary = registrationPackages.map((p) => ({
-    Package: p.name,
-    Price: p.price,
-    Registrations: rows.filter((r) => r.Package === p.name).length,
+  const packageSummary = registrationPackages.map((p) => {
+    const count = confirmed.filter((r) => r.package_id === p.id).length;
+    return { Package: p.name, "Price (₹)": p.price, Confirmed: count, "Revenue (₹)": count * p.price };
+  });
+  const statusSummary = Object.entries(STATUS_LABELS).map(([status, label]) => ({
+    Status: label,
+    Count: all.filter((r) => r.status === status).length,
   }));
-
-  const paymentSummary = [
-    { Status: "PAID", Count: rows.filter((r) => r["Payment Status"] === "PAID").length },
-    { Status: "PENDING", Count: rows.filter((r) => r["Payment Status"] === "PENDING").length },
-    { Status: "FAILED", Count: rows.filter((r) => r["Payment Status"] === "FAILED").length },
-  ];
 
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(rows), "All Registrations");
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(paid), "Paid Registrations");
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(pending), "Pending Payments");
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(committeeSummary), "Committee Summary");
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(packageSummary), "Package Summary");
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(paymentSummary), "Payment Summary");
+  XLSX.utils.book_append_sheet(workbook, sheet(confirmed.map(fullRow), "No confirmed registrations yet."), "Confirmed Registrations");
+  XLSX.utils.book_append_sheet(workbook, sheet(failedRows, "No failed payments."), "Failed Payments");
+  XLSX.utils.book_append_sheet(workbook, sheet(awaiting.map(fullRow), "Nothing awaiting verification."), "Awaiting Verification");
+  XLSX.utils.book_append_sheet(workbook, sheet(all.map(fullRow), "No registrations yet."), "All Submissions");
+  XLSX.utils.book_append_sheet(workbook, sheet(committeeSummary, ""), "Committee Summary");
+  XLSX.utils.book_append_sheet(workbook, sheet(packageSummary, ""), "Package Summary");
+  XLSX.utils.book_append_sheet(workbook, sheet(statusSummary, ""), "Status Summary");
 
   return XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }) as Buffer;
 }

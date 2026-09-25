@@ -26,7 +26,7 @@ export function StepReview({
   onTermsChange: (checked: boolean) => void;
   termsError?: string;
 }) {
-  const committee = committees.find((c) => c.id === data.committeePreference);
+  const committeeName = (id: string) => committees.find((c) => c.id === id)?.shortName ?? id;
   const pkg = registrationPackages.find((p) => p.id === data.packageId);
 
   return (
@@ -35,6 +35,7 @@ export function StepReview({
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Participant</p>
           <Row label="Name" value={data.fullName} />
+          <Row label="GITAM Student" value={data.gitamStudent} />
           <Row label="Age" value={String(data.age)} />
           <Row label="Gender" value={data.gender} />
           <Row label="Mobile" value={data.phone} />
@@ -45,13 +46,15 @@ export function StepReview({
         </div>
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">MUN Preferences</p>
+          <Row label="1st Committee" value={committeeName(data.committeePreference)} />
+          <Row label="2nd Committee" value={committeeName(data.committeePreference2)} />
+          <Row label="Country Preference" value={data.countryPreference} />
           <Row label="Prior MUN Experience" value={data.hasMunExperience ? "Yes" : "No"} />
           {data.hasMunExperience && data.munExperienceDetail && (
             <p className="border-b border-line py-3 text-sm leading-relaxed text-ivory-dim">
               {data.munExperienceDetail}
             </p>
           )}
-          <Row label="Committee" value={committee?.shortName ?? data.committeePreference} />
         </div>
       </div>
 

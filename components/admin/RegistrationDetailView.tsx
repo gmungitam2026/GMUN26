@@ -19,6 +19,7 @@ function Field({ label, value }: { label: string; value: string | number | null 
 interface RegistrationRow {
   id: string;
   full_name: string;
+  is_gitam_student: boolean | null;
   age: number;
   gender: string;
   email: string;
@@ -27,6 +28,8 @@ interface RegistrationRow {
   state: string;
   city: string;
   committee_preference: string;
+  committee_preference_2: string | null;
+  country_preference: string | null;
   package_id: string;
   mun_experience: string;
   mun_experience_detail: string | null;
@@ -42,7 +45,7 @@ export function RegistrationDetailView({ registration, history, notes }: { regis
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const committee = committees.find((c) => c.id === registration.committee_preference);
+  const committeeName = (id: string | null) => (id ? committees.find((c) => c.id === id)?.shortName ?? id : null);
   const pkg = registrationPackages.find((p) => p.id === registration.package_id);
 
   if (editing) {
@@ -107,6 +110,7 @@ export function RegistrationDetailView({ registration, history, notes }: { regis
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Participant</p>
           <Field label="Name (as per Govt. ID)" value={registration.full_name} />
+          <Field label="GITAM Student" value={registration.is_gitam_student == null ? null : registration.is_gitam_student ? "Yes" : "No"} />
           <Field label="Age" value={registration.age} />
           <Field label="Gender" value={registration.gender} />
           <Field label="Email" value={registration.email} />
@@ -118,7 +122,9 @@ export function RegistrationDetailView({ registration, history, notes }: { regis
 
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">MUN</p>
-          <Field label="Committee" value={committee?.shortName ?? registration.committee_preference} />
+          <Field label="1st Committee Preference" value={committeeName(registration.committee_preference)} />
+          <Field label="2nd Committee Preference" value={committeeName(registration.committee_preference_2)} />
+          <Field label="Country Preference" value={registration.country_preference} />
           <Field label="Package" value={pkg?.name ?? registration.package_id} />
           <Field label="Prior MUN Experience" value={registration.mun_experience} />
           <Field label="Experience Description" value={registration.mun_experience_detail} />

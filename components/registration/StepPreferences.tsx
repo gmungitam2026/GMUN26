@@ -1,7 +1,7 @@
-import { committees } from "@/config/committees";
 import { registrationPackages } from "@/config/pricing";
 import type { PreferencesInput } from "@/lib/validation/registration";
-import { Field, Select, TextArea } from "./fields";
+import { committees } from "@/config/committees";
+import { Field, Select, TextArea, TextInput, ChoiceButtons } from "./fields";
 import { cn } from "@/lib/utils/cn";
 
 function wordCount(value: string) {
@@ -21,32 +21,72 @@ export function StepPreferences({
 
   return (
     <div className="space-y-10">
-      <Field label="Any prior MUN experience?" htmlFor="hasMunExperience-yes">
-        <div className="flex gap-3">
-          {[
+      <div className="grid gap-6 sm:grid-cols-2">
+        <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold sm:col-span-2">
+          Committee &amp; Country Preferences
+        </p>
+        <Field label="1st Committee Preference" htmlFor="committeePreference" error={errors.committeePreference}>
+          <Select
+            id="committeePreference"
+            value={data.committeePreference}
+            onChange={(e) => {
+              onChange("committeePreference", e.target.value);
+              // Picking the committee already chosen as 2nd clears the 2nd.
+              if (e.target.value === data.committeePreference2) onChange("committeePreference2", "");
+            }}
+          >
+            <option value="" disabled>
+              Select a committee
+            </option>
+            {committees.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.shortName}
+              </option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="2nd Committee Preference" htmlFor="committeePreference2" error={errors.committeePreference2}>
+          <Select
+            id="committeePreference2"
+            value={data.committeePreference2}
+            onChange={(e) => onChange("committeePreference2", e.target.value)}
+          >
+            <option value="" disabled>
+              Select a committee
+            </option>
+            {committees
+              .filter((c) => c.id !== data.committeePreference)
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.shortName}
+                </option>
+              ))}
+          </Select>
+        </Field>
+        <Field label="Country Preference" htmlFor="countryPreference" error={errors.countryPreference} className="sm:col-span-2">
+          <TextInput
+            id="countryPreference"
+            value={data.countryPreference}
+            onChange={(e) => onChange("countryPreference", e.target.value)}
+            placeholder="e.g. India, France — or a character / portfolio for MCU, IFI and FIFA"
+          />
+        </Field>
+      </div>
+
+      <Field label="Any prior MUN experience?" htmlFor="hasMunExperience">
+        <ChoiceButtons
+          idPrefix="hasMunExperience"
+          label="Any prior MUN experience?"
+          options={[
             { label: "Yes", value: true },
             { label: "No", value: false },
-          ].map((opt) => (
-            <button
-              key={opt.label}
-              type="button"
-              id={opt.value ? "hasMunExperience-yes" : "hasMunExperience-no"}
-              onClick={() => {
-                onChange("hasMunExperience", opt.value);
-                if (!opt.value) onChange("munExperienceDetail", "");
-              }}
-              aria-pressed={data.hasMunExperience === opt.value}
-              className={cn(
-                "h-11 flex-1 border text-sm uppercase tracking-[0.08em] transition-colors sm:flex-none sm:px-10",
-                data.hasMunExperience === opt.value
-                  ? "border-gold bg-gold-fill text-ink"
-                  : "border-line text-ivory-dim hover:border-line-strong"
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+          ]}
+          value={data.hasMunExperience}
+          onChange={(value) => {
+            onChange("hasMunExperience", value);
+            if (!value) onChange("munExperienceDetail", "");
+          }}
+        />
       </Field>
 
       {data.hasMunExperience && (
@@ -67,23 +107,6 @@ export function StepPreferences({
           </p>
         </Field>
       )}
-
-      <Field label="Preferred Committee" htmlFor="committeePreference" error={errors.committeePreference}>
-        <Select
-          id="committeePreference"
-          value={data.committeePreference}
-          onChange={(e) => onChange("committeePreference", e.target.value)}
-        >
-          <option value="" disabled>
-            Select a committee
-          </option>
-          {committees.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.shortName} — {c.name}
-            </option>
-          ))}
-        </Select>
-      </Field>
 
       <div>
         <p className="mb-3 text-[13px] uppercase tracking-[0.08em] text-ivory-dim">Package</p>

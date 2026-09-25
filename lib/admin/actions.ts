@@ -42,6 +42,7 @@ export async function updateRegistration(
     .from("registrations")
     .update({
       full_name: data.fullName,
+      is_gitam_student: data.gitamStudent === "Yes",
       age: data.age,
       gender: data.gender,
       email: data.email.toLowerCase(),
@@ -50,6 +51,8 @@ export async function updateRegistration(
       state: data.state,
       city: data.city,
       committee_preference: data.committeePreference,
+      committee_preference_2: data.committeePreference2,
+      country_preference: data.countryPreference,
       package_id: data.packageId,
       mun_experience: data.hasMunExperience ? "Yes" : "No",
       mun_experience_detail: data.hasMunExperience ? data.munExperienceDetail || null : null,
@@ -58,9 +61,14 @@ export async function updateRegistration(
 
   if (error) {
     const duplicate = error.code === "23505";
+    const field = error.message.includes("registrations_email_key")
+      ? "email address"
+      : error.message.includes("registrations_phone_key")
+        ? "mobile number"
+        : "email or mobile number";
     return {
       ok: false,
-      error: duplicate ? "Another registration already uses this email or phone number." : "Could not save changes. Please try again.",
+      error: duplicate ? `Another registration already uses this ${field}.` : "Could not save changes. Please try again.",
     };
   }
 

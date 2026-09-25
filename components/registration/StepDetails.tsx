@@ -1,6 +1,8 @@
 import { indianStates } from "@/config/states";
 import { genderOptions, type DetailsInput } from "@/lib/validation/registration";
-import { Field, TextInput, Select } from "./fields";
+import { Field, TextInput, Select, ChoiceButtons } from "./fields";
+
+const GITAM_INSTITUTION = "GITAM (Deemed to be University)";
 
 export function StepDetails({
   data,
@@ -11,6 +13,13 @@ export function StepDetails({
   errors: Partial<Record<keyof DetailsInput, string>>;
   onChange: <K extends keyof DetailsInput>(key: K, value: DetailsInput[K]) => void;
 }) {
+  function setGitamStudent(value: DetailsInput["gitamStudent"]) {
+    onChange("gitamStudent", value);
+    // Save GITAM students typing their own institution; clear it again if they switch back.
+    if (value === "Yes" && !data.institution.trim()) onChange("institution", GITAM_INSTITUTION);
+    if (value === "No" && data.institution === GITAM_INSTITUTION) onChange("institution", "");
+  }
+
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       <Field label="Name (as per Govt. ID)" htmlFor="fullName" error={errors.fullName} className="sm:col-span-2">
@@ -19,6 +28,18 @@ export function StepDetails({
           value={data.fullName}
           onChange={(e) => onChange("fullName", e.target.value)}
           autoComplete="name"
+        />
+      </Field>
+      <Field label="Are you a GITAM student?" htmlFor="gitamStudent" error={errors.gitamStudent} className="sm:col-span-2">
+        <ChoiceButtons
+          idPrefix="gitamStudent"
+          label="Are you a GITAM student?"
+          options={[
+            { label: "Yes", value: "Yes" as const },
+            { label: "No", value: "No" as const },
+          ]}
+          value={data.gitamStudent}
+          onChange={setGitamStudent}
         />
       </Field>
       <Field label="Age" htmlFor="age" error={errors.age}>
@@ -81,6 +102,7 @@ export function StepDetails({
       <Field label="City" htmlFor="city" error={errors.city}>
         <TextInput id="city" value={data.city} onChange={(e) => onChange("city", e.target.value)} />
       </Field>
+
     </div>
   );
 }

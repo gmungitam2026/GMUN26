@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 interface RegistrationRow {
   id: string;
   full_name: string;
+  is_gitam_student: boolean | null;
   age: number;
   gender: string;
   email: string;
@@ -19,6 +20,8 @@ interface RegistrationRow {
   state: string;
   city: string;
   committee_preference: string;
+  committee_preference_2: string | null;
+  country_preference: string | null;
   package_id: string;
   mun_experience: string;
   mun_experience_detail: string | null;
@@ -34,6 +37,9 @@ export function EditRegistrationForm({
   const router = useRouter();
   const [details, setDetails] = useState<DetailsInput>({
     fullName: registration.full_name,
+    // Registrations made before these questions existed have nulls here;
+    // the admin must fill them in to save.
+    gitamStudent: (registration.is_gitam_student == null ? "" : registration.is_gitam_student ? "Yes" : "No") as DetailsInput["gitamStudent"],
     age: registration.age,
     gender: registration.gender as DetailsInput["gender"],
     phone: registration.phone,
@@ -43,9 +49,11 @@ export function EditRegistrationForm({
     city: registration.city,
   });
   const [preferences, setPreferences] = useState<PreferencesInput>({
+    committeePreference: registration.committee_preference,
+    committeePreference2: registration.committee_preference_2 ?? "",
+    countryPreference: registration.country_preference ?? "",
     hasMunExperience: registration.mun_experience === "Yes",
     munExperienceDetail: registration.mun_experience_detail ?? "",
-    committeePreference: registration.committee_preference,
     packageId: registration.package_id,
   });
   const [detailsErrors, setDetailsErrors] = useState<Partial<Record<keyof DetailsInput, string>>>({});

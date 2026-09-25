@@ -21,18 +21,18 @@ export default async function AdminOverviewPage() {
       <h1 className="font-display text-2xl text-ivory">Overview</h1>
 
       <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-6">
-        <AdminStatCard label="Total Registrations" value={stats.totalRegistrations} />
+        <AdminStatCard label="Total Registrations" value={stats.totalRegistrations} hint="Payment confirmed only" />
+        <AdminStatCard label="Revenue Collected" value={`₹${stats.revenue.toLocaleString("en-IN")}`} />
         <AdminStatCard label="Pending Verification" value={stats.pendingVerification} />
         <AdminStatCard label="Under Verification" value={stats.underVerification} />
-        <AdminStatCard label="Payment Confirmed" value={stats.confirmedRegistrations} />
         <AdminStatCard label="Rejected" value={stats.rejectedRegistrations} />
-        <AdminStatCard label="Revenue Collected" value={`₹${stats.revenue.toLocaleString("en-IN")}`} />
+        <AdminStatCard label="Cancelled" value={stats.cancelledRegistrations} />
       </div>
 
       <div className="mt-6 grid gap-3 lg:grid-cols-3">
-        <AdminBreakdownList title="Committee-wise Registrations" items={committeeItems} />
-        <AdminBreakdownList title="Package-wise Registrations" items={packageItems} />
-        <AdminBreakdownList title="Gender-wise Registrations" items={genderItems} />
+        <AdminBreakdownList title="Committee-wise (confirmed, 1st preference)" items={committeeItems} />
+        <AdminBreakdownList title="Package-wise (confirmed)" items={packageItems} />
+        <AdminBreakdownList title="Gender-wise (confirmed)" items={genderItems} />
       </div>
     </div>
   );
