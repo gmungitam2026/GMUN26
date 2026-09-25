@@ -119,12 +119,54 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
   background: var(--color-ink);
   color: var(--color-ivory);
   font-family: var(--font-sans);
+  min-width: 0;
+  overflow-x: clip;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  /* Keep long addresses, emails, and generated values inside narrow columns. */
+  a,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  td,
+  th {
+    overflow-wrap: anywhere;
+  }
+
+  /* Preserve desktop table structure while keeping it from widening the page. */
+  .overflow-x-auto {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Give the fixed navigation a little more room on compact phones. */
+  header > div {
+    padding-inline: 1.25rem;
+  }
 }
 
 ::selection {
@@ -225,113 +267,6 @@ option {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Hero council chamber (components/hero/CouncilChamber.tsx). Each seat runs
-   the same full-cycle animation offset by its turn, and is "active" for the
-   first 1/12 of the cycle — so exactly one delegate holds the floor. */
-.chamber-desk,
-.chamber-placard,
-.chamber-address,
-.chamber-ripple {
-  animation-duration: var(--chamber-cycle, 24s);
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in-out;
-  animation-fill-mode: backwards;
-}
-
-.chamber-desk {
-  animation-name: chamber-desk;
-}
-.chamber-placard {
-  animation-name: chamber-placard;
-  transform-box: fill-box;
-  transform-origin: center bottom;
-}
-.chamber-address {
-  opacity: 0;
-  animation-name: chamber-address;
-  animation-timing-function: linear;
-}
-.chamber-ripple {
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation-name: chamber-ripple;
-  animation-timing-function: ease-out;
-}
-.chamber-spin {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: chamber-spin 60s linear infinite;
-}
-.chamber-gavel {
-  transform-box: fill-box;
-  transform-origin: 0 100%;
-  animation: chamber-gavel 6s ease-in infinite;
-}
-
-@keyframes chamber-desk {
-  0%, 9%, 100% {
-    fill: var(--color-surface-raised);
-    stroke: var(--color-line-strong);
-  }
-  1.5%, 7% {
-    fill: var(--color-gold-fill);
-    stroke: var(--color-gold-bright);
-  }
-}
-@keyframes chamber-placard {
-  0%, 9%, 100% {
-    transform: translateY(0) scaleY(1);
-    fill: var(--color-ivory-faint);
-  }
-  1.5%, 7% {
-    transform: translateY(-5px) scaleY(1.6);
-    fill: var(--color-ivory);
-  }
-}
-@keyframes chamber-address {
-  0%, 9%, 100% {
-    opacity: 0;
-    stroke-dashoffset: 0;
-  }
-  1.5%, 7% {
-    opacity: 0.55;
-  }
-  8% {
-    stroke-dashoffset: -60;
-  }
-}
-@keyframes chamber-ripple {
-  0% {
-    opacity: 0;
-    transform: scale(0.4);
-  }
-  0.5% {
-    opacity: 0.8;
-    transform: scale(0.4);
-  }
-  4%, 100% {
-    opacity: 0;
-    transform: scale(2.6);
-  }
-}
-@keyframes chamber-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes chamber-gavel {
-  0%, 80%, 100% {
-    transform: rotate(0deg);
-  }
-  86% {
-    transform: rotate(-35deg);
-  }
-  90% {
-    transform: rotate(8deg);
-  }
-}
-
 /* Continuously scrolling strips (home gallery, testimonials). The track
    holds two copies of its items, so sliding by -50% lands exactly where it
    started. Edges fade out instead of cutting items off hard. */
@@ -389,35 +324,268 @@ option {
   }
 }
 
-/* Page transitions (app/template.tsx, React <ViewTransition>). Only the page
-   content animates: the root snapshot (navbar, backgrounds) is held still so
-   the navigation doesn't flicker. */
+/* Page transitions (app/template.tsx, React <ViewTransition>).
+   The page you leave sinks back: it shrinks toward the point you clicked,
+   dims and takes on a warm gold tint. The new page opens as a
+   soft-edged circle expanding from that same point (--vt-x / --vt-y, set by
+   TransitionOrigin), settling in from a slight zoom. The root snapshot
+   (navbar, backgrounds) is held still so the chrome doesn't flicker. */
+:root {
+  --vt-x: 50vw;
+  --vt-y: 40vh;
+  --vt-oy: 40vh;
+}
+@property --vt-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
 ::view-transition-old(root),
-::view-transition-new(root) {
+::view-transition-new(root),
+::view-transition-group(site-nav),
+::view-transition-old(site-nav),
+::view-transition-new(site-nav) {
   animation: none;
 }
+/* The navbar stays on top of the animating pages. */
+::view-transition-group(site-nav) {
+  z-index: 10;
+}
+::view-transition-old(site-nav) {
+  display: none;
+}
+::view-transition-group(.page-exit) {
+  animation-duration: 900ms;
+}
+/* Gold ring riding the edge of the expanding circle (drawn on the entering
+   page's group, behind the new page itself). */
+::view-transition-group(.page-enter) {
+  background: radial-gradient(
+    circle at var(--vt-x) var(--vt-y),
+    transparent calc(var(--vt-r) - 30px),
+    rgba(212, 175, 106, 0.95) calc(var(--vt-r) - 6px),
+    rgba(212, 175, 106, 0.35) calc(var(--vt-r) + 10px),
+    transparent calc(var(--vt-r) + 60px)
+  );
+  animation: page-ring 900ms cubic-bezier(0.7, 0, 0.2, 1) both;
+}
 ::view-transition-old(.page-exit) {
-  animation: page-fade-out 180ms ease-in both;
+  transform-origin: var(--vt-x) var(--vt-oy);
+  animation: page-recede 900ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 ::view-transition-new(.page-enter) {
-  animation: page-rise 460ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+  transform-origin: var(--vt-x) var(--vt-y);
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x) var(--vt-y), #000 calc(var(--vt-r) - 40px), transparent var(--vt-r));
+  mask-image: radial-gradient(circle at var(--vt-x) var(--vt-y), #000 calc(var(--vt-r) - 40px), transparent var(--vt-r));
+  animation: page-reveal 900ms cubic-bezier(0.7, 0, 0.2, 1) both;
 }
-@keyframes page-fade-out {
+@keyframes page-recede {
   to {
-    opacity: 0;
-    transform: translateY(-8px);
+    transform: scale(0.9);
+    filter: brightness(0.35) sepia(0.6) blur(8px);
+    opacity: 0.6;
   }
 }
-@keyframes page-rise {
+@keyframes page-ring {
+  0% {
+    --vt-r: 0px;
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    --vt-r: 250vmax;
+    opacity: 0;
+  }
+}
+@keyframes page-reveal {
+  from {
+    --vt-r: 0px;
+    transform: scale(1.08);
+  }
+  to {
+    --vt-r: 250vmax;
+    transform: scale(1);
+  }
+}
+
+/* Site intro (components/ui/SiteIntro.tsx). Hidden unless its inline script
+   sets data-state on it for the first page view of a session.
+   0–0.9s: sea layers rise · 0.7–1.7s: emblem surfaces ·
+   2.0–3.0s: the sea washes up and off the screen, wavy edge last. */
+.site-intro {
+  display: none;
+}
+.site-intro[data-state] {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #06121a;
+  overflow: visible;
+  animation: intro-wash 1000ms cubic-bezier(0.7, 0, 0.25, 1) 2000ms forwards;
+}
+.site-intro[data-state="skip"] {
+  animation-duration: 450ms;
+  animation-delay: 0ms;
+}
+.site-intro-sea {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.site-intro-layer {
+  position: absolute;
+  inset: 0;
+  transform: translateY(100%);
+  animation: intro-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.site-intro-layer:nth-child(2) { top: 18%; }
+.site-intro-layer:nth-child(3) { top: 36%; }
+.site-intro-wave {
+  position: absolute;
+  top: -150px;
+  left: 0;
+  width: 300%;
+  max-width: none;
+  height: 220px;
+  animation: intro-drift linear infinite;
+}
+.site-intro-depth {
+  position: absolute;
+  inset: 69px 0 0;
+}
+.site-intro-mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0;
+  animation: intro-surface 1000ms cubic-bezier(0.22, 1, 0.36, 1) 700ms forwards;
+}
+.site-intro-logo {
+  width: 96px;
+  height: auto;
+  margin-bottom: 18px;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 24px rgba(212, 175, 106, 0.45));
+}
+.site-intro-edge {
+  position: absolute;
+  left: 0;
+  top: calc(100% - 1px);
+  width: 300%;
+  max-width: none;
+  height: 160px;
+  animation: intro-drift 6s linear infinite;
+}
+@keyframes intro-rise {
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes intro-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes intro-surface {
   from {
     opacity: 0;
-    transform: translateY(18px);
-    filter: blur(4px);
+    transform: translateY(24px) scale(0.96);
+    filter: blur(6px);
   }
   to {
     opacity: 1;
     transform: none;
     filter: none;
+  }
+}
+@keyframes intro-wash {
+  to {
+    transform: translateY(calc(-100% - 140px));
+    visibility: hidden;
+  }
+}
+
+/* Hero emblem (components/hero/HeroEmblem.tsx) */
+.emblem-meridian {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-name: emblem-meridian;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes emblem-meridian {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  25%,
+  75% {
+    transform: scaleX(0.02);
+  }
+  50% {
+    transform: scaleX(-1);
+  }
+}
+.emblem-orbit {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: emblem-spin 90s linear infinite;
+}
+@keyframes emblem-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.emblem-breathe {
+  animation: emblem-breathe 6s ease-in-out infinite;
+}
+@keyframes emblem-breathe {
+  50% {
+    opacity: 0.55;
+  }
+}
+.emblem-draw {
+  animation: emblem-fade 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes emblem-fade {
+  from {
+    opacity: 0;
+  }
+}
+/* Each leaf is centred on its wrapper's origin, so it grows from its middle. */
+.emblem-leaf {
+  animation: emblem-leaf 700ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes emblem-leaf {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+.emblem-placard {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation-name: emblem-placard;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+  animation-iteration-count: infinite;
+}
+@keyframes emblem-placard {
+  0%,
+  22%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  6%,
+  14% {
+    transform: translateY(-26px) rotate(-3deg);
   }
 }
 

@@ -28,7 +28,7 @@ export function AboutTabs() {
 
   return (
     <div className="grid gap-12 lg:grid-cols-[280px_1fr] lg:gap-20">
-      <nav aria-label="About sections" className="lg:sticky lg:top-28 lg:self-start">
+      <nav aria-label="About sections" className="min-w-0 lg:sticky lg:top-28 lg:self-start">
         <ul className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-t lg:border-line lg:pb-0">
           {tabs.map((tab) => (
             <li key={tab.id} className="shrink-0 lg:border-b lg:border-line">
@@ -48,7 +48,7 @@ export function AboutTabs() {
         </ul>
       </nav>
 
-      <div className="min-h-[420px]">
+      <div className="min-h-[420px] min-w-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={active}

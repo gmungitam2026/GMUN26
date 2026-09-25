@@ -4,8 +4,10 @@ import { site } from "@/config/site";
 import { NavBar } from "@/components/navigation/NavBar";
 import { Footer } from "@/components/sections/Footer";
 import { MotionProvider } from "@/components/providers/MotionProvider";
+import { TransitionOrigin } from "@/components/providers/TransitionOrigin";
 import { themeInitScript } from "@/components/navigation/ThemeToggle";
 import { Starfield } from "@/components/ui/Starfield";
+import { SiteIntro } from "@/components/ui/SiteIntro";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -53,7 +55,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        <SiteIntro />
         <Starfield />
+        <TransitionOrigin />
         <MotionProvider>
           <NavBar />
           <main id="main-content" className="flex-1">

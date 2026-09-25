@@ -23,12 +23,20 @@ export function NavBar() {
 
   return (
     <header
+      // Own view-transition layer so page transitions animate beneath it (globals.css).
+      style={{ viewTransitionName: "site-nav" }}
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
-        scrolled || menuOpen ? "bg-ink/90 backdrop-blur-sm border-b border-line" : "bg-transparent"
+        // No backdrop blur while the menu is open: backdrop-filter makes the header the
+        // containing block for the menu's fixed full-screen panel, shrinking it to the header.
+        menuOpen
+          ? "bg-ink border-b border-line"
+          : scrolled
+            ? "bg-ink/90 backdrop-blur-sm border-b border-line"
+            : "bg-transparent"
       )}
     >
-      <div className="mx-auto flex h-20 max-w-[1400px] items-center justify-between px-6 md:px-10 lg:px-16">
+      <div className="relative z-50 mx-auto flex h-20 max-w-[1400px] items-center justify-between px-6 md:px-10 lg:px-16">
         <Link href="/" className="flex items-center gap-2.5">
           <Image src="/logos/gmun-club-logo.jpg" alt="GMUN Club" width={36} height={36} className="h-9 w-9 rounded-sm" />
           <span className="font-display text-xl tracking-wide text-ivory">

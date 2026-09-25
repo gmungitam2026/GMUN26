@@ -36,14 +36,14 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-40 bg-ink/98 md:hidden"
+          className="fixed inset-0 z-40 overflow-y-auto bg-ink md:hidden"
         >
           <motion.nav
             initial={{ y: -12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -12, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="flex h-full flex-col justify-between px-6 pt-28 pb-10"
+            className="flex min-h-full flex-col justify-between gap-8 px-6 pt-24 pb-8"
           >
             <ul className="flex flex-col gap-1">
               {primaryNav.map((item, i) => (
@@ -51,7 +51,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                   <Link
                     href={item.href}
                     className={cn(
-                      "block border-b border-line py-4 font-display text-3xl text-ivory transition-colors",
+                      "block border-b border-line py-3.5 font-display text-[26px] text-ivory transition-colors",
                       pathname === item.href && "text-gold"
                     )}
                     style={{ transitionDelay: `${i * 30}ms` }}
