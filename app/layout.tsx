@@ -33,13 +33,15 @@ export const metadata: Metadata = {
 };
 
 /**
- * A page refresh always starts from the top. Browsers normally restore the
- * previous scroll position on reload (which also restores scroll-driven state
- * like the home page's logo fill); this turns that off for reloads only, so
- * back/forward navigation still returns you to where you were. Runs inline in
- * <head>, before the browser gets a chance to restore.
+ * A page refresh always starts from the top. Browsers restore the previous
+ * scroll position on reload (and on phones they may do it late, once tall
+ * content has loaded). So restoration is switched off as the page is being
+ * left (pagehide), which is what a reload does first; the reloaded page then
+ * snaps to the top as it loads. Restoration is re-enabled shortly after load
+ * so Back/Forward between pages inside the site still returns you to where
+ * you were. Runs inline in <head>, before anything paints.
  */
-const scrollResetOnReloadScript = `(function(){try{var n=performance.getEntriesByType("navigation")[0];if(n&&n.type==="reload"){history.scrollRestoration="manual";if(location.hash){history.replaceState(null,"",location.pathname+location.search)}window.scrollTo(0,0);addEventListener("load",function(){window.scrollTo(0,0);history.scrollRestoration="auto"})}}catch(e){}})();`;
+const scrollResetOnReloadScript = `(function(){try{var h=history;addEventListener("pagehide",function(){h.scrollRestoration="manual"});var n=performance.getEntriesByType("navigation")[0];if(!n||n.type!=="reload"){h.scrollRestoration="auto";return}h.scrollRestoration="manual";if(location.hash){h.replaceState(h.state,"",location.pathname+location.search)}var top=function(){window.scrollTo(0,0)};top();document.addEventListener("DOMContentLoaded",top);addEventListener("load",function(){top();requestAnimationFrame(top);setTimeout(function(){top();h.scrollRestoration="auto"},1000)})}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

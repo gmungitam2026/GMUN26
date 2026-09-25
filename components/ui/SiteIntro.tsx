@@ -5,14 +5,17 @@ import { site } from "@/config/site";
  * First-visit intro: Visakhapatnam's sea rises over the screen, the emblem
  * surfaces, then the water washes up and away to reveal the site. Rendered in
  * the initial HTML (so the page never flashes underneath) but hidden by
- * default. The inline script right after it switches it on for the first page
- * view of a browser session only, never under prefers-reduced-motion; any
- * click, tap or key skips it. Styles: "Site intro" in globals.css.
+ * default. The inline script right after it switches it on for every full page
+ * load (first visit and each refresh; in-app navigation doesn't replay it),
+ * never under prefers-reduced-motion; any click, tap or key skips it. The skip
+ * listeners are removed as soon as the intro ends, so a later click can't
+ * bring the (invisible) overlay back under the pointer.
+ * Styles: "Site intro" in globals.css.
  *
  * The on/off state lives on this element, not on <html>: React 19 owns the
  * <html> element after hydration and strips attributes it didn't set.
  */
-const introScript = `(function(){var el=document.getElementById("site-intro");if(!el)return;try{if(sessionStorage.getItem("gmun-intro")||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;sessionStorage.setItem("gmun-intro","1");el.setAttribute("data-state","play");var skip=function(){el.setAttribute("data-state","skip")};document.addEventListener("pointerdown",skip,{once:true});document.addEventListener("keydown",skip,{once:true});setTimeout(function(){el.removeAttribute("data-state")},3400)}catch(e){}})();`;
+const introScript = `(function(){var el=document.getElementById("site-intro");if(!el)return;try{if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;el.setAttribute("data-state","play");var done=function(){el.removeAttribute("data-state");document.removeEventListener("pointerdown",skip,true);document.removeEventListener("keydown",skip,true)};var skip=function(){el.setAttribute("data-state","skip");setTimeout(done,500)};document.addEventListener("pointerdown",skip,true);document.addEventListener("keydown",skip,true);setTimeout(done,3400)}catch(e){}})();`;
 
 // Wave crest lines drawn in a 2880×200 box: one period is 720 units, repeated
 // across the width so shifting the layer by -50% loops seamlessly.
