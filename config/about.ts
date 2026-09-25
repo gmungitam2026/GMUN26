@@ -96,10 +96,9 @@ export const whyParticipate = {
 export const missionVision = {
   heading: "GMUN's Mission & Vision",
   paragraphs: [
-    "At GMUN, we envision a vibrant community of students, faculty, and individuals united by a shared passion for fostering global citizenship, critical thinking, and effective communication. Our mission is to provide a platform for young minds to engage, debate, and collaborate on pressing contemporary issues, empowering them to become empathetic, informed, and active participants in shaping a better world.",
-    "We are committed to building a vocally diverse community in which various perspectives are valued, respected, and nurtured. Toward this end, we have hosted and will continue to host events, initiatives, and activities for high schools, colleges, and faculty from diverse backgrounds. We aim to create a safe, supportive, and stimulating environment that allows individuals to express themselves freely, challenge their assumptions, and grow as global citizens.",
-    "We know that personal prejudices and biases can dilute our ability to relate to others, empathise with others' viewpoints, and make logical decisions. We are therefore committed to helping people overcome such biases, respect facts and statistics, and develop a multifaceted view of things. Through our workshops and events, we aim to provide students with the skills, knowledge, and attitude needed to address the challenges to the 21st century.",
-    "As a dynamic and vibrant community, we endeavour to make a positive contribution to our communities, our country, and global society. Together, with collective effort, knowledge sharing, and learning from one another, we believe it is possible to build a better, more equitable, and sustainable future for all.",
+    "At GMUN, we envision a community united by a passion for global citizenship, critical thinking, and effective communication. Our mission is to give young minds a platform to debate and collaborate on the pressing issues of our time, and to become informed, empathetic participants in shaping a better world.",
+    "We value every perspective. Through events for schools, colleges, and faculty from all backgrounds, we create a safe and stimulating space where people can speak freely, challenge their assumptions, and grow as global citizens.",
+    "Our workshops and conferences encourage students to look past bias, respect facts, and see issues from many sides, building the skills to meet the challenges of the 21st century and to help shape a more equitable, sustainable future.",
   ],
   highlights: ["Global citizenship", "Critical thinking", "Effective communication", "Diverse perspectives", "Evidence-based discussion"],
 };

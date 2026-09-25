@@ -14,9 +14,7 @@ export function Gallery() {
           <SectionHeading eyebrow="Gallery" title="Moments from the conference floor." />
         </Reveal>
 
-        {hasImages ? (
-          <GalleryCarousel images={galleryCategories.flatMap((c) => c.images)} />
-        ) : (
+        {!hasImages && (
           <div className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {galleryCategories.map((c, i) => (
               <Reveal key={c.id} delay={i * 0.04}>
@@ -31,6 +29,14 @@ export function Gallery() {
           </div>
         )}
       </Container>
+
+      {/* Full-bleed, outside the Container, so the strip runs edge to edge.
+          z-40 keeps the photos above the fixed logo watermark (z-30). */}
+      {hasImages && (
+        <div className="relative z-40">
+          <GalleryCarousel images={galleryCategories.flatMap((c) => c.images)} />
+        </div>
+      )}
     </section>
   );
 }

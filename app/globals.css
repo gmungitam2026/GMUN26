@@ -278,6 +278,24 @@ body {
   }
 }
 
+/* Home gallery strip (components/sections/GalleryCarousel.tsx). The track
+   holds two copies of the photos, so sliding by -50% lands exactly where it
+   started. Edges fade out instead of cutting photos off hard. */
+.gallery-marquee-viewport {
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.gallery-marquee {
+  animation: gallery-marquee 42s linear infinite;
+}
+.gallery-marquee-viewport:hover .gallery-marquee {
+  animation-play-state: paused;
+}
+@keyframes gallery-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -289,5 +307,16 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Still photos the visitor can scroll through themselves. */
+  .gallery-marquee-viewport {
+    overflow-x: auto;
+  }
+  .gallery-marquee {
+    animation: none !important;
+  }
+  .gallery-marquee [aria-hidden] {
+    display: none;
   }
 }
