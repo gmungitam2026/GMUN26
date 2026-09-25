@@ -1,8 +1,8 @@
 import { site } from "@/config/site";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
-import { GlobeLoader } from "@/components/hero/GlobeLoader";
-import { OrbitingLabels } from "@/components/hero/OrbitingLabels";
+import { Chamber3DLoader } from "@/components/hero/Chamber3DLoader";
+import { HeroCountdown } from "@/components/hero/HeroCountdown";
 
 /**
  * Pure CSS keyframe animation (see `--animate-reveal` in globals.css)
@@ -20,18 +20,23 @@ function revealStyle(delayMs: number) {
   return { animationDelay: `${delayMs}ms` };
 }
 
+// Fades the 3D room out toward the headline (left) and top/bottom edges so
+// the canvas never shows a hard rectangle.
+const chamberMask =
+  "linear-gradient(to right, transparent 0%, #000 42%), linear-gradient(to bottom, transparent 6%, #000 26%, #000 64%, transparent 90%)";
+
 export function Hero() {
   return (
     <section className="grain relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-ink pt-20">
       <HeroMotif />
 
       <div
-        className="pointer-events-none absolute inset-y-0 right-[-6%] z-[5] hidden w-[58%] items-center justify-center lg:flex"
+        className="absolute inset-y-0 right-0 z-[5] hidden w-[58%] items-center lg:flex"
+        style={{ maskImage: chamberMask, WebkitMaskImage: chamberMask, maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
         aria-hidden
       >
-        <div className="pointer-events-auto relative h-[62vh] max-h-[620px] w-[62vh] max-w-[620px]">
-          <GlobeLoader />
-          <OrbitingLabels />
+        <div className="h-full w-full">
+          <Chamber3DLoader />
         </div>
       </div>
 
@@ -67,12 +72,14 @@ export function Hero() {
         <div
           style={revealStyle(340)}
           className={cn(
-            "animate-reveal mt-10 flex flex-wrap items-center gap-x-10 gap-y-3 border-t border-line pt-6 text-sm text-ivory-dim"
+            "animate-reveal mt-10 flex flex-col gap-6 border-t border-line pt-6 sm:flex-row sm:items-end sm:gap-10"
           )}
         >
-          <span className="font-display text-lg text-ivory">{site.dates.display}</span>
-          <span className="hidden h-4 w-px bg-line-strong sm:block" aria-hidden />
-          <span>{site.venue.name}, {site.venue.line2}</span>
+          <HeroCountdown />
+          <div className="flex flex-col gap-1 text-sm text-ivory-dim">
+            <span className="font-display text-lg text-ivory">{site.dates.display}</span>
+            <span>{site.venue.name}, {site.venue.line2}</span>
+          </div>
         </div>
 
         <div style={revealStyle(420)} className={cn("animate-reveal mt-10 flex flex-wrap items-center gap-4")}>

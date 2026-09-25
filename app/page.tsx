@@ -1,5 +1,4 @@
 import { Hero } from "@/components/hero/Hero";
-import { TimelineBar } from "@/components/sections/TimelineBar";
 import { MissionVision } from "@/components/sections/MissionVision";
 import { LogoWatermark } from "@/components/ui/LogoWatermark";
 import { Gallery } from "@/components/sections/Gallery";
@@ -10,7 +9,6 @@ export default function Home() {
     <>
       <LogoWatermark />
       <Hero />
-      <TimelineBar />
       <MissionVision />
       <Gallery />
       <Testimonials />

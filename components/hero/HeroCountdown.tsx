@@ -2,7 +2,6 @@
 
 import { useSyncExternalStore } from "react";
 import { timelineMilestones } from "@/config/conference";
-import { Container } from "@/components/ui/Container";
 
 function getNextMilestone(now: Date) {
   return timelineMilestones.find((m) => m.date && new Date(m.date).getTime() > now.getTime());
@@ -53,7 +52,7 @@ function pad(n: number) {
   return String(Math.max(0, n)).padStart(2, "0");
 }
 
-export function TimelineBar() {
+export function HeroCountdown() {
   const now = useCountdown();
   const next = now ? getNextMilestone(now) : timelineMilestones.find((m) => m.date);
 
@@ -61,38 +60,31 @@ export function TimelineBar() {
   if (now && next?.date) {
     diff = Math.max(0, new Date(next.date).getTime() - now.getTime());
   }
-  const days = Math.floor(diff / 86400000);
-  const hours = Math.floor((diff % 86400000) / 3600000);
-  const minutes = Math.floor((diff % 3600000) / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
+  const units = [
+    { label: "Days", value: Math.floor(diff / 86400000) },
+    { label: "Hours", value: Math.floor((diff % 86400000) / 3600000) },
+    { label: "Min", value: Math.floor((diff % 3600000) / 60000) },
+    { label: "Sec", value: Math.floor((diff % 60000) / 1000) },
+  ];
 
   return (
-    <section className="border-y border-line bg-surface py-8 md:py-10">
-      <Container>
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
-          <div className="shrink-0">
-            <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">
-              {next ? `Counting down to ${next.label}` : "GMUN 5.0 has concluded"}
-            </p>
-            <div className="mt-3 flex items-baseline gap-4 sm:gap-6" suppressHydrationWarning>
-              {[
-                { label: "Days", value: days },
-                { label: "Hours", value: hours },
-                { label: "Min", value: minutes },
-                { label: "Sec", value: seconds },
-              ].map((unit) => (
-                <div key={unit.label} className="flex items-baseline gap-1.5">
-                  <span className="font-display text-4xl text-ivory tabular-nums sm:text-5xl lg:text-6xl">
-                    {now ? pad(unit.value) : "--"}
-                  </span>
-                  <span className="text-[11px] uppercase tracking-[0.08em] text-ivory-faint">{unit.label}</span>
-                </div>
-              ))}
-            </div>
+    <div>
+      <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">
+        {next ? `Counting down to ${next.label}` : "GMUN 5.0 has concluded"}
+      </p>
+      <div className="mt-3 flex items-stretch gap-2 sm:gap-3" suppressHydrationWarning>
+        {units.map((unit) => (
+          <div
+            key={unit.label}
+            className="flex min-w-[64px] flex-col items-center border border-line-strong bg-ink/60 px-3 py-2.5 backdrop-blur-sm sm:min-w-[76px]"
+          >
+            <span className="font-display text-3xl leading-none text-ivory tabular-nums sm:text-4xl">
+              {now ? pad(unit.value) : "--"}
+            </span>
+            <span className="mt-1.5 text-[10px] uppercase tracking-[0.14em] text-ivory-faint">{unit.label}</span>
           </div>
-
-        </div>
-      </Container>
-    </section>
+        ))}
+      </div>
+    </div>
   );
 }
