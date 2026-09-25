@@ -93,3 +93,14 @@ export const committeePhotos: Record<string, Photo> = {
       credit: { author: "Patrick Maletz", license: "CC0", url: "https://commons.wikimedia.org/wiki/File:Salt_Lake_Stadium_(_Yuba_Bharati_Krirangan_)_Kolkata_India_-_FC_Bayern_Munich_Mohun_Bagan_Oliver_Kahn_15.jpg" },
     },
 };
+
+/** Committee emblems (gold on black, 800×800), keyed by committee id. */
+export const committeeLogos: Record<string, string> = {
+  unea: "/committees/unea.jpg",
+  unhrc: "/committees/unhrc.jpg",
+  "media-info": "/committees/media-info.jpg",
+  disec: "/committees/disec.jpg",
+  mcu: "/committees/mcu.jpg",
+  ifi: "/committees/ifi.jpg",
+  fifa: "/committees/fifa.jpg",
+};

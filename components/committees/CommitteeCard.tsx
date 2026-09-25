@@ -1,27 +1,32 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Committee } from "@/types";
-import { committeePhotos } from "@/config/photos";
+import { committeeLogos } from "@/config/photos";
 
 export function CommitteeCard({ committee }: { committee: Committee }) {
-  const photo = committeePhotos[committee.id];
+  const logo = committeeLogos[committee.id];
 
   return (
     <Link
       href={`/committees/${committee.id}`}
       className="group relative flex h-full flex-col border border-line transition-colors hover:border-gold"
     >
-      {photo && (
-        <div className="relative aspect-[16/10] overflow-hidden border-b border-line">
+      {logo && (
+        // Gold-on-black emblem; the panel is always black so it blends in both themes.
+        <div className="relative aspect-[16/10] overflow-hidden border-b border-line bg-black">
+          <div
+            className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(212,175,106,0.18),transparent_60%)] opacity-60 transition-opacity duration-500 group-hover:opacity-100"
+            aria-hidden
+          />
           <Image
-            src={photo.src}
-            alt={photo.alt}
+            src={logo}
+            alt={`${committee.shortName} emblem`}
             fill
             sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            // screen blend drops the logo's own black square so it sits directly on the glow
+            className="object-contain p-5 mix-blend-screen transition-transform duration-700 ease-out group-hover:scale-[1.06]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" aria-hidden />
-          <p className="absolute bottom-4 left-5 text-[11px] font-medium uppercase tracking-[0.16em] text-white/85">
+          <p className="absolute bottom-4 left-5 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70">
             {committee.type}
           </p>
         </div>
@@ -29,7 +34,7 @@ export function CommitteeCard({ committee }: { committee: Committee }) {
 
       <div className="flex flex-1 flex-col justify-between p-7">
         <div>
-          {!photo && (
+          {!logo && (
             <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.16em] text-ivory-faint">
               {committee.type}
             </p>

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { committees } from "@/config/committees";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { committeePhotos, gmunPhotos } from "@/config/photos";
+import { committeeLogos, committeePhotos, gmunPhotos } from "@/config/photos";
 import { Button } from "@/components/ui/Button";
 
 export function generateStaticParams() {
@@ -30,7 +30,12 @@ export default async function CommitteeDetailPage({ params }: PageProps<"/commit
 
   return (
     <div className="pb-24 md:pb-32">
-      <PageHeader photo={committeePhotos[committee.id] ?? gmunPhotos.p7} eyebrow={committee.type + " Committee"} title={committee.shortName}>
+      <PageHeader
+        photo={committeePhotos[committee.id] ?? gmunPhotos.p7}
+        eyebrow={committee.type + " Committee"}
+        title={committee.shortName}
+        logo={committeeLogos[committee.id] ? { src: committeeLogos[committee.id], alt: `${committee.shortName} emblem` } : undefined}
+      >
         <p className="text-lg text-ivory">{committee.name}</p>
         {committee.governingBody && <p className="mt-1 text-sm text-ivory-faint">{committee.governingBody}</p>}
       </PageHeader>
