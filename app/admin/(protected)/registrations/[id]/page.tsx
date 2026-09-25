@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRegistrationDetail } from "@/lib/admin/queries";
 import { RegistrationDetailView } from "@/components/admin/RegistrationDetailView";
+import { StatusBadge } from "@/components/admin/StatusBadge";
 
 function Field({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (
@@ -31,7 +32,7 @@ export default async function AdminRegistrationDetailPage({
 
       <div className="mt-4 flex items-baseline gap-4">
         <h1 className="font-display text-2xl text-ivory">{r.registration_id}</h1>
-        <span className="text-sm text-ivory-faint">{r.status}</span>
+        <StatusBadge status={r.status} />
       </div>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[2fr_1fr]">

@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { StatusBadge } from "@/components/admin/StatusBadge";
 import { committees } from "@/config/committees";
 import { registrationPackages } from "@/config/pricing";
-import { cn } from "@/lib/utils/cn";
 
 interface RegistrationRow {
   id: string;
@@ -68,17 +68,7 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
                 <div className="text-xs text-ivory-faint">{r.phone}</div>
               </td>
               <td className="py-3 pr-4">
-                <span
-                  className={cn(
-                    "px-2 py-0.5 text-[11px] uppercase tracking-[0.06em]",
-                    r.status === "PAYMENT_CONFIRMED" && "bg-gold/15 text-gold",
-                    (r.status === "PENDING_VERIFICATION" || r.status === "UNDER_VERIFICATION") && "bg-ivory-faint/15 text-ivory-dim",
-                    r.status === "REJECTED" && "bg-danger/10 text-danger",
-                    r.status === "CANCELLED" && "bg-danger/10 text-danger"
-                  )}
-                >
-                  {r.status}
-                </span>
+                <StatusBadge status={r.status} className="whitespace-nowrap" />
               </td>
               <td className="py-3 pr-4 text-ivory-faint">
                 {new Date(r.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
