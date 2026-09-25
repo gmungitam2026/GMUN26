@@ -1,5 +1,5 @@
 import "server-only";
-import { site } from "@/config/site";
+import { site, poweredBy } from "@/config/site";
 import { contact } from "@/config/contact";
 import { committees } from "@/config/committees";
 import { registrationPackages } from "@/config/pricing";
@@ -117,6 +117,7 @@ function layout(opts: {
         <tr><td style="padding:20px 32px 28px;border-top:1px solid ${C.line};">
           <p style="margin:0;font-size:12px;line-height:1.6;color:${C.faint};">GMUN Organising Team · ${esc(site.institution)}<br />
           You can reply to this email to reach the team.</p>
+          <p style="margin:14px 0 0;font-size:11px;letter-spacing:1px;color:${C.faint};">Website &amp; registration powered by <a href="${poweredBy.url}" style="color:${C.gold};text-decoration:none;">${esc(poweredBy.name)} · ${esc(poweredBy.fullName)}</a></p>
         </td></tr>
       </table>
     </td></tr>
@@ -148,6 +149,8 @@ function plainText(opts: {
     ...(opts.showContact ? ["", "Contact the organising team:", ...contactLines()] : []),
     "",
     "GMUN Organising Team",
+    "",
+    `Website & registration powered by ${poweredBy.name} · ${poweredBy.fullName} (${poweredBy.url})`,
   ].join("\n");
 }
 

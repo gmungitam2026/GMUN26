@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PoweredByMDC } from "@/components/ui/PoweredByMDC";
 import { site } from "@/config/site";
 import { contact } from "@/config/contact";
 import { Container } from "@/components/ui/Container";
@@ -115,7 +116,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col gap-4 border-t border-line pt-8 text-xs text-ivory-faint md:flex-row md:items-center md:justify-between">
+        <PoweredByMDC variant="strip" className="mt-16" />
+
+        <div className="flex flex-col gap-4 pt-8 text-xs text-ivory-faint md:flex-row md:items-center md:justify-between">
           <p>
             © {new Date().getFullYear()} {site.organizer}, {site.institution}.
           </p>

@@ -19,3 +19,13 @@ export const site = {
   description:
     "GMUN 5.0 · GITAM Model United Nations, 24–25 October 2026 at GITAM, Visakhapatnam. Diplomacy, debate, leadership and global perspectives.",
 } as const;
+
+/** The club that designed and built this site for GMUN. */
+export const poweredBy = {
+  name: "MDC",
+  fullName: "Meta Developer Communities",
+  place: "GITAM",
+  url: "https://www.mdcgitam.in",
+  logo: "/logos/mdc-logo-light.png",
+  mark: "/logos/mdc-mark-light.png",
+} as const;

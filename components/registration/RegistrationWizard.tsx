@@ -17,6 +17,7 @@ import { StepPreferences } from "./StepPreferences";
 import { StepReview } from "./StepReview";
 import { StepPayment } from "./StepPayment";
 import { Button } from "@/components/ui/Button";
+import { PoweredByMDC } from "@/components/ui/PoweredByMDC";
 import { shrinkProfilePhoto, validateImageFile } from "@/lib/registration/photo";
 
 const emptyDetails: DetailsInput = {
@@ -137,11 +138,14 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
 
   return (
     <div>
-      <div className="border-b border-line pb-8">
-        <p className="font-display text-2xl text-ivory">{site.name}</p>
-        <p className="mt-1 text-sm text-ivory-dim">
-          {site.dates.display} · {site.venue.name}, {site.venue.line2} · Registration from ₹{minPrice}
-        </p>
+      <div className="flex flex-col gap-4 border-b border-line pb-8 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="font-display text-2xl text-ivory">{site.name}</p>
+          <p className="mt-1 text-sm text-ivory-dim">
+            {site.dates.display} · {site.venue.name}, {site.venue.line2} · Registration from ₹{minPrice}
+          </p>
+        </div>
+        <PoweredByMDC className="shrink-0 sm:mt-2" />
       </div>
 
       <div className="mt-8">

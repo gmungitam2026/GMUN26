@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { site } from "@/config/site";
+import { site, poweredBy } from "@/config/site";
 
 /**
  * First-visit intro: Visakhapatnam's sea rises over the screen, the emblem
@@ -69,6 +69,12 @@ export function SiteIntro() {
             GMUN <span className="text-gold">5.0</span>
           </p>
           <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-gold">Visakhapatnam · {site.dates.display}</p>
+          <p className="mt-12 flex items-center justify-center gap-4 text-xs uppercase tracking-[0.32em] text-ivory-dim md:text-sm">
+            Powered by
+            {/* eslint-disable-next-line @next/next/no-img-element -- static mark in the pre-hydration intro */}
+            <img src={poweredBy.mark} alt={poweredBy.name} className="h-8 w-auto md:h-10" />
+          </p>
+          <p className="mt-3 text-xs tracking-[0.2em] text-ivory-dim md:text-sm">{poweredBy.fullName}</p>
         </div>
 
         {/* Wavy trailing edge as the sea washes up off the screen */}

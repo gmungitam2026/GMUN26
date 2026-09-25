@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { fraunces, inter } from "./fonts";
-import { site } from "@/config/site";
+import { site, poweredBy } from "@/config/site";
 import { NavBar } from "@/components/navigation/NavBar";
 import { Footer } from "@/components/sections/Footer";
 import { MotionProvider } from "@/components/providers/MotionProvider";
@@ -17,6 +17,10 @@ export const metadata: Metadata = {
     template: `%s · ${site.name}`,
   },
   description: site.description,
+  // Built for GMUN by MDC (Meta Developer Communities, GITAM).
+  creator: `${poweredBy.name} · ${poweredBy.fullName}`,
+  publisher: `${poweredBy.name} · ${poweredBy.fullName}`,
+  authors: [{ name: `${poweredBy.name} · ${poweredBy.fullName}`, url: poweredBy.url }],
   openGraph: {
     title: site.fullName,
     description: site.description,

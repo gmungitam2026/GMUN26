@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PoweredByMDC } from "@/components/ui/PoweredByMDC";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 import { signOutAdmin } from "@/lib/admin/actions";
@@ -51,6 +52,7 @@ export function AdminSidebar({ adminName }: { adminName: string }) {
             Sign Out
           </button>
         </form>
+        <PoweredByMDC className="mt-6" />
       </div>
     </aside>
   );

@@ -198,6 +198,11 @@ button {
   display: none;
 }
 
+/* The MDC logo files are ivory for the dark theme; darken them on light. */
+:root[data-theme="light"] .mdc-logo {
+  filter: brightness(0.2);
+}
+
 
 /* Dropdowns — every <select> on the site (registration form, admin filters).
    The open list is gold with dark text. Browsers that support customizable

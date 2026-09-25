@@ -1,6 +1,7 @@
 import { site } from "@/config/site";
 import { Button } from "@/components/ui/Button";
 import { HeroCountdown } from "@/components/hero/HeroCountdown";
+import { PoweredByMDC } from "@/components/ui/PoweredByMDC";
 
 /**
  * Pure CSS keyframe animation (see `--animate-reveal` in globals.css)
@@ -68,6 +69,10 @@ export function Hero() {
           <Button href="/about" variant="secondary" size="lg">
             Explore GMUN
           </Button>
+        </div>
+
+        <div style={revealStyle(500)} className="animate-reveal mt-10">
+          <PoweredByMDC variant="badge" />
         </div>
       </div>
     </section>

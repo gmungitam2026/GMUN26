@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { primaryNav, registerNav } from "@/config/navigation";
 import { cn } from "@/lib/utils/cn";
+import { PoweredByMDC } from "@/components/ui/PoweredByMDC";
 
 export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
@@ -36,14 +37,15 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-40 overflow-y-auto bg-ink md:hidden"
+          // Starts below the 80px header so scrolled items never slide under it.
+          className="fixed inset-x-0 top-20 bottom-0 z-40 overflow-y-auto bg-ink md:hidden"
         >
           <motion.nav
             initial={{ y: -12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -12, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="flex min-h-full flex-col justify-between gap-8 px-6 pt-24 pb-8"
+            className="flex min-h-full flex-col justify-between gap-8 px-6 pt-4 pb-8"
           >
             <ul className="flex flex-col gap-1">
               {primaryNav.map((item, i) => (
@@ -71,6 +73,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
               <p className="text-center text-xs text-ivory-faint">
                 GMUN 5.0 · 24–25 October 2026 · GITAM, Visakhapatnam
               </p>
+              <PoweredByMDC className="mx-auto" />
             </div>
           </motion.nav>
         </motion.div>
