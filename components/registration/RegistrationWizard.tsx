@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { site } from "@/config/site";
 import { registrationPackages } from "@/config/pricing";
@@ -49,6 +49,15 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
   const minPrice = Math.min(...registrationPackages.map((p) => p.price));
 
   const [step, setStep] = useState(1);
+
+  // Each step starts at the top of the page, not at the previous step's scroll
+  // position. Skipped on first render so arriving on /register isn't affected.
+  const renderedStep = useRef(step);
+  useEffect(() => {
+    if (renderedStep.current === step) return;
+    renderedStep.current = step;
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [step]);
   const [details, setDetails] = useState<DetailsInput>(emptyDetails);
   const [preferences, setPreferences] = useState<PreferencesInput>(() => buildEmptyPreferences(initialCommittee));
   const [termsAccepted, setTermsAccepted] = useState(false);
