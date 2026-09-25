@@ -69,12 +69,13 @@ export function SiteIntro() {
             GMUN <span className="text-gold">5.0</span>
           </p>
           <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-gold">Visakhapatnam · {site.dates.display}</p>
-          <p className="mt-12 flex items-center justify-center gap-4 text-xs uppercase tracking-[0.32em] text-ivory-dim md:text-sm">
+          {/* MDC mark ~65-75px wide: a little smaller than the 96px GMUN emblem above. */}
+          <p className="mt-10 flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ivory-dim">
             Powered by
             {/* eslint-disable-next-line @next/next/no-img-element -- static mark in the pre-hydration intro */}
-            <img src={poweredBy.mark} alt={poweredBy.name} className="h-8 w-auto md:h-10" />
+            <img src={poweredBy.mark} alt={poweredBy.name} className="h-6 w-auto md:h-7" />
           </p>
-          <p className="mt-3 text-xs tracking-[0.2em] text-ivory-dim md:text-sm">{poweredBy.fullName}</p>
+          <p className="mt-2 text-[11px] tracking-[0.18em] text-ivory-faint">{poweredBy.fullName}</p>
         </div>
 
         {/* Wavy trailing edge as the sea washes up off the screen */}
