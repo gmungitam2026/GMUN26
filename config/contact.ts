@@ -9,8 +9,8 @@ export const contact = {
     { name: "Akshaya Tadi", role: "Vice President, GMUN", phone: "8885649766", photo: null as string | null },
   ],
   social: {
-    instagram: null as string | null,
-    linkedin: null as string | null,
+    instagram: "https://www.instagram.com/gmun_official_vsp/" as string | null,
+    linkedin: "https://www.linkedin.com/in/gitam-model-united-nations-gmun-75634a288/" as string | null,
   },
   partner: {
     heading: "Partner With Us",
