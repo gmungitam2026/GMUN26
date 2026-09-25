@@ -17,6 +17,7 @@ import { StepPreferences } from "./StepPreferences";
 import { StepReview } from "./StepReview";
 import { StepPayment } from "./StepPayment";
 import { Button } from "@/components/ui/Button";
+import { shrinkProfilePhoto, validateImageFile } from "@/lib/registration/photo";
 
 const emptyDetails: DetailsInput = {
   fullName: "",
@@ -51,6 +52,9 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
   const [details, setDetails] = useState<DetailsInput>(emptyDetails);
   const [preferences, setPreferences] = useState<PreferencesInput>(() => buildEmptyPreferences(initialCommittee));
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [photoError, setPhotoError] = useState<string | undefined>();
+  const [photoProcessing, setPhotoProcessing] = useState(false);
 
   const [detailsErrors, setDetailsErrors] = useState<Partial<Record<keyof DetailsInput, string>>>({});
   const [preferencesErrors, setPreferencesErrors] = useState<Partial<Record<keyof PreferencesInput, string>>>({});
@@ -64,8 +68,23 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
     setPreferences((p) => ({ ...p, [key]: value }));
   }
 
+  async function selectProfilePhoto(file: File | null) {
+    if (!file) return;
+    const error = validateImageFile(file, "profile photo");
+    if (error) {
+      setPhotoError(error);
+      return;
+    }
+    setPhotoError(undefined);
+    setPhotoProcessing(true);
+    setProfilePhoto(await shrinkProfilePhoto(file));
+    setPhotoProcessing(false);
+  }
+
   function goNextFromDetails() {
     const result = detailsSchema.safeParse(details);
+    const missingPhoto = !profilePhoto;
+    if (missingPhoto) setPhotoError("Upload a profile photo to continue.");
     if (!result.success) {
       const errs: typeof detailsErrors = {};
       for (const issue of result.error.issues) {
@@ -76,6 +95,7 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
       return;
     }
     setDetailsErrors({});
+    if (missingPhoto) return;
     setStep(2);
   }
 
@@ -121,7 +141,12 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
 
       <div className="mt-10">
         {step === 1 && (
-          <StepDetails data={details} errors={detailsErrors} onChange={updateDetails} />
+          <StepDetails
+            data={details}
+            errors={detailsErrors}
+            onChange={updateDetails}
+            photo={{ file: profilePhoto, error: photoError, processing: photoProcessing, onSelect: selectProfilePhoto }}
+          />
         )}
         {step === 2 && (
           <StepPreferences data={preferences} errors={preferencesErrors} onChange={updatePreferences} />
@@ -129,6 +154,7 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
         {step === 3 && (
           <StepReview
             data={{ ...details, ...preferences }}
+            profilePhoto={profilePhoto}
             termsAccepted={termsAccepted}
             onTermsChange={(c) => {
               setTermsAccepted(c);
@@ -141,6 +167,7 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
           <StepPayment
             amount={selectedPackage.price}
             registrationData={{ ...details, ...preferences, termsAccepted: true }}
+            profilePhoto={profilePhoto!}
             onSubmitted={(registrationId) => router.push(`/confirmation/${registrationId}`)}
             onError={setSubmitError}
           />

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createRegistration } from "@/lib/registration/actions";
+import { createRegistration, requestRegistrationUploads } from "@/lib/registration/actions";
+import { createClient } from "@/lib/supabase/client";
+import { ACCEPTED_IMAGE_TYPES, validateImageFile } from "@/lib/registration/photo";
 import { Button } from "@/components/ui/Button";
 import { eventSettings } from "@/config/event";
 import type { RegistrationInput } from "@/lib/validation/registration";
@@ -9,11 +11,13 @@ import type { RegistrationInput } from "@/lib/validation/registration";
 export function StepPayment({
   amount,
   registrationData,
+  profilePhoto,
   onSubmitted,
   onError,
 }: {
   amount: number;
   registrationData: RegistrationInput;
+  profilePhoto: File;
   onSubmitted: (registrationId: string) => void;
   onError: (message: string | null) => void;
 }) {
@@ -22,25 +26,53 @@ export function StepPayment({
   const [utr, setUtr] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stage, setStage] = useState<"uploading" | "saving" | null>(null);
+
+  function fail(message: string) {
+    setError(message);
+    onError(message);
+  }
+
+  function selectProof(file: File | null) {
+    setError(null);
+    if (!file) return setProof(null);
+    const problem = validateImageFile(file, "payment screenshot");
+    if (problem) {
+      setProof(null);
+      return setError(problem);
+    }
+    setProof(file);
+  }
 
   function submit() {
     setError(null);
     onError(null);
+    if (!utr.trim()) return setError("Enter the UTR / payment reference from your payment receipt.");
     if (!proof) return setError("Upload your payment screenshot before submitting.");
     if (!confirmed) return setError("Confirm that you completed the payment to continue.");
     startTransition(async () => {
       try {
-        const result = await createRegistration(registrationData, proof, utr);
+        // 1. Upload both images straight to storage via one-time signed URLs.
+        setStage("uploading");
+        const targets = await requestRegistrationUploads(profilePhoto.type, proof.type);
+        if (!targets.ok) return fail(targets.error);
+        const storage = createClient().storage;
+        const [photoUpload, proofUpload] = await Promise.all([
+          storage.from("profile-photos").uploadToSignedUrl(targets.photo.path, targets.photo.token, profilePhoto, { contentType: profilePhoto.type }),
+          storage.from("payment-proofs").uploadToSignedUrl(targets.proof.path, targets.proof.token, proof, { contentType: proof.type }),
+        ]);
+        if (photoUpload.error || proofUpload.error) return fail("Your photos could not be uploaded. Check your connection and try again.");
+
+        // 2. Save the registration; the server re-checks both uploads.
+        setStage("saving");
+        const result = await createRegistration(registrationData, { photoPath: targets.photo.path, proofPath: targets.proof.path }, utr);
         if (result.ok) onSubmitted(result.registrationId);
-        else {
-          setError(result.error);
-          onError(result.error);
-        }
+        else fail(result.error);
       } catch (submissionError) {
         console.error("Registration submission failed:", submissionError);
-        const message = "We could not submit your registration. Please try again.";
-        setError(message);
-        onError(message);
+        fail("We could not submit your registration. Please try again.");
+      } finally {
+        setStage(null);
       }
     });
   }
@@ -67,15 +99,15 @@ export function StepPayment({
           </label>
           <label className="block text-xs uppercase tracking-[0.08em] text-ivory-dim">
             Payment screenshot
-            <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setProof(e.target.files?.[0] ?? null)} className="mt-2 block w-full text-sm text-ivory-dim file:mr-4 file:border-0 file:bg-gold-fill file:px-4 file:py-2 file:text-ink" />
+            <input type="file" accept={ACCEPTED_IMAGE_TYPES.join(",")} onChange={(e) => selectProof(e.target.files?.[0] ?? null)} className="mt-2 block w-full text-sm text-ivory-dim file:mr-4 file:border-0 file:bg-gold-fill file:px-4 file:py-2 file:text-ink" />
           </label>
-          {proof && <p className="text-xs text-ivory-faint">Selected: {proof.name}</p>}
+          <p className="text-xs text-ivory-faint">{proof ? `Selected: ${proof.name}` : "JPG, PNG or WebP · under 5 MB"}</p>
           <label className="flex items-start gap-3 text-sm text-ivory-dim">
             <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="mt-1 accent-[#b7924e]" />
             I confirm that I have completed the payment.
           </label>
           <Button type="button" disabled={pending} onClick={submit}>
-            {pending ? "Submitting…" : "Submit Registration"}
+            {stage === "uploading" ? "Uploading photos…" : pending ? "Submitting…" : "Submit Registration"}
           </Button>
         </div>
       </div>

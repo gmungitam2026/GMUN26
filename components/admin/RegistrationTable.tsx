@@ -14,6 +14,7 @@ interface RegistrationRow {
   gender: string;
   status: string;
   created_at: string;
+  photoUrl: string | null;
 }
 
 export function RegistrationTable({ registrations }: { registrations: RegistrationRow[] }) {
@@ -44,7 +45,17 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
                   {r.registration_id}
                 </Link>
               </td>
-              <td className="py-3 pr-4 text-ivory">{r.full_name}</td>
+              <td className="py-3 pr-4 text-ivory">
+                <span className="flex items-center gap-3">
+                  <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-line bg-surface-raised">
+                    {r.photoUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL from private storage
+                      <img src={r.photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                    )}
+                  </span>
+                  {r.full_name}
+                </span>
+              </td>
               <td className="py-3 pr-4 text-ivory-dim">{r.gender}</td>
               <td className="py-3 pr-4 text-ivory-dim">
                 {committees.find((c) => c.id === r.committee_preference)?.shortName ?? r.committee_preference}

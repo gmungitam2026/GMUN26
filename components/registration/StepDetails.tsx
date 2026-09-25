@@ -1,6 +1,7 @@
 import { indianStates } from "@/config/states";
 import { genderOptions, type DetailsInput } from "@/lib/validation/registration";
 import { Field, TextInput, Select, ChoiceButtons } from "./fields";
+import { ProfilePhotoField } from "./ProfilePhotoField";
 
 const GITAM_INSTITUTION = "GITAM (Deemed to be University)";
 
@@ -8,10 +9,13 @@ export function StepDetails({
   data,
   errors,
   onChange,
+  photo,
 }: {
   data: DetailsInput;
   errors: Partial<Record<keyof DetailsInput, string>>;
   onChange: <K extends keyof DetailsInput>(key: K, value: DetailsInput[K]) => void;
+  /** Profile photo upload — omitted in the admin edit form. */
+  photo?: { file: File | null; error?: string; processing?: boolean; onSelect: (file: File | null) => void };
 }) {
   function setGitamStudent(value: DetailsInput["gitamStudent"]) {
     onChange("gitamStudent", value);
@@ -102,6 +106,11 @@ export function StepDetails({
       <Field label="City" htmlFor="city" error={errors.city}>
         <TextInput id="city" value={data.city} onChange={(e) => onChange("city", e.target.value)} />
       </Field>
+      {photo && (
+        <div className="border-t border-line pt-6 sm:col-span-2">
+          <ProfilePhotoField {...photo} />
+        </div>
+      )}
 
     </div>
   );

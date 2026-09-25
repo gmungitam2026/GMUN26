@@ -60,6 +60,17 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   };
 }
 
+/** Profile photos live in a private bucket; admins see them through short-lived signed URLs. */
+const PHOTO_URL_TTL_SECONDS = 60 * 60;
+
+async function signProfilePhotos(supabase: ReturnType<typeof createAdminClient>, paths: string[]) {
+  const urls = new Map<string, string>();
+  if (paths.length === 0) return urls;
+  const { data } = await supabase.storage.from("profile-photos").createSignedUrls(paths, PHOTO_URL_TTL_SECONDS);
+  for (const item of data ?? []) if (item.path && item.signedUrl) urls.set(item.path, item.signedUrl);
+  return urls;
+}
+
 export interface RegistrationListFilters {
   query?: string;
   committee?: string;
@@ -79,7 +90,7 @@ export async function listRegistrations(filters: RegistrationListFilters) {
   let query = supabase
     .from("registrations")
     .select(
-      "id, registration_id, full_name, email, phone, committee_preference, package_id, gender, status, created_at",
+      "id, registration_id, full_name, email, phone, committee_preference, package_id, gender, status, created_at, profile_photo_path",
       { count: "exact" }
     )
     .order("created_at", { ascending: false })
@@ -96,7 +107,14 @@ export async function listRegistrations(filters: RegistrationListFilters) {
   const { data, count, error } = await query;
   if (error) throw error;
 
-  return { registrations: data ?? [], total: count ?? 0, page, pageSize };
+  const rows = data ?? [];
+  const photoUrls = await signProfilePhotos(
+    supabase,
+    rows.map((r) => r.profile_photo_path).filter((p): p is string => Boolean(p))
+  );
+  const registrations = rows.map((r) => ({ ...r, photoUrl: r.profile_photo_path ? photoUrls.get(r.profile_photo_path) ?? null : null }));
+
+  return { registrations, total: count ?? 0, page, pageSize };
 }
 
 /** Same filters as listRegistrations, but every matching row (no pagination) — used for CSV export. */
@@ -130,7 +148,11 @@ export async function getRegistrationDetail(id: string) {
     supabase.from("registration_notes").select("*, admin_profiles(name)").eq("registration_id", id).order("created_at", { ascending: false }),
   ]);
 
-  return { registration, history: history ?? [], notes: notes ?? [] };
+  const photoUrl = registration.profile_photo_path
+    ? (await signProfilePhotos(supabase, [registration.profile_photo_path])).get(registration.profile_photo_path) ?? null
+    : null;
+
+  return { registration, photoUrl, history: history ?? [], notes: notes ?? [] };
 }
 
 export async function listPayments(page = 1, pageSize = 20) {

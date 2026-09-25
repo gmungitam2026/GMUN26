@@ -4,6 +4,7 @@ import { registrationPackages } from "@/config/pricing";
 import { consentSummary } from "@/config/terms";
 import { CheckboxField } from "./fields";
 import type { DetailsInput, PreferencesInput } from "@/lib/validation/registration";
+import { useFilePreview } from "./ProfilePhotoField";
 
 function Row({ label, value }: { label: string; value: string }) {
   if (!value) return null;
@@ -17,23 +18,30 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export function StepReview({
   data,
+  profilePhoto,
   termsAccepted,
   onTermsChange,
   termsError,
 }: {
   data: DetailsInput & PreferencesInput;
+  profilePhoto: File | null;
   termsAccepted: boolean;
   onTermsChange: (checked: boolean) => void;
   termsError?: string;
 }) {
   const committeeName = (id: string) => committees.find((c) => c.id === id)?.shortName ?? id;
   const pkg = registrationPackages.find((p) => p.id === data.packageId);
+  const photoPreview = useFilePreview(profilePhoto);
 
   return (
     <div>
       <div className="grid gap-10 md:grid-cols-2">
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Participant</p>
+          {photoPreview && (
+            // eslint-disable-next-line @next/next/no-img-element -- local object URL preview
+            <img src={photoPreview} alt="Your profile photo" className="mb-3 h-20 w-20 rounded-full border border-line-strong object-cover" />
+          )}
           <Row label="Name" value={data.fullName} />
           <Row label="GITAM Student" value={data.gitamStudent} />
           <Row label="Age" value={String(data.age)} />
