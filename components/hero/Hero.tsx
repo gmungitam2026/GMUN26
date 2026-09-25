@@ -1,7 +1,5 @@
 import { site } from "@/config/site";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils/cn";
-import { HeroEmblem } from "@/components/hero/HeroEmblem";
 import { HeroCountdown } from "@/components/hero/HeroCountdown";
 
 /**
@@ -22,69 +20,54 @@ function revealStyle(delayMs: number) {
 
 export function Hero() {
   return (
-    <section className="grain relative flex overflow-hidden bg-ink pt-24 pb-16 sm:pt-28 lg:min-h-[100svh] lg:items-center lg:pt-24 lg:pb-20">
+    <section className="grain relative flex min-h-[100svh] items-center overflow-hidden bg-ink pt-24 pb-16 sm:pt-28 lg:pb-20">
       <HeroMotif />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1400px] items-center gap-6 px-6 md:px-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10 lg:px-16">
-        {/* MUN emblem: above the headline on phones, beside it on desktop */}
-        <div
-          style={revealStyle(60)}
-          className="animate-reveal mx-auto -mt-4 w-full max-w-[230px] sm:max-w-[340px] lg:order-2 lg:mt-0 lg:max-w-[560px]"
+      <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-col items-center px-6 text-center md:px-10 lg:px-16">
+        <p
+          style={revealStyle(100)}
+          className="animate-reveal mb-5 flex items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.24em] text-gold sm:mb-6 sm:text-[11px] sm:tracking-[0.32em]"
         >
-          <HeroEmblem className="h-auto w-full" />
+          <span className="hidden h-px w-10 bg-gold sm:block" aria-hidden />
+          {site.tagline}
+          <span className="hidden h-px w-10 bg-gold sm:block" aria-hidden />
+        </p>
+
+        <h1
+          style={revealStyle(180)}
+          className="animate-reveal max-w-4xl font-display text-[12vw] leading-[0.98] font-medium text-ivory sm:text-6xl md:text-7xl xl:text-8xl"
+        >
+          Welcome to <span className="italic text-gold">GMUN</span>
+        </h1>
+
+        <p
+          style={revealStyle(260)}
+          className="animate-reveal mt-6 max-w-xl text-[15px] leading-relaxed text-ivory-dim sm:mt-8 md:text-lg"
+        >
+          Andhra Pradesh&apos;s one of the largest Model United Nations conferences returns, a gathering of delegates
+          for diplomacy, debate, leadership, and diverse perspectives on the issues shaping our world.
+        </p>
+
+        <div
+          style={revealStyle(340)}
+          className="animate-reveal mt-10 flex w-full max-w-2xl flex-col items-center gap-5 border-t border-line pt-8"
+        >
+          <HeroCountdown />
+          <div className="flex flex-col gap-1 text-sm text-ivory-dim">
+            <span className="font-display text-lg text-ivory">{site.dates.display}</span>
+            <span>
+              {site.venue.name}, {site.venue.line2}
+            </span>
+          </div>
         </div>
 
-        <div className="lg:order-1">
-          <p
-            style={revealStyle(100)}
-            className={cn(
-              "animate-reveal mb-5 flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.24em] text-gold sm:mb-6 sm:text-[11px] sm:tracking-[0.32em]",
-            )}
-          >
-            <span className="h-px w-10 bg-gold" aria-hidden />
-            {site.tagline}
-          </p>
-
-          <h1
-            style={revealStyle(180)}
-            className={cn(
-              "animate-reveal max-w-4xl font-display text-[12vw] leading-[0.98] font-medium text-ivory sm:text-6xl md:text-7xl xl:text-8xl",
-            )}
-          >
-            Welcome to <span className="italic text-gold">GMUN</span>
-          </h1>
-
-          <p
-            style={revealStyle(260)}
-            className={cn("animate-reveal mt-6 max-w-xl text-[15px] leading-relaxed text-ivory-dim sm:mt-8 md:text-lg")}
-          >
-            Andhra Pradesh&apos;s one of the largest Model United Nations conferences returns, a gathering of delegates
-            for diplomacy, debate, leadership, and diverse perspectives on the issues shaping our world.
-          </p>
-
-          <div
-            style={revealStyle(340)}
-            className={cn(
-              "animate-reveal mt-10 flex flex-col gap-6 border-t border-line pt-6 sm:flex-row sm:items-end sm:gap-10",
-            )}
-          >
-            <HeroCountdown />
-            <div className="flex flex-col gap-1 text-sm text-ivory-dim">
-              <span className="font-display text-lg text-ivory">{site.dates.display}</span>
-              <span>
-                {site.venue.name}, {site.venue.line2}
-              </span>
-            </div>
-          </div>
-
-          <div style={revealStyle(420)} className={cn("animate-reveal mt-10 flex flex-wrap items-center gap-4")}>
-            <Button href="/register" variant="primary" size="lg">
-              Register Now
-            </Button>
-            <Button href="/about" variant="secondary" size="lg">
-              Explore GMUN
-            </Button>
-          </div>
+        <div style={revealStyle(420)} className="animate-reveal mt-10 flex flex-wrap items-center justify-center gap-4">
+          <Button href="/register" variant="primary" size="lg">
+            Register Now
+          </Button>
+          <Button href="/about" variant="secondary" size="lg">
+            Explore GMUN
+          </Button>
         </div>
       </div>
     </section>

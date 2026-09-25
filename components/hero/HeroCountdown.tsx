@@ -69,10 +69,10 @@ export function HeroCountdown() {
 
   return (
     <div>
-      <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">
+      <p className="text-center text-[11px] font-medium uppercase tracking-[0.24em] text-gold">
         {next ? `Counting down to ${next.label}` : "GMUN 5.0 has concluded"}
       </p>
-      <div className="mt-3 flex items-stretch gap-2 sm:gap-3" suppressHydrationWarning>
+      <div className="mt-3 flex items-stretch justify-center gap-2 sm:gap-3" suppressHydrationWarning>
         {units.map((unit) => (
           <div
             key={unit.label}
