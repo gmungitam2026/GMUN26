@@ -332,19 +332,22 @@ option {
   }
 }
 
-/* Home gallery strip (components/sections/GalleryCarousel.tsx). The track
-   holds two copies of the photos, so sliding by -50% lands exactly where it
-   started. Edges fade out instead of cutting photos off hard. */
-.gallery-marquee-viewport {
+/* Continuously scrolling strips (home gallery, testimonials). The track
+   holds two copies of its items, so sliding by -50% lands exactly where it
+   started. Edges fade out instead of cutting items off hard. */
+.marquee-viewport {
   mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
 }
-.gallery-marquee {
-  animation: gallery-marquee 42s linear infinite;
+.marquee {
+  animation: marquee 42s linear infinite;
 }
-.gallery-marquee-viewport:hover .gallery-marquee {
+.marquee-viewport:hover .marquee {
   animation-play-state: paused;
 }
-@keyframes gallery-marquee {
+.marquee-reverse {
+  animation-direction: reverse;
+}
+@keyframes marquee {
   to {
     transform: translateX(-50%);
   }
@@ -403,13 +406,13 @@ option {
   }
 
   /* Still photos the visitor can scroll through themselves. */
-  .gallery-marquee-viewport {
+  .marquee-viewport {
     overflow-x: auto;
   }
-  .gallery-marquee {
+  .marquee {
     animation: none !important;
   }
-  .gallery-marquee [aria-hidden] {
+  .marquee [aria-hidden] {
     display: none;
   }
 

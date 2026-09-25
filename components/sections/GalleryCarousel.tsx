@@ -5,7 +5,7 @@ import type { GalleryImage } from "@/config/gallery";
  * Continuous, hands-off photo strip. Every photo shares one row height and
  * keeps its own aspect ratio, so nothing is cropped. The list is rendered
  * twice and the track slides left by exactly one copy (-50%) per cycle, so
- * the loop is seamless. Pure CSS (see `.gallery-marquee` in globals.css):
+ * the loop is seamless. Pure CSS (see `.marquee` in globals.css):
  * pauses on hover, and under prefers-reduced-motion it becomes a plain
  * horizontally scrollable row instead.
  */
@@ -14,8 +14,8 @@ export function GalleryCarousel({ images }: { images: GalleryImage[] }) {
   const duration = `${images.length * 6}s`;
 
   return (
-    <div className="gallery-marquee-viewport relative mt-16 overflow-hidden">
-      <div className="gallery-marquee flex w-max" style={{ animationDuration: duration }}>
+    <div className="marquee-viewport relative mt-16 overflow-hidden">
+      <div className="marquee flex w-max" style={{ animationDuration: duration }}>
         {[0, 1].map((copy) =>
           images.map((img) => (
             <figure
