@@ -16,7 +16,7 @@ export default function FormsPage() {
     <div className="pb-24 md:pb-32">
       <PageHeader photo={gmunPhotos.p3} eyebrow="Forms & Documents" title="Read before you register.">
         Every delegate is expected to read and agree to the following. You confirm your
-        agreement to both during registration — this page just makes them easy to read, print,
+        agreement to both during registration; this page just makes them easy to read, print,
         or save on their own.
       </PageHeader>
 

@@ -148,6 +148,6 @@ export interface TimelineMilestone {
 export const timelineMilestones: TimelineMilestone[] = [
   { id: "reg-open", label: "Registrations Open", date: null, alwaysComplete: true },
   { id: "reg-deadline", label: "Registration Deadline", date: null },
-  { id: "day1", label: "Day 1 — Opening Ceremony", date: site.dates.start },
-  { id: "day2", label: "Day 2 — Closing Ceremony", date: site.dates.end },
+  { id: "day1", label: "Day 1: Opening Ceremony", date: site.dates.start },
+  { id: "day2", label: "Day 2: Closing Ceremony", date: site.dates.end },
 ];

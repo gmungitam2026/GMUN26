@@ -11,7 +11,7 @@ const noopProvider: EmailProvider = {
   name: "noop",
   async send(message: EmailMessage) {
     console.warn(
-      `[email] No EMAIL_PROVIDER configured — skipping send to ${message.to} ("${message.subject}").`
+      `[email] No EMAIL_PROVIDER configured; skipping send to ${message.to} ("${message.subject}").`
     );
     return { sent: false };
   },

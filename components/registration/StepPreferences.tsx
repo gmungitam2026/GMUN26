@@ -68,7 +68,7 @@ export function StepPreferences({
             id="countryPreference"
             value={data.countryPreference}
             onChange={(e) => onChange("countryPreference", e.target.value)}
-            placeholder="e.g. India, France — or a character / portfolio for MCU, IFI and FIFA"
+            placeholder="e.g. India, France, or a character / portfolio for MCU, IFI and FIFA"
           />
         </Field>
       </div>
@@ -100,7 +100,7 @@ export function StepPreferences({
             rows={5}
             value={data.munExperienceDetail ?? ""}
             onChange={(e) => onChange("munExperienceDetail", e.target.value)}
-            placeholder="Conferences attended, committees, awards, roles — max 200 words."
+            placeholder="Conferences attended, committees, awards, roles (max 200 words)."
           />
           <p className={cn("mt-2 text-xs", words > 200 ? "text-danger" : "text-ivory-faint")}>
             {words} / 200 words

@@ -43,7 +43,7 @@ export const delegateForms: DelegateForm[] = [
       {
         paragraphs: [
           "6.3. Any Participant facing or witnessing misconduct may report the matter confidentially to the Grievance Point of Contact designated at gmun@gitam.in. GMUN will investigate all complaints in a fair and timely manner.",
-          "6.4. The decision of the Secretariat/Organising Committee on matters of conduct and disciplinary action — including denial of further participation under Section 6.2 — shall be final and binding, and does not entitle the Participant to a refund.",
+          "6.4. The decision of the Secretariat/Organising Committee on matters of conduct and disciplinary action, including denial of further participation under Section 6.2, shall be final and binding, and does not entitle the Participant to a refund.",
         ],
       },
     ],
@@ -72,7 +72,7 @@ export const delegateForms: DelegateForm[] = [
       {
         heading: "Note for Participants Under 18",
         paragraphs: [
-          "GMUN 5.0 is open to students aged 12–23. Participants under 18 may be required to have this form countersigned by a parent or guardian before the Conference — final confirmation of this requirement, and any accompanying process, will be announced by the Organising team closer to the event.",
+          "GMUN 5.0 is open to students aged 12–23. Participants under 18 may be required to have this form countersigned by a parent or guardian before the Conference. Final confirmation of this requirement, and any accompanying process, will be announced by the Organising team closer to the event.",
         ],
       },
     ],

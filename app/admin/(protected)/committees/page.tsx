@@ -7,7 +7,7 @@ export default function AdminCommitteesPage() {
       <p className="mt-2 max-w-xl text-sm text-ivory-dim">
         Committee content is seeded from the <code className="text-ivory">committees</code> table
         (see <code className="text-ivory">supabase/migrations/0001_init.sql</code>). Full CRUD
-        management from this screen is planned for a future pass — for now, edit rows directly in
+        management from this screen is planned for a future pass. For now, edit rows directly in
         Supabase or update the seed migration.
       </p>
 

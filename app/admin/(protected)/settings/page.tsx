@@ -56,7 +56,7 @@ export default async function AdminSettingsPage() {
           </table>
           <p className="mt-3 max-w-xl text-sm text-ivory-faint">
             Defined in <code className="text-ivory">config/pricing.ts</code>. Pricing is not yet
-            finalised for GMUN 5.0 — update this file (or migrate it to the{" "}
+            finalised for GMUN 5.0. Update this file (or migrate it to the{" "}
             <code className="text-ivory">registration_packages</code> table) once it is.
           </p>
         </div>

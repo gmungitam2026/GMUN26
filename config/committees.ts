@@ -36,7 +36,7 @@ export const committees: Committee[] = [
     agenda:
       "Safeguarding Press Freedom and Ensuring Freedom of Speech and Expression While Combating the Rise of Misinformation in the Contemporary World",
     description:
-      "This committee is modelled on the real UN Committee on Information, established in 1978 to examine global public-information policy and promote a free, balanced flow of news and data. In its ad-hoc, contemporary form, it tackles issues the original mandate never anticipated — disinformation campaigns, AI-generated content, and algorithm-driven narrative control. It also champions press freedom and the safety of journalists operating in conflict or authoritarian settings. The committee seeks to recommend frameworks for the ethical governance of emerging media technologies. Delegates will confront the rapidly evolving battle among truth, technology, and information warfare.",
+      "This committee is modelled on the real UN Committee on Information, established in 1978 to examine global public-information policy and promote a free, balanced flow of news and data. In its ad-hoc, contemporary form, it tackles issues the original mandate never anticipated: disinformation campaigns, AI-generated content, and algorithm-driven narrative control. It also champions press freedom and the safety of journalists operating in conflict or authoritarian settings. The committee seeks to recommend frameworks for the ethical governance of emerging media technologies. Delegates will confront the rapidly evolving battle among truth, technology, and information warfare.",
     type: "Special",
     displayOrder: 3,
     studyGuideUrl: null,

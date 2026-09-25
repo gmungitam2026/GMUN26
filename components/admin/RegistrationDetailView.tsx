@@ -11,7 +11,7 @@ function Field({ label, value }: { label: string; value: string | number | null 
   return (
     <div className="border-b border-line py-3">
       <p className="text-[11px] uppercase tracking-[0.08em] text-ivory-faint">{label}</p>
-      <p className="mt-1 text-ivory">{value || "—"}</p>
+      <p className="mt-1 text-ivory">{value || "-"}</p>
     </div>
   );
 }

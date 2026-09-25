@@ -27,9 +27,9 @@ export default async function AdminPaymentsPage() {
               <tr key={p.id} className="border-b border-line">
                 <td className="py-3 pr-4 text-ivory-dim">{p.order_id}</td>
                 <td className="py-3 pr-4 text-ivory-dim">{p.provider}</td>
-                <td className="py-3 pr-4 text-ivory-dim">{p.payment_id ?? "—"}</td>
+                <td className="py-3 pr-4 text-ivory-dim">{p.payment_id ?? "-"}</td>
                 <td className="py-3 pr-4 text-ivory">₹{p.amount}</td>
-                <td className="py-3 pr-4 text-ivory-dim">{p.method ?? "—"}</td>
+                <td className="py-3 pr-4 text-ivory-dim">{p.method ?? "-"}</td>
                 <td className="py-3 pr-4">
                   <span
                     className={cn(
