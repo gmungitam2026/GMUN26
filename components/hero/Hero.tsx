@@ -22,8 +22,6 @@ function revealStyle(delayMs: number) {
 export function Hero() {
   return (
     <section className="grain relative flex min-h-[100svh] items-center overflow-hidden bg-ink pt-24 pb-16 sm:pt-28 lg:pb-20">
-      <HeroMotif />
-
       <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-col items-center px-6 text-center md:px-10 lg:px-16">
         <p
           style={revealStyle(100)}
@@ -76,23 +74,5 @@ export function Hero() {
         </div>
       </div>
     </section>
-  );
-}
-
-function HeroMotif() {
-  return (
-    <svg
-      className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.16]"
-      viewBox="0 0 1400 900"
-      fill="none"
-      aria-hidden
-      preserveAspectRatio="xMidYMid slice"
-    >
-      {Array.from({ length: 7 }).map((_, i) => (
-        <ellipse key={i} cx="700" cy="450" rx={140 + i * 110} ry={90 + i * 70} stroke="#b7924e" strokeWidth="0.6" />
-      ))}
-      <line x1="0" y1="450" x2="1400" y2="450" stroke="#efe9dc" strokeWidth="0.4" />
-      <line x1="700" y1="0" x2="700" y2="900" stroke="#efe9dc" strokeWidth="0.4" />
-    </svg>
   );
 }
