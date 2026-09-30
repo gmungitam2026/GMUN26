@@ -114,20 +114,20 @@ export function StepPayment({
         <p className="font-display text-3xl text-gold">₹{amount}</p>
       </div>
 
-      <div className="mt-8 grid gap-8 border border-line p-6 md:grid-cols-[240px_1fr]">
-        <div className="mx-auto w-full max-w-[260px]">
+      <div className="mt-8 grid gap-8 border border-line p-6 md:grid-cols-[300px_1fr]">
+        <div className="mx-auto w-full max-w-[300px]">
           <Image
             src={eventSettings.paymentQrPath}
             alt={`GMUN UPI QR code. Pay ₹${amount} to UPI ID ${eventSettings.upiId}`}
-            width={839}
-            height={1009}
-            className="w-full border border-line"
+            width={1112}
+            height={1670}
+            className="w-full border border-line bg-white"
             priority
           />
           {/* On a phone you can't scan your own screen: save the image and use "scan from gallery" in any UPI app. */}
           <a
             href={eventSettings.paymentQrPath}
-            download="GMUN-UPI-QR.jpg"
+            download="GMUN-UPI-QR.png"
             className="mt-3 block text-center text-[11px] uppercase tracking-[0.12em] text-gold hover:underline"
           >
             Save QR image
@@ -140,7 +140,7 @@ export function StepPayment({
           </p>
           <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span>
-              UPI ID: <span className="text-ivory">{eventSettings.upiId}</span>
+              UPI ID: <span className="font-mono text-ivory break-all">{eventSettings.upiId}</span>
             </span>
             <button type="button" onClick={copyUpiId} className="text-[11px] uppercase tracking-[0.12em] text-gold hover:underline">
               {upiCopied ? "Copied" : "Copy"}

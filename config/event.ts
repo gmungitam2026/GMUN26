@@ -1,8 +1,8 @@
 export const eventSettings = {
     registrationClose: "2026-10-30T23:59:59+05:30",
     maximumRegistrations: 500,
-    paymentQrPath: "/images/gmun-upi-qr.jpg",
-    upiId: "9110799363@ibl",
+    paymentQrPath: "/images/gmun-qr.png",
+    upiId: "QR918520854447-6367@unionbankofindia",
     paymentProofRequired: true,
     retentionDays: 30,
 } as const;
