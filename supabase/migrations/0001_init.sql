@@ -42,7 +42,7 @@ insert into registration_packages (id, name, description, price, currency, activ
 values (
   'gmun-5-delegate',
   'GMUN 5.0 Delegate Registration',
-  'Conference participation for GMUN 5.0, 24-25 October 2026.',
+  'Conference participation for GMUN 5.0, 31 October – 1 November 2026.',
   600,
   'INR',
   true,

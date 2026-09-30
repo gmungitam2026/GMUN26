@@ -5,9 +5,9 @@ export const site = {
   institution: "GITAM (Deemed to be University), Visakhapatnam",
   tagline: "Team behind Andhra Pradesh's one of the largest MUNs",
   dates: {
-    start: "2026-10-24",
-    end: "2026-10-25",
-    display: "24–25 October 2026",
+    start: "2026-10-31",
+    end: "2026-11-01",
+    display: "31 October – 1 November 2026",
   },
   venue: {
     name: "GITAM Deemed to be University",
@@ -17,7 +17,7 @@ export const site = {
   },
   url: "https://gmun.mdcgitam.in",
   description:
-    "GMUN 5.0 · GITAM Model United Nations, 24–25 October 2026 at GITAM, Visakhapatnam. Diplomacy, debate, leadership and global perspectives.",
+    "GMUN 5.0 · GITAM Model United Nations, 31 October – 1 November 2026 at GITAM, Visakhapatnam. Diplomacy, debate, leadership and global perspectives.",
 } as const;
 
 /** The club that designed and built this site for GMUN. */

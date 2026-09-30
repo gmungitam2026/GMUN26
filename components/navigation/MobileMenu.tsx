@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { primaryNav, registerNav } from "@/config/navigation";
+import { site } from "@/config/site";
 import { cn } from "@/lib/utils/cn";
 import { PoweredByMDC } from "@/components/ui/PoweredByMDC";
 
@@ -71,7 +72,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                 {registerNav.label} Now
               </Link>
               <p className="text-center text-xs text-ivory-faint">
-                GMUN 5.0 · 24–25 October 2026 · GITAM, Visakhapatnam
+                GMUN 5.0 · {site.dates.display} · GITAM, Visakhapatnam
               </p>
               <PoweredByMDC className="mx-auto" />
             </div>

@@ -13,7 +13,7 @@ const UPLOADS = {
   photo: { bucket: "profile-photos", file: "profile-photo", label: "profile photo" },
   proof: { bucket: "payment-proofs", file: "payment-proof", label: "payment screenshot" },
 } as const;
-const REGISTRATION_CLOSE = "2026-10-23T23:59:59+05:30";
+const REGISTRATION_CLOSE = "2026-10-30T23:59:59+05:30";
 const MAX_REGISTRATIONS = 500;
 /** Unique indexes from supabase/migrations/0006 and 0008, mapped to a message for the delegate. */
 const UNIQUE_INDEX_ERRORS: Record<string, string> = {
