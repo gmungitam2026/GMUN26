@@ -28,12 +28,12 @@ create unique index if not exists registrations_gitam_reg_no_key
 -- 4. Deactivate legacy single-tier package if present
 update registration_packages set active = false where id = 'gmun-5-delegate';
 
--- 5. Upsert the 3 current package tiers (₹600, ₹860, ₹1860)
+-- 5. Upsert the 3 current package tiers (₹600, ₹900, ₹1900)
 insert into registration_packages (id, name, description, price, currency, active, display_order, includes)
 values
   ('gmun-only', 'GMUN Only', 'Two-day conference entry.', 600, 'INR', true, 1, array['Two-day conference entry (both days)']),
-  ('gmun-lunch', 'GMUN + Lunch', 'Two-day conference entry with lunch included.', 860, 'INR', true, 2, array['Two-day conference entry (both days)', 'Lunch']),
-  ('gmun-lunch-accommodation', 'GMUN + Lunch + Accommodation', 'Two-day conference entry with lunch and accommodation included.', 1860, 'INR', true, 3, array['Two-day conference entry (both days)', 'Lunch', 'Accommodation'])
+  ('gmun-lunch', 'GMUN + Lunch', 'Two-day conference entry with lunch included.', 900, 'INR', true, 2, array['Two-day conference entry (both days)', 'Lunch']),
+  ('gmun-lunch-accommodation', 'GMUN + Lunch + Accommodation', 'Two-day conference entry with lunch and accommodation included.', 1900, 'INR', true, 3, array['Two-day conference entry (both days)', 'Lunch', 'Accommodation'])
 on conflict (id) do update set
   name = excluded.name,
   description = excluded.description,

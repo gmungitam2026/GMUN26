@@ -45,12 +45,12 @@ export const faqItems: FaqItem[] = [
   {
     question: "How much does registration cost?",
     answer:
-      "Registration starts at INR 600 for GMUN Only. We also offer GMUN + Lunch for INR 860, and GMUN + Lunch + Accommodation for INR 1860. Please refer to the Registration page for full package options.",
+      "Registration starts at INR 600 for GMUN Only. We also offer GMUN + Lunch for INR 900, and GMUN + Lunch + Accommodation for INR 1900. Please refer to the Registration page for full package options.",
   },
   {
     question: "What does the registration fee include?",
     answer:
-      "The base registration fee covers conference entry. You can choose packages that include lunch (₹860) or both lunch and accommodation (₹1860) during registration.",
+      "The base registration fee covers conference entry. You can choose packages that include lunch (₹900) or both lunch and accommodation (₹1900) during registration.",
   },
   {
     question: "How can I register?",
@@ -109,12 +109,12 @@ export const faqItems: FaqItem[] = [
   {
     question: "Will food be provided?",
     answer:
-      "Lunch is included in the GMUN + Lunch (₹860) and GMUN + Lunch + Accommodation (₹1860) packages. Delegates opting for the base GMUN package (₹600) can purchase meals and refreshments at campus cafeterias.",
+      "Lunch is included in the GMUN + Lunch (₹900) and GMUN + Lunch + Accommodation (₹1900) packages. Delegates opting for the base GMUN package (₹600) can purchase meals and refreshments at campus cafeterias.",
   },
   {
     question: "Is accommodation available?",
     answer:
-      "Yes. Accommodation is available through the GMUN + Lunch + Accommodation package (₹1860). Delegates selecting this package will receive check-in and stay instructions prior to the conference.",
+      "Yes. Accommodation is available through the GMUN + Lunch + Accommodation package (₹1900). Please plan travel to reach GITAM on 24th morning and depart on 25th night. Contact the organising team in advance if an extended stay is required.",
   },
   {
     question: "How do I reach GITAM Visakhapatnam?",

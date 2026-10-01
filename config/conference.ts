@@ -87,7 +87,7 @@ export const venueAndAccommodation = {
   },
   accommodation: {
     heading: "Accommodation",
-    body: "Accommodation is available for outstation participants through the GMUN + Lunch + Accommodation package (₹1860). Registered delegates selecting this option will receive check-in and stay instructions prior to the conference.",
+    body: "Accommodation is available for outstation participants through the GMUN + Lunch + Accommodation package (₹1900). Participants should plan their travel to reach GITAM University on 24th morning and depart on 25th night. If any extended stay is needed, contact the organising team in advance so arrangements can be reviewed.",
   },
 };
 

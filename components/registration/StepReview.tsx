@@ -80,6 +80,20 @@ export function StepReview({
         <p className="font-display text-3xl text-gold">₹{pkg?.price}</p>
       </div>
 
+      {data.packageId === "gmun-lunch-accommodation" && (
+        <div className="mt-4 border-l-2 border-gold bg-gold/10 p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gold">
+            Accommodation &amp; Travel Notice
+          </p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-ivory">
+            NOTE: PLAN YOUR TRAVEL LIKE YOU REACH GITAM UNIVERSITY ON 24TH MORNING AND LEAVING ON 25TH NIGHT.
+          </p>
+          <p className="mt-1 text-xs text-ivory-dim">
+            If any queries reach out to the organising team for extended stay only then arrangements will be made.
+          </p>
+        </div>
+      )}
+
       <div className="mt-8 space-y-3 text-sm leading-relaxed text-ivory-dim">
         <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Before you continue</p>
         <ul className="list-disc space-y-1.5 pl-5">
