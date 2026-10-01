@@ -1,5 +1,5 @@
 import { indianStates } from "@/config/states";
-import { genderOptions, type DetailsInput } from "@/lib/validation/registration";
+import { genderOptions, gitamCampuses, type DetailsInput } from "@/lib/validation/registration";
 import { Field, TextInput, Select, ChoiceButtons } from "./fields";
 import { ProfilePhotoField } from "./ProfilePhotoField";
 
@@ -21,7 +21,11 @@ export function StepDetails({
     onChange("gitamStudent", value);
     // Save GITAM students typing their own institution; clear it again if they switch back.
     if (value === "Yes" && !data.institution.trim()) onChange("institution", GITAM_INSTITUTION);
-    if (value === "No" && data.institution === GITAM_INSTITUTION) onChange("institution", "");
+    if (value === "No") {
+      if (data.institution === GITAM_INSTITUTION) onChange("institution", "");
+      onChange("gitamRegistrationNumber", "");
+      onChange("gitamCampus", "");
+    }
   }
 
   return (
@@ -34,10 +38,10 @@ export function StepDetails({
           autoComplete="name"
         />
       </Field>
-      <Field label="Are you a GITAM student?" htmlFor="gitamStudent" error={errors.gitamStudent} className="sm:col-span-2">
+      <Field label="Are you a Gitamite?" htmlFor="gitamStudent" error={errors.gitamStudent} className="sm:col-span-2">
         <ChoiceButtons
           idPrefix="gitamStudent"
-          label="Are you a GITAM student?"
+          label="Are you a Gitamite?"
           options={[
             { label: "Yes", value: "Yes" as const },
             { label: "No", value: "No" as const },
@@ -46,6 +50,39 @@ export function StepDetails({
           onChange={setGitamStudent}
         />
       </Field>
+      {data.gitamStudent === "Yes" && (
+        <>
+          <Field
+            label="Registration Number"
+            htmlFor="gitamRegistrationNumber"
+            error={errors.gitamRegistrationNumber}
+          >
+            <TextInput
+              id="gitamRegistrationNumber"
+              value={data.gitamRegistrationNumber ?? ""}
+              onChange={(e) => onChange("gitamRegistrationNumber", e.target.value)}
+              placeholder="e.g. 121910301001"
+              autoComplete="off"
+            />
+          </Field>
+          <Field label="Campus" htmlFor="gitamCampus" error={errors.gitamCampus}>
+            <Select
+              id="gitamCampus"
+              value={data.gitamCampus ?? ""}
+              onChange={(e) => onChange("gitamCampus", e.target.value)}
+            >
+              <option value="" disabled>
+                Select campus
+              </option>
+              {gitamCampuses.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </>
+      )}
       <Field label="Age" htmlFor="age" error={errors.age}>
         <TextInput
           id="age"

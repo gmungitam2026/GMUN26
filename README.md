@@ -1,7 +1,7 @@
 # GMUN 5.0 — GITAM Model United Nations
 
 Public website and registration/payment/admin platform for GMUN 5.0
-(31 October – 1 November 2026, GITAM Deemed to be University, Visakhapatnam).
+(24–25 October 2026, GITAM Deemed to be University, Visakhapatnam).
 
 Next.js (App Router) + TypeScript + Tailwind CSS, with Supabase Postgres,
 a pluggable payment-provider abstraction, and an admin dashboard.

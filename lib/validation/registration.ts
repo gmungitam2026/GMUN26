@@ -4,6 +4,8 @@ import { registrationPackages } from "@/config/pricing";
 
 export const genderOptions = ["Male", "Female", "Other", "Prefer not to say"] as const;
 export const gitamStudentOptions = ["Yes", "No"] as const;
+export const gitamCampuses = ["Visakhapatnam", "Hyderabad", "Bengaluru"] as const;
+export type GitamCampus = (typeof gitamCampuses)[number];
 
 const packageIds = registrationPackages.map((p) => p.id) as [string, ...string[]];
 
@@ -13,7 +15,9 @@ function wordCount(value: string) {
 
 export const detailsSchema = z.object({
   fullName: z.string().trim().min(2, "Enter your name as per your government ID.").max(120),
-  gitamStudent: z.enum(gitamStudentOptions, { error: "Tell us whether you're a GITAM student." }),
+  gitamStudent: z.enum(gitamStudentOptions, { error: "Tell us whether you're a Gitamite." }),
+  gitamRegistrationNumber: z.string().trim().max(40).optional().default(""),
+  gitamCampus: z.string().trim().optional().default(""),
   age: z.coerce.number({ error: "Enter your age." }).int().min(12, "Minimum age for GMUN 5.0 is 12.").max(23, "Maximum age for GMUN 5.0 is 23."),
   gender: z.enum(genderOptions),
   phone: z
@@ -70,14 +74,46 @@ function withCommitteeRules<T extends z.ZodType<{ committeePreference: string; c
   });
 }
 
+/** GITAM students must provide their registration number and campus. */
+function withGitamiteRules<T extends z.ZodType<{ gitamStudent: "Yes" | "No"; gitamRegistrationNumber?: string; gitamCampus?: string }>>(
+  schema: T
+) {
+  return schema.superRefine((data, ctx) => {
+    if (data.gitamStudent === "Yes") {
+      const regNo = (data.gitamRegistrationNumber ?? "").trim();
+      if (!regNo) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Enter your GITAM registration number.",
+          path: ["gitamRegistrationNumber"],
+        });
+      }
+      const campus = (data.gitamCampus ?? "").trim();
+      if (!campus || !gitamCampuses.includes(campus as GitamCampus)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Select your GITAM campus.",
+          path: ["gitamCampus"],
+        });
+      }
+    }
+  });
+}
+
+export const detailsSchemaValidated = withGitamiteRules(detailsSchema);
+
 export const preferencesSchemaValidated = withCommitteeRules(withMunExperienceRules(preferencesSchema));
 
 export const registrationSchema = withCommitteeRules(
-  withMunExperienceRules(detailsSchema.extend(preferencesSchema.shape).extend(consentSchema.shape))
+  withMunExperienceRules(
+    withGitamiteRules(detailsSchema.extend(preferencesSchema.shape).extend(consentSchema.shape))
+  )
 );
 
 /** Same participant/MUN fields as registration, without the consent checkbox — used by the admin edit form. */
-export const adminEditSchema = withCommitteeRules(withMunExperienceRules(detailsSchema.extend(preferencesSchema.shape)));
+export const adminEditSchema = withCommitteeRules(
+  withMunExperienceRules(withGitamiteRules(detailsSchema.extend(preferencesSchema.shape)))
+);
 
 export type RegistrationInput = z.infer<typeof registrationSchema>;
 export type DetailsInput = z.infer<typeof detailsSchema>;

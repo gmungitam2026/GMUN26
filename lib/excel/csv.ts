@@ -14,6 +14,8 @@ export async function buildRegistrationsCsv(filters: Omit<RegistrationListFilter
     "Full Name": r.full_name,
     "Profile Photo": r.profile_photo_path ? `${origin}/admin/photos/${r.id}` : "",
     "GITAM Student": r.is_gitam_student == null ? "" : r.is_gitam_student ? "Yes" : "No",
+    "GITAM Regd No": r.gitam_registration_number ?? "",
+    "GITAM Campus": r.gitam_campus ?? "",
     Age: r.age,
     Gender: r.gender,
     Email: r.email,

@@ -43,7 +43,13 @@ export function StepReview({
             <img src={photoPreview} alt="Your profile photo" className="mb-3 h-20 w-20 rounded-full border border-line-strong object-cover" />
           )}
           <Row label="Name" value={data.fullName} />
-          <Row label="GITAM Student" value={data.gitamStudent} />
+          <Row label="Gitamite" value={data.gitamStudent} />
+          {data.gitamStudent === "Yes" && (
+            <>
+              <Row label="Registration Number" value={data.gitamRegistrationNumber ?? ""} />
+              <Row label="Campus" value={data.gitamCampus ?? ""} />
+            </>
+          )}
           <Row label="Age" value={String(data.age)} />
           <Row label="Gender" value={data.gender} />
           <Row label="Mobile" value={data.phone} />

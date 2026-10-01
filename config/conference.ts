@@ -87,7 +87,7 @@ export const venueAndAccommodation = {
   },
   accommodation: {
     heading: "Accommodation",
-    body: "Accommodation details will be announced. Participants should not assume accommodation is included in the registration fee unless explicitly stated.",
+    body: "Accommodation is available for outstation participants through the GMUN + Lunch + Accommodation package (₹1860). Registered delegates selecting this option will receive check-in and stay instructions prior to the conference.",
   },
 };
 

@@ -20,6 +20,8 @@ interface RegistrationRow {
   id: string;
   full_name: string;
   is_gitam_student: boolean | null;
+  gitam_registration_number?: string | null;
+  gitam_campus?: string | null;
   age: number;
   gender: string;
   email: string;
@@ -111,6 +113,12 @@ export function RegistrationDetailView({ registration, history, notes }: { regis
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Participant</p>
           <Field label="Name (as per Govt. ID)" value={registration.full_name} />
           <Field label="GITAM Student" value={registration.is_gitam_student == null ? null : registration.is_gitam_student ? "Yes" : "No"} />
+          {registration.is_gitam_student && (
+            <>
+              <Field label="Registration Number" value={registration.gitam_registration_number} />
+              <Field label="Campus" value={registration.gitam_campus} />
+            </>
+          )}
           <Field label="Age" value={registration.age} />
           <Field label="Gender" value={registration.gender} />
           <Field label="Email" value={registration.email} />

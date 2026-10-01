@@ -12,7 +12,7 @@ export const termsIntro =
  * Verbatim from the GMUN 5.0 client requirements document. The two bracketed
  * fields the source doc flags for finalisation — [Insert Dates] and
  * [Insert Venue] in §1 — are filled in with the dates/venue confirmed
- * elsewhere in that same document (31 October – 1 November 2026; GITAM Deemed to be
+ * elsewhere in that same document (24–25 October 2026; GITAM Deemed to be
  * University, Rushikonda, Visakhapatnam), not invented. Section numbering
  * (through §15, then §17, with no §16) matches the source document as given.
  */
@@ -22,7 +22,7 @@ export const termsSections: TermsSection[] = [
     title: "Definitions",
     bullets: [
       '"GMUN" refers to the GITAM Model United Nations, the organising body of the Conference, operating under GITAM (Deemed to be University), Visakhapatnam.',
-      '"Conference" refers to GMUN 5.0, scheduled to be held on 31 October – 1 November 2026 at GITAM Deemed to be University, Gandhi Nagar, Rushikonda, Visakhapatnam, Andhra Pradesh.',
+      '"Conference" refers to GMUN 5.0, scheduled to be held on 24–25 October 2026 at GITAM Deemed to be University, Gandhi Nagar, Rushikonda, Visakhapatnam, Andhra Pradesh.',
       '"Delegate" refers to any individual registered to represent a country, entity, or role within a committee at the Conference.',
       '"Participant" includes Delegates, Executive Board members, faculty advisors, observers, volunteers, and press corps registrants.',
       '"Website" refers to the official GMUN 5.0 website through which registration, information, and communication are conducted.',

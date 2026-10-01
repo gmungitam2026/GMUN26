@@ -44,6 +44,8 @@ export async function updateRegistration(
     .update({
       full_name: data.fullName,
       is_gitam_student: data.gitamStudent === "Yes",
+      gitam_registration_number: data.gitamStudent === "Yes" ? (data.gitamRegistrationNumber?.trim() || null) : null,
+      gitam_campus: data.gitamStudent === "Yes" ? (data.gitamCampus?.trim() || null) : null,
       age: data.age,
       gender: data.gender,
       email: data.email.toLowerCase(),
@@ -66,7 +68,9 @@ export async function updateRegistration(
       ? "email address"
       : error.message.includes("registrations_phone_key")
         ? "mobile number"
-        : "email or mobile number";
+        : error.message.includes("registrations_gitam_reg_no_key")
+          ? "GITAM registration number"
+          : "email, mobile number, or registration number";
     return {
       ok: false,
       error: duplicate ? `Another registration already uses this ${field}.` : "Could not save changes. Please try again.",

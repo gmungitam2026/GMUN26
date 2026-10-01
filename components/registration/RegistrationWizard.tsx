@@ -6,7 +6,7 @@ import { site } from "@/config/site";
 import { registrationPackages } from "@/config/pricing";
 import { committees } from "@/config/committees";
 import {
-  detailsSchema,
+  detailsSchemaValidated,
   preferencesSchemaValidated,
   type DetailsInput,
   type PreferencesInput,
@@ -20,9 +20,22 @@ import { Button } from "@/components/ui/Button";
 import { PoweredByMDC } from "@/components/ui/PoweredByMDC";
 import { shrinkProfilePhoto, validateImageFile } from "@/lib/registration/photo";
 import { firstError, focusField } from "@/lib/registration/focusField";
+import { checkParticipantAvailability } from "@/lib/registration/actions";
 
 // On-screen order of each step's fields, so the first visible error wins.
-const DETAILS_ORDER = ["fullName", "gitamStudent", "age", "gender", "phone", "email", "institution", "state", "city"] as const;
+const DETAILS_ORDER = [
+  "fullName",
+  "gitamStudent",
+  "gitamRegistrationNumber",
+  "gitamCampus",
+  "age",
+  "gender",
+  "phone",
+  "email",
+  "institution",
+  "state",
+  "city",
+] as const;
 const PREFERENCES_ORDER = [
   "committeePreference",
   "committeePreference2",
@@ -35,6 +48,8 @@ const PREFERENCES_ORDER = [
 const emptyDetails: DetailsInput = {
   fullName: "",
   gitamStudent: "" as DetailsInput["gitamStudent"],
+  gitamRegistrationNumber: "",
+  gitamCampus: "",
   age: NaN,
   gender: "Prefer not to say",
   phone: "",
@@ -77,6 +92,7 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [photoError, setPhotoError] = useState<string | undefined>();
   const [photoProcessing, setPhotoProcessing] = useState(false);
+  const [validatingStep1, setValidatingStep1] = useState(false);
 
   const [detailsErrors, setDetailsErrors] = useState<Partial<Record<keyof DetailsInput, string>>>({});
   const [preferencesErrors, setPreferencesErrors] = useState<Partial<Record<keyof PreferencesInput, string>>>({});
@@ -103,8 +119,8 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
     setPhotoProcessing(false);
   }
 
-  function goNextFromDetails() {
-    const result = detailsSchema.safeParse(details);
+  async function goNextFromDetails() {
+    const result = detailsSchemaValidated.safeParse(details);
     const missingPhoto = !profilePhoto;
     if (missingPhoto) setPhotoError("Upload a profile photo to continue.");
     if (!result.success) {
@@ -122,7 +138,28 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
       focusField("profilePhoto-field");
       return;
     }
-    setStep(2);
+
+    setValidatingStep1(true);
+    try {
+      const check = await checkParticipantAvailability({
+        email: details.email,
+        phone: details.phone,
+        gitamStudent: details.gitamStudent,
+        gitamRegistrationNumber: details.gitamRegistrationNumber,
+      });
+      if (!check.ok) {
+        setDetailsErrors(check.errors);
+        focusField(check.firstField);
+        return;
+      }
+      setStep(2);
+    } catch (err) {
+      console.error("Availability check failed:", err);
+      // In case of an unexpected error, proceed so delegate is not permanently stuck
+      setStep(2);
+    } finally {
+      setValidatingStep1(false);
+    }
   }
 
   function goNextFromPreferences() {
@@ -228,8 +265,8 @@ export function RegistrationWizard({ initialCommittee }: { initialCommittee?: st
             Back
           </Button>
           {step === 1 && (
-            <Button type="button" onClick={goNextFromDetails}>
-              Continue
+            <Button type="button" disabled={validatingStep1} onClick={goNextFromDetails}>
+              {validatingStep1 ? "Checking details…" : "Continue"}
             </Button>
           )}
           {step === 2 && (

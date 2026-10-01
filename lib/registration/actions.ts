@@ -13,13 +13,14 @@ const UPLOADS = {
   photo: { bucket: "profile-photos", file: "profile-photo", label: "profile photo" },
   proof: { bucket: "payment-proofs", file: "payment-proof", label: "payment screenshot" },
 } as const;
-const REGISTRATION_CLOSE = "2026-10-30T23:59:59+05:30";
+const REGISTRATION_CLOSE = "2026-10-23T23:59:59+05:30";
 const MAX_REGISTRATIONS = 500;
 /** Unique indexes from supabase/migrations/0006 and 0008, mapped to a message for the delegate. */
 const UNIQUE_INDEX_ERRORS: Record<string, string> = {
   registrations_payment_reference_key: "This UTR / payment reference has already been used for another registration.",
   registrations_email_key: "A registration with this email address already exists.",
   registrations_phone_key: "A registration with this mobile number already exists.",
+  registrations_gitam_reg_no_key: "A registration with this GITAM registration number already exists.",
 };
 const DUPLICATE_UTR_ERROR = UNIQUE_INDEX_ERRORS.registrations_payment_reference_key;
 /** Registrations in these statuses don't block a new one with the same email / phone / UTR (migration 0010). */
@@ -44,6 +45,73 @@ export interface CreateRegistrationError {
 export interface RegistrationUploadTarget {
   path: string;
   token: string;
+}
+
+export type ParticipantAvailabilityResult =
+  | { ok: true }
+  | {
+      ok: false;
+      errors: Partial<Record<"email" | "phone" | "gitamRegistrationNumber", string>>;
+      firstField: "email" | "phone" | "gitamRegistrationNumber";
+    };
+
+/**
+ * Validates whether email, phone number, and (if applicable) GITAM registration number
+ * are available before allowing the participant to advance past Step 1.
+ */
+export async function checkParticipantAvailability(input: {
+  email: string;
+  phone: string;
+  gitamStudent: "Yes" | "No";
+  gitamRegistrationNumber?: string;
+}): Promise<ParticipantAvailabilityResult> {
+  let supabase;
+  try {
+    supabase = createAdminClient();
+  } catch {
+    return { ok: true };
+  }
+
+  const normalizedEmail = input.email.trim().toLowerCase();
+  const phone = input.phone.trim();
+  const errors: Partial<Record<"email" | "phone" | "gitamRegistrationNumber", string>> = {};
+
+  // Check email and phone in active registrations
+  const { data: duplicates } = await supabase
+    .from("registrations")
+    .select("email, phone")
+    .or(`email.eq.${normalizedEmail},phone.eq.${phone}`)
+    .not("status", "in", INACTIVE_STATUSES)
+    .limit(2);
+
+  if (duplicates?.some((d) => d.email.toLowerCase() === normalizedEmail)) {
+    errors.email = UNIQUE_INDEX_ERRORS.registrations_email_key;
+  }
+  if (duplicates?.some((d) => d.phone === phone)) {
+    errors.phone = UNIQUE_INDEX_ERRORS.registrations_phone_key;
+  }
+
+  // Check GITAM registration number if student is a Gitamite
+  if (input.gitamStudent === "Yes" && input.gitamRegistrationNumber?.trim()) {
+    const normalizedRegNo = input.gitamRegistrationNumber.trim();
+    const { data: regNoInUse } = await supabase
+      .from("registrations")
+      .select("id")
+      .ilike("gitam_registration_number", normalizedRegNo)
+      .not("status", "in", INACTIVE_STATUSES)
+      .limit(1)
+      .maybeSingle();
+    if (regNoInUse) {
+      errors.gitamRegistrationNumber = UNIQUE_INDEX_ERRORS.registrations_gitam_reg_no_key;
+    }
+  }
+
+  const keys = Object.keys(errors) as (keyof typeof errors)[];
+  if (keys.length > 0) {
+    return { ok: false, errors, firstField: keys[0] };
+  }
+
+  return { ok: true };
 }
 
 /**
@@ -199,11 +267,25 @@ async function saveRegistration(
     .maybeSingle();
   if (utrInUse) return { ok: false, error: DUPLICATE_UTR_ERROR };
 
+  if (data.gitamStudent === "Yes" && data.gitamRegistrationNumber?.trim()) {
+    const normalizedRegNo = data.gitamRegistrationNumber.trim();
+    const { data: regNoInUse } = await supabase
+      .from("registrations")
+      .select("id")
+      .ilike("gitam_registration_number", normalizedRegNo)
+      .not("status", "in", INACTIVE_STATUSES)
+      .limit(1)
+      .maybeSingle();
+    if (regNoInUse) return { ok: false, error: UNIQUE_INDEX_ERRORS.registrations_gitam_reg_no_key };
+  }
+
   const { data: registration, error: insertError } = await supabase
     .from("registrations")
     .insert({
       full_name: data.fullName,
       is_gitam_student: data.gitamStudent === "Yes",
+      gitam_registration_number: data.gitamStudent === "Yes" ? (data.gitamRegistrationNumber?.trim() || null) : null,
+      gitam_campus: data.gitamStudent === "Yes" ? (data.gitamCampus?.trim() || null) : null,
       age: data.age,
       gender: data.gender,
       email: normalizedEmail,
@@ -228,6 +310,7 @@ async function saveRegistration(
     .single();
 
   if (insertError || !registration) {
+    console.error("Failed to insert registration:", insertError);
     if (insertError?.code === "23505") {
       const index = Object.keys(UNIQUE_INDEX_ERRORS).find((name) => insertError.message.includes(name));
       return { ok: false, error: index ? UNIQUE_INDEX_ERRORS[index] : "A registration with these details already exists." };

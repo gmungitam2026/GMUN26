@@ -38,6 +38,9 @@ export interface RegistrationRecord {
   id: string;
   registrationId: string;
   fullName: string;
+  isGitamStudent?: boolean | null;
+  gitamRegistrationNumber?: string | null;
+  gitamCampus?: string | null;
   age: number;
   gender: Gender;
   email: string;

@@ -25,7 +25,7 @@ export const faqItems: FaqItem[] = [
   {
     question: "When will GMUN 5.0 take place?",
     answer:
-      "The conference will be held on the 31st of October & 1st of November 2026. Please check the official conference schedule for timings and session details.",
+      "The conference will be held on the 24th & 25th of October 2026. Please check the official conference schedule for timings and session details.",
   },
   {
     question: "What committees are available?",
@@ -44,12 +44,13 @@ export const faqItems: FaqItem[] = [
   },
   {
     question: "How much does registration cost?",
-    answer: "The registration fee for GMUN 5.0 is INR 600. Please refer to the Registration page for the latest fee information.",
+    answer:
+      "Registration starts at INR 600 for GMUN Only. We also offer GMUN + Lunch for INR 860, and GMUN + Lunch + Accommodation for INR 1860. Please refer to the Registration page for full package options.",
   },
   {
     question: "What does the registration fee include?",
     answer:
-      "The registration fee includes conference participation and the facilities/services specified by the organisers. Any additional inclusions, such as meals, conference kits, certificates, or accommodation, will be mentioned on the registration page.",
+      "The base registration fee covers conference entry. You can choose packages that include lunch (₹860) or both lunch and accommodation (₹1860) during registration.",
   },
   {
     question: "How can I register?",
@@ -107,12 +108,13 @@ export const faqItems: FaqItem[] = [
   },
   {
     question: "Will food be provided?",
-    answer: "Details regarding meals and refreshments will be announced on the conference information page and/or communicated to registered delegates.",
+    answer:
+      "Lunch is included in the GMUN + Lunch (₹860) and GMUN + Lunch + Accommodation (₹1860) packages. Delegates opting for the base GMUN package (₹600) can purchase meals and refreshments at campus cafeterias.",
   },
   {
     question: "Is accommodation available?",
     answer:
-      "Accommodation arrangements, if offered, will be mentioned separately on the official website. Participants should not assume accommodation is included in the registration fee unless explicitly stated.",
+      "Yes. Accommodation is available through the GMUN + Lunch + Accommodation package (₹1860). Delegates selecting this package will receive check-in and stay instructions prior to the conference.",
   },
   {
     question: "How do I reach GITAM Visakhapatnam?",

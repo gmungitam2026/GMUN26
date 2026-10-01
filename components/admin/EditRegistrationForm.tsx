@@ -12,6 +12,8 @@ interface RegistrationRow {
   id: string;
   full_name: string;
   is_gitam_student: boolean | null;
+  gitam_registration_number?: string | null;
+  gitam_campus?: string | null;
   age: number;
   gender: string;
   email: string;
@@ -40,6 +42,8 @@ export function EditRegistrationForm({
     // Registrations made before these questions existed have nulls here;
     // the admin must fill them in to save.
     gitamStudent: (registration.is_gitam_student == null ? "" : registration.is_gitam_student ? "Yes" : "No") as DetailsInput["gitamStudent"],
+    gitamRegistrationNumber: registration.gitam_registration_number ?? "",
+    gitamCampus: registration.gitam_campus ?? "",
     age: registration.age,
     gender: registration.gender as DetailsInput["gender"],
     phone: registration.phone,

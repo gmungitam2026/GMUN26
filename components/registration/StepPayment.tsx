@@ -25,7 +25,7 @@ export function StepPayment({
   onSubmitted: (registrationId: string) => void;
   onError: (message: string | null) => void;
   /** A server-side problem with a step-1 field (e.g. email already registered): go back and focus it. */
-  onDetailsFieldError: (field: "email" | "phone", message: string) => void;
+  onDetailsFieldError: (field: "email" | "phone" | "gitamRegistrationNumber", message: string) => void;
 }) {
   const [pending, startTransition] = useTransition();
   const [proof, setProof] = useState<File | null>(null);
@@ -56,6 +56,7 @@ export function StepPayment({
   function failFromServer(message: string) {
     if (/email address already exists/i.test(message)) return onDetailsFieldError("email", message);
     if (/mobile number already exists/i.test(message)) return onDetailsFieldError("phone", message);
+    if (/GITAM registration number already exists/i.test(message)) return onDetailsFieldError("gitamRegistrationNumber", message);
     if (/UTR/i.test(message)) return fail(message, "utr");
     if (/payment screenshot/i.test(message)) return fail(message, "paymentProof");
     fail(message);
