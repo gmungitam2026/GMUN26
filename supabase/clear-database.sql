@@ -22,7 +22,10 @@ delete from public.registration_notes;
 delete from public.payments;
 delete from public.registrations;
 
--- 2. Reset the registration ID sequence so numbering restarts at MUN26-0001
+-- 2. Remove all uploaded files (profile photos & payment screenshots) from storage
+delete from storage.objects where bucket_id in ('profile-photos', 'payment-proofs');
+
+-- 3. Reset the registration ID sequence so numbering restarts at MUN26-0001
 alter sequence if exists public.registration_id_seq restart with 1;
 
 -- ----------------------------------------------------------------------------
@@ -45,6 +48,7 @@ select
   (select count(*) from public.registration_status_history) as status_history_count,
   (select count(*) from public.registration_notes) as notes_count,
   (select count(*) from public.payments) as payments_count,
+  (select count(*) from storage.objects where bucket_id in ('profile-photos', 'payment-proofs')) as storage_files_count,
   (select count(*) from public.committees) as committees_kept,
   (select count(*) from public.registration_packages) as packages_kept,
   (select count(*) from public.admin_profiles) as admin_profiles_kept;
