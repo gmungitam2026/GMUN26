@@ -47,10 +47,12 @@ export function RegistrationTable({ registrations }: { registrations: Registrati
               </td>
               <td className="py-3 pr-4 text-ivory">
                 <span className="flex items-center gap-3">
-                  <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-line bg-surface-raised">
-                    {r.photoUrl && (
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-line bg-surface-raised text-xs font-medium uppercase text-ivory-dim">
+                    {r.photoUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL from private storage
-                      <img src={r.photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      <img src={r.photoUrl} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                    ) : (
+                      r.full_name?.charAt(0) || "?"
                     )}
                   </span>
                   {r.full_name}

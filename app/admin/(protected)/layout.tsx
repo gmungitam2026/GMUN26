@@ -8,7 +8,7 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
   const session = await verifyAdminSession();
 
   return (
-    <div className="flex min-h-screen bg-ink pt-20">
+    <div className="admin-shell flex min-h-screen bg-ink pt-20">
       <AdminSidebar adminName={`${session.name} · ${session.role}`} />
       <div className="flex-1 px-10 py-10">{children}</div>
     </div>

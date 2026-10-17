@@ -60,14 +60,44 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   };
 }
 
-/** Profile photos live in a private bucket; admins see them through short-lived signed URLs. */
 const PHOTO_URL_TTL_SECONDS = 60 * 60;
+const photoUrlCache = new Map<string, { url: string; expiresAt: number }>();
 
 async function signProfilePhotos(supabase: ReturnType<typeof createAdminClient>, paths: string[]) {
   const urls = new Map<string, string>();
   if (paths.length === 0) return urls;
-  const { data } = await supabase.storage.from("profile-photos").createSignedUrls(paths, PHOTO_URL_TTL_SECONDS);
-  for (const item of data ?? []) if (item.path && item.signedUrl) urls.set(item.path, item.signedUrl);
+
+  const now = Date.now();
+  const missingPaths: string[] = [];
+
+  for (const p of paths) {
+    const cached = photoUrlCache.get(p);
+    if (cached && cached.expiresAt > now) {
+      urls.set(p, cached.url);
+    } else {
+      missingPaths.push(p);
+    }
+  }
+
+  if (missingPaths.length > 0) {
+    try {
+      const { data } = await supabase.storage
+        .from("profile-photos")
+        .createSignedUrls(missingPaths, PHOTO_URL_TTL_SECONDS);
+      for (const item of data ?? []) {
+        if (item.path && item.signedUrl) {
+          urls.set(item.path, item.signedUrl);
+          photoUrlCache.set(item.path, {
+            url: item.signedUrl,
+            expiresAt: now + (PHOTO_URL_TTL_SECONDS - 300) * 1000,
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Failed to sign profile photos:", e);
+    }
+  }
+
   return urls;
 }
 
@@ -148,11 +178,19 @@ export async function getRegistrationDetail(id: string) {
     supabase.from("registration_notes").select("*, admin_profiles(name)").eq("registration_id", id).order("created_at", { ascending: false }),
   ]);
 
-  const photoUrl = registration.profile_photo_path
-    ? (await signProfilePhotos(supabase, [registration.profile_photo_path])).get(registration.profile_photo_path) ?? null
-    : null;
+  const [photoUrls, proofRes] = await Promise.all([
+    registration.profile_photo_path
+      ? signProfilePhotos(supabase, [registration.profile_photo_path])
+      : Promise.resolve(new Map<string, string>()),
+    registration.payment_screenshot_path
+      ? supabase.storage.from("payment-proofs").createSignedUrl(registration.payment_screenshot_path, 3600)
+      : Promise.resolve(null),
+  ]);
 
-  return { registration, photoUrl, history: history ?? [], notes: notes ?? [] };
+  const photoUrl = registration.profile_photo_path ? photoUrls.get(registration.profile_photo_path) ?? null : null;
+  const proofUrl = proofRes?.data?.signedUrl ?? null;
+
+  return { registration, photoUrl, proofUrl, history: history ?? [], notes: notes ?? [] };
 }
 
 export async function listPayments(page = 1, pageSize = 20) {

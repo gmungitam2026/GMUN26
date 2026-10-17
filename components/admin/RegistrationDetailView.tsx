@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { committees } from "@/config/committees";
 import { registrationPackages } from "@/config/pricing";
 import { Button } from "@/components/ui/Button";
-import { addRegistrationNote, getPaymentProofUrl, updateRegistrationStatus } from "@/lib/admin/actions";
+import { addRegistrationNote, updateRegistrationStatus } from "@/lib/admin/actions";
 import { EditRegistrationForm } from "./EditRegistrationForm";
 
 function Field({ label, value }: { label: string; value: string | number | null | undefined }) {
@@ -42,11 +43,23 @@ interface RegistrationRow {
 type AuditRow = { id: string; old_status: string | null; new_status: string; note: string | null; created_at: string; admin_profiles?: { name?: string } | null };
 type NoteRow = { id: string; note: string; created_at: string; admin_profiles?: { name?: string } | null };
 
-export function RegistrationDetailView({ registration, history, notes }: { registration: RegistrationRow; history: AuditRow[]; notes: NoteRow[] }) {
+export function RegistrationDetailView({
+  registration,
+  history,
+  notes,
+  proofUrl,
+}: {
+  registration: RegistrationRow;
+  history: AuditRow[];
+  notes: NoteRow[];
+  proofUrl?: string | null;
+}) {
+  const router = useRouter();
   const [editing, setEditing] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(registration.status);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const committeeName = (id: string | null) => (id ? committees.find((c) => c.id === id)?.shortName ?? id : null);
   const pkg = registrationPackages.find((p) => p.id === registration.package_id);
 
@@ -55,30 +68,30 @@ export function RegistrationDetailView({ registration, history, notes }: { regis
   }
 
   async function changeStatus(status: string) {
-    setPending(true);
+    setLoadingAction(status);
     setError(null);
     const result = await updateRegistrationStatus(registration.id, status, note);
-    setPending(false);
-    if (!result.ok) setError(result.error ?? "Could not update status.");
-    else window.location.reload();
-  }
-
-  async function saveNote() {
-    setPending(true);
-    setError(null);
-    const result = await addRegistrationNote(registration.id, note);
-    setPending(false);
-    if (!result.ok) setError(result.error ?? "Could not save note.");
-    else {
+    setLoadingAction(null);
+    if (!result.ok) {
+      setError(result.error ?? "Could not update status.");
+    } else {
+      setCurrentStatus(status);
       setNote("");
-      window.location.reload();
+      router.refresh();
     }
   }
 
-  async function viewProof() {
-    const result = await getPaymentProofUrl(registration.id);
-    if (result.ok) window.open(result.url, "_blank", "noopener,noreferrer");
-    else setError(result.error);
+  async function saveNote() {
+    setLoadingAction("NOTE");
+    setError(null);
+    const result = await addRegistrationNote(registration.id, note);
+    setLoadingAction(null);
+    if (!result.ok) {
+      setError(result.error ?? "Could not save note.");
+    } else {
+      setNote("");
+      router.refresh();
+    }
   }
 
   return (
@@ -92,19 +105,73 @@ export function RegistrationDetailView({ registration, history, notes }: { regis
       <div className="mb-8 border border-gold/40 p-5">
         <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Verification</p>
         <div className="mt-4 flex flex-wrap gap-3">
-          {registration.payment_screenshot_path && <Button type="button" variant="secondary" onClick={viewProof}>View Payment Proof</Button>}
-          {registration.status === "PENDING_VERIFICATION" && <>
-            <Button type="button" disabled={pending} onClick={() => changeStatus("PAYMENT_CONFIRMED")}>Confirm Payment</Button>
-            <Button type="button" variant="secondary" disabled={pending} onClick={() => changeStatus("UNDER_VERIFICATION")}>Under Verification</Button>
-            <Button type="button" variant="secondary" disabled={pending} onClick={() => changeStatus("REJECTED")}>Reject</Button>
-          </>}
-          {registration.status === "UNDER_VERIFICATION" && <>
-            <Button type="button" disabled={pending} onClick={() => changeStatus("PAYMENT_CONFIRMED")}>Confirm Payment</Button>
-            <Button type="button" variant="secondary" disabled={pending} onClick={() => changeStatus("REJECTED")}>Reject</Button>
-          </>}
+          {proofUrl && (
+            <a
+              href={proofUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-11 items-center justify-center gap-2 border border-line-strong px-6 text-[13px] font-medium uppercase tracking-[0.14em] text-ivory hover:border-gold hover:text-gold"
+            >
+              View Payment Proof ↗
+            </a>
+          )}
+          {(currentStatus === "PENDING_VERIFICATION" || currentStatus === "UNDER_VERIFICATION") && (
+            <Button
+              type="button"
+              disabled={Boolean(loadingAction)}
+              onClick={() => changeStatus("PAYMENT_CONFIRMED")}
+            >
+              {loadingAction === "PAYMENT_CONFIRMED" ? "Confirming..." : "Confirm Payment"}
+            </Button>
+          )}
+          {currentStatus === "PENDING_VERIFICATION" && (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={Boolean(loadingAction)}
+              onClick={() => changeStatus("UNDER_VERIFICATION")}
+            >
+              {loadingAction === "UNDER_VERIFICATION" ? "Updating..." : "Under Verification"}
+            </Button>
+          )}
+          {(currentStatus === "PENDING_VERIFICATION" || currentStatus === "UNDER_VERIFICATION") && (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={Boolean(loadingAction)}
+              onClick={() => changeStatus("REJECTED")}
+            >
+              {loadingAction === "REJECTED" ? "Rejecting..." : "Reject"}
+            </Button>
+          )}
+          {currentStatus === "PAYMENT_CONFIRMED" && (
+            <span className="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-success">
+              ✓ Payment Confirmed
+            </span>
+          )}
+          {currentStatus === "REJECTED" && (
+            <span className="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-danger">
+              ✕ Payment Rejected
+            </span>
+          )}
         </div>
-        <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Reason (sent to the delegate when you reject or cancel) or an internal note" rows={3} className="mt-4 w-full resize-none border border-line bg-transparent p-3 text-sm text-ivory placeholder:text-ivory-faint" />
-        <div className="mt-3 flex justify-end"><Button type="button" variant="ghost" disabled={pending || !note.trim()} onClick={saveNote}>Add Internal Note</Button></div>
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Reason (sent to delegate on reject/cancel) or internal note"
+          rows={3}
+          className="mt-4 w-full resize-none border border-line bg-transparent p-3 text-sm text-ivory placeholder:text-ivory-faint focus-visible:border-gold"
+        />
+        <div className="mt-3 flex justify-end">
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={Boolean(loadingAction) || !note.trim()}
+            onClick={saveNote}
+          >
+            {loadingAction === "NOTE" ? "Saving..." : "Add Internal Note"}
+          </Button>
+        </div>
         {error && <p className="mt-3 text-sm text-danger">{error}</p>}
       </div>
 

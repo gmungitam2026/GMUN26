@@ -151,11 +151,9 @@ export async function updateRegistrationStatus(
 
   const email = statusChangeEmail(current, nextStatus, note);
   if (email) {
-    try {
-      await sendEmail(email);
-    } catch (error) {
+    sendEmail(email).catch((error) => {
       console.error("Registration status email failed:", error);
-    }
+    });
   }
 
   revalidatePath(`/admin/registrations/${registrationDbId}`);

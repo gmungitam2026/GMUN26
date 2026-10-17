@@ -15,7 +15,36 @@ import { site, poweredBy } from "@/config/site";
  * The on/off state lives on this element, not on <html>: React 19 owns the
  * <html> element after hydration and strips attributes it didn't set.
  */
-const introScript = `(function(){var el=document.getElementById("site-intro");if(!el)return;try{if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;el.setAttribute("data-state","play");var done=function(){el.removeAttribute("data-state");document.removeEventListener("pointerdown",skip,true);document.removeEventListener("keydown",skip,true)};var skip=function(){el.setAttribute("data-state","skip");setTimeout(done,500)};document.addEventListener("pointerdown",skip,true);document.addEventListener("keydown",skip,true);setTimeout(done,3400)}catch(e){}})();`;
+const introScript = `(function(){
+  try {
+    var el = document.getElementById("site-intro");
+    if (!el) return;
+    if (window.location.pathname.indexOf("/admin") === 0 || sessionStorage.getItem("gmun_intro_done")) {
+      el.remove();
+      return;
+    }
+    sessionStorage.setItem("gmun_intro_done", "1");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.remove();
+      return;
+    }
+    el.setAttribute("data-state","play");
+    var done = function(){
+      el.removeAttribute("data-state");
+      el.remove();
+      document.removeEventListener("pointerdown", skip, true);
+      document.removeEventListener("keydown", skip, true);
+    };
+    var skip = function(){
+      el.style.pointerEvents = "none";
+      el.setAttribute("data-state","skip");
+      setTimeout(done, 150);
+    };
+    document.addEventListener("pointerdown", skip, { capture: true, once: true });
+    document.addEventListener("keydown", skip, { capture: true, once: true });
+    setTimeout(done, 2600);
+  } catch(e) {}
+})();`;
 
 // Wave crest lines drawn in a 2880×200 box: one period is 720 units, repeated
 // across the width so shifting the layer by -50% loops seamlessly.

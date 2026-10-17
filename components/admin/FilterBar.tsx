@@ -18,7 +18,7 @@ export function FilterBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -35,18 +35,41 @@ export function FilterBar() {
           e.preventDefault();
           updateParam("q", query);
         }}
-        className="flex-1 min-w-[220px]"
+        className="flex-1 min-w-[280px]"
       >
-        <label htmlFor="admin-search" className="mb-1.5 block text-[11px] uppercase tracking-[0.08em] text-ivory-faint">
-          Search
+        <label htmlFor="admin-search" className="mb-1.5 flex items-center justify-between text-[11px] uppercase tracking-[0.08em] text-ivory-faint">
+          <span>Search</span>
+          {isPending && <span className="text-gold animate-pulse">Filtering...</span>}
         </label>
-        <input
-          id="admin-search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Name, email, phone, or registration ID"
-          className="h-10 w-full border border-line bg-transparent px-3 text-sm text-ivory placeholder:text-ivory-faint focus-visible:border-gold"
-        />
+        <div className="flex gap-2">
+          <input
+            id="admin-search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Name, email, phone, or registration ID"
+            className="h-10 flex-1 border border-line bg-transparent px-3 text-sm text-ivory placeholder:text-ivory-faint focus-visible:border-gold"
+          />
+          <button
+            type="submit"
+            disabled={isPending}
+            className="h-10 px-4 border border-gold text-gold text-xs font-semibold uppercase tracking-wider hover:bg-gold-fill hover:text-ink disabled:opacity-50 transition-colors"
+          >
+            {isPending ? "..." : "Search"}
+          </button>
+          {(query || searchParams.get("q")) && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                updateParam("q", "");
+              }}
+              className="h-10 px-3 border border-line text-xs uppercase tracking-wider text-ivory-faint hover:text-ivory hover:border-line-strong transition-colors"
+              title="Clear search"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </form>
 
       <div>

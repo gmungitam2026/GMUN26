@@ -31,11 +31,10 @@ export function Starfield() {
   return (
     <div
       aria-hidden
-      className="starfield animate-drift pointer-events-none fixed inset-0 z-40"
+      className="starfield pointer-events-none fixed inset-0 z-0 opacity-25"
       style={{
         backgroundImage: starsDataUri,
         backgroundRepeat: "repeat",
-        mixBlendMode: "screen",
       }}
     />
   );

@@ -270,9 +270,8 @@ option {
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 106, 0.1), transparent 75%);
 }
 
 /* Continuously scrolling strips (home gallery, testimonials). The track
@@ -363,7 +362,7 @@ option {
   display: none;
 }
 ::view-transition-group(.page-exit) {
-  animation-duration: 900ms;
+  animation-duration: 200ms;
 }
 /* Gold ring riding the edge of the expanding circle (drawn on the entering
    page's group, behind the new page itself). */
@@ -375,31 +374,24 @@ option {
     rgba(212, 175, 106, 0.35) calc(var(--vt-r) + 10px),
     transparent calc(var(--vt-r) + 60px)
   );
-  animation: page-ring 900ms cubic-bezier(0.7, 0, 0.2, 1) both;
+  animation: page-ring 200ms cubic-bezier(0.7, 0, 0.2, 1) both;
 }
 ::view-transition-old(.page-exit) {
   transform-origin: var(--vt-x) var(--vt-oy);
-  animation: page-recede 900ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: page-recede 200ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 ::view-transition-new(.page-enter) {
   transform-origin: var(--vt-x) var(--vt-y);
-  -webkit-mask-image: radial-gradient(circle at var(--vt-x) var(--vt-y), #000 calc(var(--vt-r) - 40px), transparent var(--vt-r));
-  mask-image: radial-gradient(circle at var(--vt-x) var(--vt-y), #000 calc(var(--vt-r) - 40px), transparent var(--vt-r));
-  animation: page-reveal 900ms cubic-bezier(0.7, 0, 0.2, 1) both;
+  animation: page-reveal 200ms cubic-bezier(0.7, 0, 0.2, 1) both;
 }
 @keyframes page-recede {
   to {
-    transform: scale(0.9);
-    filter: brightness(0.35) sepia(0.6) blur(8px);
-    opacity: 0.6;
+    opacity: 0;
   }
 }
 @keyframes page-ring {
   0% {
     --vt-r: 0px;
-    opacity: 1;
-  }
-  75% {
     opacity: 1;
   }
   100% {
@@ -409,13 +401,21 @@ option {
 }
 @keyframes page-reveal {
   from {
-    --vt-r: 0px;
-    transform: scale(1.08);
+    opacity: 0;
   }
   to {
-    --vt-r: 250vmax;
-    transform: scale(1);
+    opacity: 1;
   }
+}
+
+/* Admin shell overrides: instant rendering and zero lag */
+html:has(.admin-shell) ::view-transition-group(*),
+html:has(.admin-shell) ::view-transition-old(*),
+html:has(.admin-shell) ::view-transition-new(*),
+.admin-shell ~ .starfield,
+html:has(.admin-shell) .starfield {
+  display: none !important;
+  animation: none !important;
 }
 
 /* Site intro (components/ui/SiteIntro.tsx). Hidden unless its inline script

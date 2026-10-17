@@ -13,31 +13,20 @@ import { useScrollProgress } from "@/lib/hooks/useScrollProgress";
  * section without those sections needing to change.
  */
 export function LogoWatermark() {
-  const progress = useScrollProgress();
-  const revealFromTop = (1 - progress) * 100;
-
   return (
     <div
       aria-hidden
-      className="logo-watermark pointer-events-none fixed inset-0 z-30 flex items-center justify-center"
-      style={{ mixBlendMode: "screen" }}
+      className="logo-watermark pointer-events-none fixed inset-0 z-10 flex items-center justify-center opacity-[0.05]"
     >
-      <div className="relative h-[85vmin] w-[85vmin] max-h-[900px] max-w-[900px] overflow-hidden">
+      <div className="relative h-[85vmin] w-[85vmin] max-h-[800px] max-w-[800px] overflow-hidden">
         <Image
           src="/logos/gmun-club-logo.jpg"
           alt=""
           fill
-          sizes="900px"
-          className="object-contain grayscale"
-          style={{ opacity: 0.06, clipPath: "inset(0 0 20% 0)" }}
-        />
-        <Image
-          src="/logos/gmun-club-logo.jpg"
-          alt=""
-          fill
-          sizes="900px"
-          className="object-contain transition-[clip-path] duration-300 ease-out"
-          style={{ opacity: 0.18, clipPath: `inset(${revealFromTop}% 0 20% 0)` }}
+          sizes="800px"
+          priority
+          className="object-contain"
+          style={{ clipPath: "inset(0 0 20% 0)" }}
         />
       </div>
     </div>

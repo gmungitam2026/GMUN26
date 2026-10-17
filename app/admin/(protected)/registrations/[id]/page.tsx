@@ -36,7 +36,7 @@ export default async function AdminRegistrationDetailPage({
       </div>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[2fr_1fr]">
-        <RegistrationDetailView registration={r} history={history} notes={notes} />
+        <RegistrationDetailView registration={r} history={history} notes={notes} proofUrl={detail.proofUrl} />
 
         <div>
           <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Profile Photo</p>
