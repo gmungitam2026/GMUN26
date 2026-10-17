@@ -8,17 +8,19 @@ import { CsvExportButton } from "@/components/admin/CsvExportButton";
 export default async function AdminRegistrationsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; committee?: string; status?: string; package?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; committee?: string; status?: string; package?: string; page?: string; pageSize?: string }>;
 }) {
   const params = await searchParams;
   const page = Number(params.page ?? "1") || 1;
+  const pageSize = Number(params.pageSize ?? "50") || 50;
 
-  const { registrations, total, pageSize } = await listRegistrations({
+  const { registrations, total } = await listRegistrations({
     query: params.q,
     committee: params.committee,
     paymentStatus: params.status,
     packageId: params.package,
     page,
+    pageSize,
   });
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -68,6 +70,7 @@ function buildQuery(params: Record<string, string | undefined>, page: number) {
   if (params.committee) usp.set("committee", params.committee);
   if (params.status) usp.set("status", params.status);
   if (params.package) usp.set("package", params.package);
+  if (params.pageSize) usp.set("pageSize", params.pageSize);
   usp.set("page", String(page));
   return usp.toString();
 }

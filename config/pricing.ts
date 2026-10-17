@@ -34,7 +34,7 @@ export const registrationPackages: RegistrationPackage[] = [
     description: "Two-day conference entry with lunch and accommodation included.",
     price: 1900,
     currency: "INR",
-    active: true,
+    active: false,
     displayOrder: 3,
     includes: ["Two-day conference entry (both days)", "Lunch", "Accommodation"],
     capacity: null,

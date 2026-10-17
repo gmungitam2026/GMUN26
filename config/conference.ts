@@ -87,7 +87,7 @@ export const venueAndAccommodation = {
   },
   accommodation: {
     heading: "Accommodation",
-    body: "Accommodation is available for outstation participants through the GMUN + Lunch + Accommodation package (₹1900). Participants should plan their travel to reach GITAM University on 24th morning and depart on 25th night. If any extended stay is needed, contact the organising team in advance so arrangements can be reviewed.",
+    body: "Please note that accommodation is not provided by the conference organisers for GMUN 5.0. Outstation participants are requested to arrange their own stay in Visakhapatnam.",
   },
 };
 

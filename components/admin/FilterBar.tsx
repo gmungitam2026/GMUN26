@@ -98,11 +98,31 @@ export function FilterBar() {
           className="h-10 border border-line bg-ink px-3 text-sm text-ivory"
         >
           <option value="">All</option>
-          {registrationPackages.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
+          {registrationPackages
+            .filter((p) => p.active)
+            .map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="pageSize-filter" className="mb-1.5 block text-[11px] uppercase tracking-[0.08em] text-ivory-faint">
+          Per Page
+        </label>
+        <select
+          id="pageSize-filter"
+          defaultValue={searchParams.get("pageSize") ?? "50"}
+          onChange={(e) => updateParam("pageSize", e.target.value)}
+          className="h-10 border border-line bg-ink px-3 text-sm text-ivory"
+        >
+          <option value="25">25</option>
+          <option value="50">50 (Default)</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="500">All (500)</option>
         </select>
       </div>
     </div>

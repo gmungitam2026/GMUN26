@@ -74,7 +74,7 @@ function buildEmptyPreferences(initialCommittee?: string): PreferencesInput {
 
 export function RegistrationWizard({ initialCommittee }: { initialCommittee?: string }) {
   const router = useRouter();
-  const minPrice = Math.min(...registrationPackages.map((p) => p.price));
+  const minPrice = Math.min(...registrationPackages.filter((p) => p.active).map((p) => p.price));
 
   const [step, setStep] = useState(1);
 
