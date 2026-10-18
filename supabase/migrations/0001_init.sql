@@ -80,7 +80,7 @@ insert into committees (id, short_name, name, governing_body, agenda, descriptio
  'The United Nations Environment Assembly is the world''s highest-level decision-making body on environmental matters, established in 2012 following the Rio+20 Conference. It brings together all 193 UN Member States to set the global environmental agenda, shape international environmental law, and mobilise funding for ecological action.',
  'General', 1),
 ('unhrc', 'UNHRC', 'United Nations Human Rights Council', null,
- 'Regulating Illicit Arms Trade and Trafficking: Curbing Acquisition by Terrorist and Non-State Armed Actors.',
+ 'Reaffirming States'' Obligations to Protect: Ensuring Accountability for Abuses of State Power',
  'The UNHRC is a 47-member inter-governmental body established in 2006 to promote and protect human rights worldwide. It addresses situations of human rights violations, conducts the Universal Periodic Review of every Member State''s human rights record, and works through Special Rapporteurs and independent experts.',
  'General', 2),
 ('media-info', 'UN Ad-hoc Committee', 'UN Ad-hoc Committee on Media and Information', 'Modelled on the UN Committee on Information (UNGA Fourth Committee)',
@@ -88,7 +88,7 @@ insert into committees (id, short_name, name, governing_body, agenda, descriptio
  'This committee is modelled on the real UN Committee on Information, established in 1978 to examine global public-information policy and promote a free, balanced flow of news and data.',
  'Special', 3),
 ('disec', 'UNGA-DISEC', 'Disarmament and International Security Committee', 'UNGA First Committee',
- 'Regulating Illicit Arms Trade and Trafficking: Curbing Acquisition by Terrorist and Non-State Armed Actors',
+ 'Regulating Illicit Arms Trade and Trafficking: Curbing Acquisition by Terrorist and Non-State Armed Actors.',
  'DISEC is the first of the UN General Assembly''s six main committees, open to all 193 Member States, and is dedicated to disarmament and international security.',
  'General', 4),
 ('mcu', 'MCU', 'Marvel Cinematic Universe Committee', 'Crisis simulation committee',
@@ -100,7 +100,7 @@ insert into committees (id, short_name, name, governing_body, agenda, descriptio
  'This committee simulates the ecosystem of the Indian film industry, spanning Bollywood and regional cinema alongside production houses, streaming platforms, and regulatory bodies like the Central Board of Film Certification.',
  'Special', 6),
 ('fifa', 'FIFA', 'Fédération Internationale de Football Association', null,
- 'To be announced',
+ 'Reforming FIFA''s Global Transfer System: Agent Regulation and Ownership Integrity',
  'This committee simulates FIFA, the global governing body of association football, comprising 211 member associations. Delegates represent national federations, confederations, or FIFA''s own executive bodies.',
  'Special', 7);
 

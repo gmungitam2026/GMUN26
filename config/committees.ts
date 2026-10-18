@@ -20,7 +20,7 @@ export const committees: Committee[] = [
     shortName: "UNHRC",
     name: "United Nations Human Rights Council",
     agenda:
-      "Regulating Illicit Arms Trade and Trafficking: Curbing Acquisition by Terrorist and Non-State Armed Actors.",
+      "Reaffirming States' Obligations to Protect: Ensuring Accountability for Abuses of State Power",
     description:
       "The UNHRC is a 47-member inter-governmental body established in 2006 to promote and protect human rights worldwide. It addresses situations of human rights violations, conducts the Universal Periodic Review of every Member State's human rights record, and works through Special Rapporteurs and independent experts. The Council responds to emergencies such as conflict-driven abuses, refugee crises, and threats to civil liberties. It also engages closely with governments, regional bodies, and civil society to prevent violations before they escalate. Delegates will debate pressing human rights issues, from digital rights to accountability for war crimes.",
     type: "General",
@@ -48,7 +48,7 @@ export const committees: Committee[] = [
     name: "Disarmament and International Security Committee",
     governingBody: "UNGA First Committee",
     agenda:
-      "Regulating Illicit Arms Trade and Trafficking: Curbing Acquisition by Terrorist and Non-State Armed Actors",
+      "Regulating Illicit Arms Trade and Trafficking: Curbing Acquisition by Terrorist and Non-State Armed Actors.",
     description:
       "DISEC is the first of the UN General Assembly's six main committees, open to all 193 Member States, and is dedicated to disarmament and international security. It addresses the proliferation of nuclear, chemical, biological, and conventional weapons, working closely with the UN Disarmament Commission and the Conference on Disarmament. Increasingly, it also tackles emerging threats such as cyber warfare, autonomous weapons, and the militarisation of outer space. The committee promotes confidence-building measures and cooperative security frameworks among nations. Delegates will negotiate solutions to some of the world's most consequential security challenges.",
     type: "General",
@@ -85,7 +85,8 @@ export const committees: Committee[] = [
     id: "fifa",
     shortName: "FIFA",
     name: "Fédération Internationale de Football Association",
-    agenda: "To be announced",
+    agenda:
+      "Reforming FIFA's Global Transfer System: Agent Regulation and Ownership Integrity",
     description:
       "This committee simulates FIFA, the global governing body of association football, comprising 211 member associations. Delegates represent national federations, confederations such as UEFA and AFC, or FIFA's own executive bodies, addressing the sport's sporting, commercial, and governance dimensions. Core issues include World Cup hosting and reform, anti-corruption governance, player welfare and transfer regulations, and the use of technology such as VAR. The committee also confronts discrimination and fan violence within football. Delegates will negotiate as federations and stakeholders rather than sovereign states, balancing commercial interests with the integrity of the game.",
     type: "Special",
