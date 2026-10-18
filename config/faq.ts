@@ -25,7 +25,7 @@ export const faqItems: FaqItem[] = [
   {
     question: "When will GMUN 5.0 take place?",
     answer:
-      "The conference will be held from 30th October to 1st November 2026. Please check the official conference schedule for timings and session details.",
+      "The conference will be held on 31st October and 1st November 2026. Please check the official conference schedule for timings and session details.",
   },
   {
     question: "What committees are available?",
