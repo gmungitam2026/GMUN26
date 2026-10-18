@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { fraunces, inter } from "./fonts";
 import { site, poweredBy } from "@/config/site";
 import { NavBar } from "@/components/navigation/NavBar";
@@ -51,8 +52,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <script dangerouslySetInnerHTML={{ __html: scrollResetOnReloadScript }} />
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
+        <Script
+          id="scroll-reset"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: scrollResetOnReloadScript }}
+        />
       </head>
       <body className="flex min-h-screen flex-col bg-ink text-ivory antialiased">
         <a

@@ -20,18 +20,16 @@ const introScript = `(function(){
     var el = document.getElementById("site-intro");
     if (!el) return;
     if (window.location.pathname.indexOf("/admin") === 0 || sessionStorage.getItem("gmun_intro_done")) {
-      el.remove();
       return;
     }
     sessionStorage.setItem("gmun_intro_done", "1");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.remove();
       return;
     }
     el.setAttribute("data-state","play");
     var done = function(){
       el.removeAttribute("data-state");
-      el.remove();
+      el.style.display = "none";
       document.removeEventListener("pointerdown", skip, true);
       document.removeEventListener("keydown", skip, true);
     };

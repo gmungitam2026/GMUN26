@@ -59,9 +59,10 @@ export const committees: Committee[] = [
   {
     id: "mcu",
     shortName: "MCU",
-    name: "Marvel Cinematic Universe Committee",
+    name: "Marvel Cinematic Universe",
     governingBody: "Crisis simulation committee",
-    agenda: "Reaffirming States' Obligations to Protect: Ensuring Accountability for Abuses of State Power",
+    agenda:
+      "The Morality of Power: Reassessing Heroism, Villainy, and the Justification of Sacrifice in the Marvel Cinematic Universe",
     description:
       "This special crisis committee places delegates within the fictional world of the Marvel Cinematic Universe, representing superheroes, organisations such as S.H.I.E.L.D. or the Avengers, and governmental bodies operating within that universe. It tests crisis diplomacy through chairperson-driven scenarios ranging from extra-terrestrial threats to the regulation of enhanced individuals, echoing in-universe frameworks like the Sokovia Accords. Delegates must stay true to their character's powers and worldview while negotiating collective security. The format rewards improvisation, lateral thinking, and rapid coalition-building. It is a popular addition to modern MUN circuits, blending pop culture with serious diplomatic skill.",
     type: "Crisis",
